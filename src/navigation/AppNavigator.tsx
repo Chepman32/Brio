@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { TodayScreen } from '../screens/TodayScreen';
 import { PlannerScreen } from '../screens/PlannerScreen';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
@@ -34,6 +35,9 @@ export const AppNavigator: React.FC = () => {
         component={TodayScreen}
         options={{
           tabBarLabel: 'Today',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="today-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -41,6 +45,9 @@ export const AppNavigator: React.FC = () => {
         component={PlannerScreen}
         options={{
           tabBarLabel: 'Plan',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="calendar-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -48,6 +55,9 @@ export const AppNavigator: React.FC = () => {
         component={AchievementsScreen}
         options={{
           tabBarLabel: 'Achievements',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="trophy-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -55,6 +65,9 @@ export const AppNavigator: React.FC = () => {
         component={SettingsScreen}
         options={{
           tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="settings-outline" size={size} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>
