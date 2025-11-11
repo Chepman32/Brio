@@ -40,7 +40,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
 
   useEffect(() => {
     if (visible) {
-      translateY.value = withSpring(0, { damping: 20 });
+      translateY.value = withSpring(0, {
+        damping: 30,
+        stiffness: 300,
+      });
 
       if (editTask) {
         setTitle(editTask.title);
@@ -51,7 +54,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         setPriority(editTask.priority);
       }
     } else {
-      translateY.value = withSpring(1000);
+      translateY.value = withSpring(1000, {
+        damping: 30,
+        stiffness: 300,
+      });
       // Reset form
       setTitle('');
       setNotes('');

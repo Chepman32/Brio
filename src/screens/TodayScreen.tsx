@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, RefreshControl } from 'react-native';
 import { TaskListView } from '../components/TaskListView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { TaskCreationModal } from '../components/TaskCreationModal';
+import { TaskDetailModal } from '../components/TaskDetailModal';
 import {
   getTasksByDate,
   completeTask,
   snoozeTask,
   createTask,
   getTaskById,
+  deleteTask,
 } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
@@ -19,13 +21,34 @@ export const TodayScreen: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
+  const [editingTask, setEditingTask] = useState<TaskType | null>(null);
 
   const loadTasks = () => {
     try {
       const today = new Date();
+      console.log('Loading tasks for date:', today);
       const todayTasks = getTasksByDate(today);
-      setTasks(todayTasks.filter(task => !task.completed));
+      console.log('Found tasks:', todayTasks.length);
+      const incompleteTasks = todayTasks
+        .filter(task => !task.completed)
+        .map(task => ({
+          _id: task._id,
+          title: task.title,
+          notes: task.notes,
+          dueDate: task.dueDate,
+          dueTime: task.dueTime,
+          category: task.category,
+          priority: task.priority,
+          completed: task.completed,
+          completedAt: task.completedAt,
+          snoozedUntil: task.snoozedUntil,
+          createdAt: task.createdAt,
+          updatedAt: task.updatedAt,
+        }));
+      console.log('Incomplete tasks:', incompleteTasks.length);
+      setTasks(incompleteTasks);
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
@@ -78,7 +101,22 @@ export const TodayScreen: React.FC = () => {
     const task = tasks.find(t => t._id === taskId);
     if (task) {
       setSelectedTask(task);
-      // TODO: Open task detail modal
+      setShowDetailModal(true);
+    }
+  };
+
+  const handleEditTask = (task: TaskType) => {
+    setEditingTask(task);
+    setShowTaskModal(true);
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await NotificationService.cancelNotification(taskId);
+      deleteTask(taskId);
+      loadTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
     }
   };
 
@@ -88,15 +126,41 @@ export const TodayScreen: React.FC = () => {
 
   const handleSaveTask = async (taskInput: TaskInput) => {
     try {
-      const newTask = createTask(taskInput);
-      // Schedule notification if task has due time
-      if (newTask.dueTime) {
-        await NotificationService.scheduleNotification(newTask);
+      if (editingTask) {
+        // Update existing task
+        console.log('Updating task:', editingTask._id);
+        const { updateTask } = require('../database/operations');
+        updateTask(editingTask._id, taskInput);
+
+        // Reschedule notification if task has due time
+        await NotificationService.cancelNotification(editingTask._id);
+        if (taskInput.dueTime) {
+          const updatedTask = getTaskById(editingTask._id);
+          if (updatedTask) {
+            await NotificationService.scheduleNotification(updatedTask);
+          }
+        }
+      } else {
+        // Create new task
+        console.log('Creating task with input:', taskInput);
+        const newTask = createTask(taskInput);
+        console.log('Task created:', newTask);
+
+        // Schedule notification if task has due time
+        if (newTask.dueTime) {
+          await NotificationService.scheduleNotification(newTask);
+        }
       }
-      loadTasks();
+
       setShowTaskModal(false);
+      setEditingTask(null);
+
+      // Reload tasks after a short delay to ensure state updates
+      setTimeout(() => {
+        loadTasks();
+      }, 100);
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error saving task:', error);
     }
   };
 
@@ -141,8 +205,23 @@ export const TodayScreen: React.FC = () => {
 
       <TaskCreationModal
         visible={showTaskModal}
-        onClose={() => setShowTaskModal(false)}
+        onClose={() => {
+          setShowTaskModal(false);
+          setEditingTask(null);
+        }}
         onSave={handleSaveTask}
+        editTask={editingTask}
+      />
+
+      <TaskDetailModal
+        visible={showDetailModal}
+        task={selectedTask}
+        onClose={() => {
+          setShowDetailModal(false);
+          setSelectedTask(null);
+        }}
+        onEdit={handleEditTask}
+        onDelete={handleDeleteTask}
       />
     </View>
   );

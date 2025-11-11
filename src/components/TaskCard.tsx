@@ -23,6 +23,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
 
+  // Extract task ID to avoid accessing Realm object in worklet
+  const taskId = task._id;
+
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
       translateX.value = event.translationX;
@@ -32,14 +35,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         // Swipe right - complete task
         translateX.value = withSpring(300, {}, () => {
           opacity.value = withTiming(0, { duration: 200 }, () => {
-            runOnJS(onComplete)(task._id);
+            runOnJS(onComplete)(taskId);
           });
         });
       } else if (event.translationX < -SWIPE_THRESHOLD) {
         // Swipe left - snooze task
         translateX.value = withSpring(-300, {}, () => {
           opacity.value = withTiming(0, { duration: 200 }, () => {
-            runOnJS(onSnooze)(task._id);
+            runOnJS(onSnooze)(taskId);
           });
         });
       } else {
@@ -52,14 +55,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     .minDuration(500)
     .onStart(() => {
       scale.value = withSpring(0.95);
-      runOnJS(onLongPress)(task._id);
+      runOnJS(onLongPress)(taskId);
     })
     .onEnd(() => {
       scale.value = withSpring(1);
     });
 
   const tapGesture = Gesture.Tap().onEnd(() => {
-    runOnJS(onPress)(task._id);
+    runOnJS(onPress)(taskId);
   });
 
   const composedGesture = Gesture.Race(
