@@ -10,7 +10,18 @@ export const initializeRealm = async (): Promise<Realm> => {
 
   const config: Realm.Configuration = {
     schema: [Task, Achievement, UserStats, Settings],
-    schemaVersion: 1,
+    schemaVersion: 2,
+    migration: (oldRealm, newRealm) => {
+      // Migration for schema version 2: add timeFormat field
+      if (oldRealm.schemaVersion < 2) {
+        const oldSettings = oldRealm.objects('Settings');
+        const newSettings = newRealm.objects('Settings');
+
+        for (let i = 0; i < oldSettings.length; i++) {
+          newSettings[i].timeFormat = 'auto';
+        }
+      }
+    },
   };
 
   realmInstance = await Realm.open(config);

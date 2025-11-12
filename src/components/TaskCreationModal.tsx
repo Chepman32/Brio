@@ -19,6 +19,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TaskCreationModalProps, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
 import { PREDEFINED_CATEGORIES } from '../utils/categories';
+import { useTimeFormat } from '../hooks/useTimeFormat';
 
 export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   visible,
@@ -26,6 +27,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   onSave,
   editTask,
 }) => {
+  const { formatTime, is24Hour } = useTimeFormat();
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
@@ -342,13 +344,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   <View style={styles.accordionHeaderContent}>
                     <Text style={styles.label}>Due Time (Optional)</Text>
                     <Text style={styles.accordionValue}>
-                      {dueTime
-                        ? `🕐 ${dueTime.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                          })}`
-                        : '🕐 Set time'}
+                      {dueTime ? `🕐 ${formatTime(dueTime)}` : '🕐 Set time'}
                     </Text>
                   </View>
                   <View style={styles.accordionRightContent}>
@@ -376,6 +372,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                     <DateTimePicker
                       value={dueTime}
                       mode="time"
+                      is24Hour={is24Hour}
                       display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                       onChange={(event, selectedTime) => {
                         if (Platform.OS === 'android') {
@@ -412,12 +409,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                       month: 'short',
                       day: 'numeric',
                     })}{' '}
-                    at{' '}
-                    {smartSuggestion.suggestedTime.toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    })}
+                    at {formatTime(smartSuggestion.suggestedTime)}
                   </Text>
                   <Pressable
                     style={styles.applySuggestionButton}

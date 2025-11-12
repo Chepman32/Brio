@@ -13,6 +13,7 @@ import {
   setTheme,
   setNotificationsEnabled,
   setDefaultReminderTime,
+  setTimeFormat,
 } from '../database/operations';
 import { closeRealm } from '../database/realm';
 
@@ -20,6 +21,9 @@ export const SettingsScreen: React.FC = () => {
   const [theme, setThemeState] = useState<'light' | 'dark'>('light');
   const [notificationsEnabled, setNotificationsEnabledState] = useState(true);
   const [reminderTime, setReminderTime] = useState(15);
+  const [timeFormat, setTimeFormatState] = useState<'auto' | '12h' | '24h'>(
+    'auto',
+  );
 
   useEffect(() => {
     loadSettings();
@@ -31,6 +35,7 @@ export const SettingsScreen: React.FC = () => {
       setThemeState(settings.theme);
       setNotificationsEnabledState(settings.notificationsEnabled);
       setReminderTime(settings.defaultReminderTime);
+      setTimeFormatState(settings.timeFormat || 'auto');
     } catch (error) {
       console.error('Error loading settings:', error);
     }
@@ -50,6 +55,11 @@ export const SettingsScreen: React.FC = () => {
   const handleReminderTimeChange = (minutes: number) => {
     setDefaultReminderTime(minutes);
     setReminderTime(minutes);
+  };
+
+  const handleTimeFormatChange = (format: 'auto' | '12h' | '24h') => {
+    setTimeFormat(format);
+    setTimeFormatState(format);
   };
 
   const handleResetData = () => {
@@ -102,6 +112,44 @@ export const SettingsScreen: React.FC = () => {
               trackColor={{ false: '#E0E0E0', true: '#6366F1' }}
               thumbColor="#FFFFFF"
             />
+          </View>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Time Format</Text>
+              <Text style={styles.settingDescription}>
+                Choose how times are displayed
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.reminderOptions}>
+            {[
+              { value: 'auto', label: 'Auto' },
+              { value: '12h', label: '12h' },
+              { value: '24h', label: '24h' },
+            ].map(option => (
+              <Pressable
+                key={option.value}
+                style={[
+                  styles.reminderOption,
+                  timeFormat === option.value && styles.reminderOptionActive,
+                ]}
+                onPress={() =>
+                  handleTimeFormatChange(option.value as 'auto' | '12h' | '24h')
+                }
+              >
+                <Text
+                  style={[
+                    styles.reminderOptionText,
+                    timeFormat === option.value &&
+                      styles.reminderOptionTextActive,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         </View>
 

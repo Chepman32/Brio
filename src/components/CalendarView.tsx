@@ -24,6 +24,7 @@ import {
 } from '../utils/localization';
 import { analyzeDayVibe } from '../utils/dayVibeAnalysis';
 import { DayHeroSection } from './DayHeroSection';
+import { useTimeFormat } from '../hooks/useTimeFormat';
 
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 50;
@@ -67,6 +68,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [currentDate, setCurrentDate] = useState(selectedDate);
   const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
+  const { formatTime, formatTimeRange, formatHourLabel } = useTimeFormat();
 
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
@@ -143,16 +145,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return tasks.filter(task => isSameDay(task.dueDate, date));
   };
 
-  const formatTime = (date: Date): string => {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    return `${hours}:${minutes.toString().padStart(2, '0')}`;
-  };
-
-  const formatTimeRange = (startTime?: Date, duration: number = 60): string => {
+  const formatTimeRangeLocal = (
+    startTime?: Date,
+    duration: number = 60,
+  ): string => {
     if (!startTime) return '';
     const endTime = new Date(startTime.getTime() + duration * 60000);
-    return `${formatTime(startTime)} – ${formatTime(endTime)}`;
+    return formatTimeRange(startTime, endTime);
   };
 
   const renderDayView = () => {
@@ -195,11 +194,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
               return (
                 <View key={hour} style={styles.hourSlot}>
-                  <Text style={styles.hourLabel}>{`${hour}:00`}</Text>
+                  <Text style={styles.hourLabel}>{formatHourLabel(hour)}</Text>
                   <View style={styles.hourContent}>
                     {hourTasks.map(task => {
                       const taskColor = getCategoryColor(task.category);
-                      const timeRange = formatTimeRange(task.dueTime, 60);
+                      const timeRange = formatTimeRangeLocal(task.dueTime, 60);
 
                       return (
                         <TaskBlock
@@ -234,9 +233,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     },
                   ]}
                 >
-                  {`${currentHour}:${currentMinute
-                    .toString()
-                    .padStart(2, '0')}`}
+                  {formatTime(now)}
                 </Text>
               </View>
             )}

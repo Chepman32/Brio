@@ -9,6 +9,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { TaskCardProps } from '../types';
+import { useTimeFormat } from '../hooks/useTimeFormat';
 
 const SWIPE_THRESHOLD = 100;
 
@@ -22,6 +23,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const translateX = useSharedValue(0);
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
+  const { formatTime } = useTimeFormat();
 
   // Extract task ID to avoid accessing Realm object in worklet
   const taskId = task._id;
@@ -91,15 +93,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     }
   };
 
-  const formatTime = (date?: Date) => {
-    if (!date) return '';
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
   return (
     <GestureDetector gesture={composedGesture}>
       <Animated.View style={[styles.container, animatedStyle]}>
@@ -120,7 +113,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           )}
           <View style={styles.footer}>
             {task.dueTime && (
-              <Text style={styles.time}>{formatTime(task.dueTime)}</Text>
+              <Text style={styles.time}>
+                {task.dueTime ? formatTime(task.dueTime) : ''}
+              </Text>
             )}
             {task.category && (
               <Text style={styles.category}>{task.category}</Text>

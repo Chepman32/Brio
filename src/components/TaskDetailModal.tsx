@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { TaskDetailModalProps } from '../types';
+import { useTimeFormat } from '../hooks/useTimeFormat';
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   visible,
@@ -16,6 +17,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { formatTime } = useTimeFormat();
+
   if (!task) return null;
 
   const formatDate = (date: Date) => {
@@ -26,13 +29,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     });
   };
 
-  const formatTime = (date?: Date) => {
+  const formatTimeLocal = (date?: Date) => {
     if (!date) return 'No time set';
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
+    return formatTime(date);
   };
 
   const getPriorityColor = () => {
@@ -95,7 +94,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
             <View style={styles.section}>
               <Text style={styles.label}>Due Time</Text>
-              <Text style={styles.value}>{formatTime(task.dueTime)}</Text>
+              <Text style={styles.value}>{formatTimeLocal(task.dueTime)}</Text>
             </View>
 
             {task.category && (

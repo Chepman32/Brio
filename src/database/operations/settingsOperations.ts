@@ -21,6 +21,7 @@ export const initializeSettings = (): void => {
       notificationsEnabled: true,
       defaultReminderTime: 15,
       onboardingCompleted: false,
+      timeFormat: 'auto',
     });
   });
 };
@@ -65,4 +66,8 @@ export const setDefaultReminderTime = (minutes: number): void => {
 
 export const setOnboardingCompleted = (completed: boolean): void => {
   updateSettings({ onboardingCompleted: completed });
+};
+
+export const setTimeFormat = (format: 'auto' | '12h' | '24h'): void => {
+  updateSettings({ timeFormat: format });
 };
