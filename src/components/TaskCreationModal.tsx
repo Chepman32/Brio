@@ -312,7 +312,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                           backgroundColor: getPriorityColor(p),
                         },
                       ]}
-                      onPress={() => setPriority(p)}
+                      onPress={() =>
+                        setPriority(priority === p ? undefined : p)
+                      }
                     >
                       <Icon
                         name={getPriorityIcon(p)}
