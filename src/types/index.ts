@@ -97,6 +97,7 @@ export interface CalendarViewProps {
   tasks: TaskType[];
   onDateSelect: (date: Date) => void;
   onModeChange: (mode: 'day' | 'week' | 'month') => void;
+  onCreateTask?: (date: Date) => void;
 }
 
 export interface TaskCreationModalProps {

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { CalendarView } from '../components/CalendarView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
-import { getTasks } from '../database/operations';
-import { TaskType } from '../types';
+import { TaskCreationModal } from '../components/TaskCreationModal';
+import { getTasks, createTask } from '../database/operations';
+import { TaskType, TaskInput } from '../types';
 
 export const PlannerScreen: React.FC = () => {
   const [mode, setMode] = useState<'day' | 'week' | 'month'>('week');
@@ -34,7 +35,20 @@ export const PlannerScreen: React.FC = () => {
 
   const handleAddTask = () => {
     setShowTaskModal(true);
-    // TODO: Open task creation modal
+  };
+
+  const handleSaveTask = (taskInput: TaskInput) => {
+    try {
+      createTask(taskInput);
+      loadTasks();
+      setShowTaskModal(false);
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowTaskModal(false);
   };
 
   return (
@@ -67,9 +81,16 @@ export const PlannerScreen: React.FC = () => {
         tasks={tasks}
         onDateSelect={handleDateSelect}
         onModeChange={handleModeChange}
+        onCreateTask={handleAddTask}
       />
 
       <FloatingActionButton onPress={handleAddTask} />
+
+      <TaskCreationModal
+        visible={showTaskModal}
+        onClose={handleCloseModal}
+        onSave={handleSaveTask}
+      />
     </View>
   );
 };

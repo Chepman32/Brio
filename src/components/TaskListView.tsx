@@ -63,12 +63,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#999',
+    color: '#000',
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#BBB',
+    color: '#000',
     textAlign: 'center',
   },
 });

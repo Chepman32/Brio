@@ -16,9 +16,45 @@ import Animated, {
 } from 'react-native-reanimated';
 import { CalendarViewProps } from '../types';
 import { addDays, getStartOfDay, isSameDay } from '../utils/dateHelpers';
+import { getCategoryColor } from '../utils/categoryColors';
+import {
+  formatDayHeader as formatDayHeaderLocalized,
+  formatMonthYear,
+  getWeekdays,
+} from '../utils/localization';
+import { analyzeDayVibe } from '../utils/dayVibeAnalysis';
+import { DayHeroSection } from './DayHeroSection';
 
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 50;
+
+// Memoized TaskBlock component for better performance
+interface TaskBlockProps {
+  task: any;
+  timeRange: string;
+  taskColor: string;
+  onPress: () => void;
+}
+
+const TaskBlock = React.memo<TaskBlockProps>(
+  ({ task, timeRange, taskColor, onPress }) => {
+    return (
+      <Pressable
+        style={[styles.taskBlock, { backgroundColor: taskColor }]}
+        onPress={onPress}
+        accessible={true}
+        accessibilityLabel={`Task: ${task.title}, ${timeRange}`}
+        accessibilityRole="button"
+        accessibilityHint="Tap to view task details"
+      >
+        <Text style={styles.taskBlockTitle} numberOfLines={1}>
+          {task.title}
+        </Text>
+        {timeRange && <Text style={styles.taskBlockTime}>{timeRange}</Text>}
+      </Pressable>
+    );
+  },
+);
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   mode,
@@ -26,6 +62,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   tasks,
   onDateSelect,
   onModeChange,
+  onCreateTask,
 }) => {
   const [currentDate, setCurrentDate] = useState(selectedDate);
   const translateX = useSharedValue(0);
@@ -106,19 +143,41 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return tasks.filter(task => isSameDay(task.dueDate, date));
   };
 
+  const formatTime = (date: Date): string => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    return `${hours}:${minutes.toString().padStart(2, '0')}`;
+  };
+
+  const formatTimeRange = (startTime?: Date, duration: number = 60): string => {
+    if (!startTime) return '';
+    const endTime = new Date(startTime.getTime() + duration * 60000);
+    return `${formatTime(startTime)} – ${formatTime(endTime)}`;
+  };
+
   const renderDayView = () => {
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+    // Start from 6:00 AM to 23:00 (11 PM)
+    const hours = Array.from({ length: 18 }, (_, i) => i + 6);
     const dayTasks = getTasksForDate(currentDate);
+
+    // Get day name and vibe
+    const dayName = currentDate.toLocaleDateString('ru-RU', {
+      weekday: 'long',
+    });
+    const capitalizedDayName =
+      dayName.charAt(0).toUpperCase() + dayName.slice(1);
+    const { vibe, gradientColors } = analyzeDayVibe(dayTasks);
 
     return (
       <ScrollView style={styles.dayView} showsVerticalScrollIndicator={false}>
-        <Text style={styles.dateHeader}>
-          {currentDate.toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-          })}
+        <Text style={styles.compactHeader}>
+          {formatDayHeaderLocalized(currentDate)}
         </Text>
+        <DayHeroSection
+          dayName={capitalizedDayName}
+          dayVibe={vibe}
+          gradientColors={gradientColors}
+        />
         {hours.map(hour => {
           const hourTasks = dayTasks.filter(task => {
             if (!task.dueTime) return false;
@@ -127,31 +186,38 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
           return (
             <View key={hour} style={styles.hourSlot}>
-              <Text style={styles.hourLabel}>
-                {hour === 0
-                  ? '12 AM'
-                  : hour < 12
-                  ? `${hour} AM`
-                  : hour === 12
-                  ? '12 PM'
-                  : `${hour - 12} PM`}
-              </Text>
+              <Text style={styles.hourLabel}>{`${hour}:00`}</Text>
               <View style={styles.hourContent}>
-                {hourTasks.map(task => (
-                  <Pressable
-                    key={task._id}
-                    style={styles.taskInHour}
-                    onPress={() => onDateSelect(task.dueDate)}
-                  >
-                    <Text style={styles.taskInHourText} numberOfLines={1}>
-                      {task.title}
-                    </Text>
-                  </Pressable>
-                ))}
+                {hourTasks.map(task => {
+                  const taskColor = getCategoryColor(task.category);
+                  const timeRange = formatTimeRange(task.dueTime, 60);
+
+                  return (
+                    <TaskBlock
+                      key={task._id}
+                      task={task}
+                      timeRange={timeRange}
+                      taskColor={taskColor}
+                      onPress={() => onDateSelect(task.dueDate)}
+                    />
+                  );
+                })}
               </View>
             </View>
           );
         })}
+        {onCreateTask && (
+          <Pressable
+            style={styles.fab}
+            onPress={() => onCreateTask(currentDate)}
+            accessible={true}
+            accessibilityLabel="Create new task"
+            accessibilityRole="button"
+            accessibilityHint="Opens task creation form"
+          >
+            <Text style={styles.fabIcon}>+</Text>
+          </Pressable>
+        )}
       </ScrollView>
     );
   };
@@ -269,7 +335,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       <Pressable
                         key={task._id}
                         style={[
-                          styles.taskBlock,
+                          styles.weekTaskBlock,
                           {
                             top: minute,
                             height: Math.max(duration, 40),
@@ -279,7 +345,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         ]}
                         onPress={() => onDateSelect(task.dueDate)}
                       >
-                        <Text style={styles.taskBlockText} numberOfLines={2}>
+                        <Text
+                          style={styles.weekTaskBlockText}
+                          numberOfLines={2}
+                        >
                           {task.title}
                         </Text>
                       </Pressable>
@@ -321,14 +390,32 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
     return (
       <View style={styles.monthView}>
-        <Text style={styles.dateHeader}>
-          {currentDate.toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric',
-          })}
-        </Text>
+        <View style={styles.monthNavigationHeader}>
+          <Pressable
+            onPress={navigatePrevious}
+            style={styles.monthNavButton}
+            accessible={true}
+            accessibilityLabel="Previous month"
+            accessibilityRole="button"
+          >
+            <Text style={styles.monthNavButtonText}>←</Text>
+          </Pressable>
+          <Text style={styles.monthTitle}>{formatMonthYear(currentDate)}</Text>
+          {onCreateTask && (
+            <Pressable
+              onPress={() => onCreateTask(currentDate)}
+              style={styles.monthNavButton}
+              accessible={true}
+              accessibilityLabel="Create new task"
+              accessibilityRole="button"
+            >
+              <Text style={styles.monthNavButtonText}>+</Text>
+            </Pressable>
+          )}
+          {!onCreateTask && <View style={styles.monthNavButton} />}
+        </View>
         <View style={styles.weekDayHeaders}>
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          {getWeekdays(true).map(day => (
             <Text key={day} style={styles.weekDayHeader}>
               {day}
             </Text>
@@ -342,27 +429,46 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               const isToday = isSameDay(date, new Date());
               const isCurrentMonth = date.getMonth() === month;
 
+              const dateLabel = `${date.toLocaleDateString('ru-RU', {
+                month: 'long',
+                day: 'numeric',
+              })}${dayTasks.length > 0 ? `, ${dayTasks.length} tasks` : ''}`;
+
               return (
                 <Pressable
                   key={date.toISOString()}
                   style={[
                     styles.monthDay,
-                    isSelected && styles.monthDaySelected,
                     isToday && styles.monthDayToday,
+                    isSelected && !isToday && styles.monthDaySelected,
                   ]}
                   onPress={() => onDateSelect(date)}
+                  accessible={true}
+                  accessibilityLabel={dateLabel}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
                 >
                   <Text
                     style={[
                       styles.monthDayNumber,
                       !isCurrentMonth && styles.monthDayNumberOther,
-                      isSelected && styles.monthDayNumberSelected,
+                      isToday && { color: '#FFFFFF', fontWeight: '600' },
+                      isSelected && !isToday && styles.monthDayNumberSelected,
                     ]}
                   >
                     {date.getDate()}
                   </Text>
                   {dayTasks.length > 0 && isCurrentMonth && (
-                    <View style={styles.monthTaskDot} />
+                    <View
+                      style={[
+                        styles.monthTaskDot,
+                        {
+                          backgroundColor: getCategoryColor(
+                            dayTasks[0].category,
+                          ),
+                        },
+                      ]}
+                    />
                   )}
                 </Pressable>
               );
@@ -395,6 +501,24 @@ const styles = StyleSheet.create({
     padding: 16,
     textAlign: 'center',
   },
+  dayViewHeader: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#000',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    textAlign: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  compactHeader: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    textAlign: 'center',
+    backgroundColor: '#FFFFFF',
+  },
   // Day view styles
   dayView: {
     flex: 1,
@@ -403,18 +527,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
-    minHeight: 60,
+    minHeight: 70,
   },
   hourLabel: {
-    width: 70,
-    padding: 8,
-    fontSize: 12,
-    color: '#999',
+    width: 60,
+    paddingTop: 8,
+    paddingLeft: 12,
+    fontSize: 14,
+    color: '#8E8E93',
   },
   hourContent: {
     flex: 1,
     padding: 4,
   },
+  taskBlock: {
+    borderRadius: 8,
+    padding: 12,
+    marginHorizontal: 8,
+    marginVertical: 4,
+  },
+  taskBlockTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  taskBlockTime: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    opacity: 0.9,
+  },
+  // Legacy styles for backward compatibility
   taskInHour: {
     backgroundColor: '#6366F1',
     padding: 8,
@@ -523,7 +666,7 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F0F0F0',
   },
-  taskBlock: {
+  weekTaskBlock: {
     position: 'absolute',
     left: 8,
     right: 8,
@@ -531,7 +674,7 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'center',
   },
-  taskBlockText: {
+  weekTaskBlockText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
@@ -540,21 +683,47 @@ const styles = StyleSheet.create({
   monthView: {
     flex: 1,
   },
+  monthNavigationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+  },
+  monthNavButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  monthNavButtonText: {
+    fontSize: 28,
+    color: '#000',
+    fontWeight: '300',
+  },
+  monthTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#000',
+    textAlign: 'center',
+  },
   weekDayHeaders: {
     flexDirection: 'row',
     paddingHorizontal: 8,
-    paddingBottom: 8,
+    paddingVertical: 12,
   },
   weekDayHeader: {
     flex: 1,
     textAlign: 'center',
     fontSize: 12,
     fontWeight: '600',
-    color: '#666',
+    color: '#8E8E93',
   },
   monthWeek: {
     flexDirection: 'row',
     paddingHorizontal: 8,
+    marginBottom: 4,
   },
   monthDay: {
     flex: 1,
@@ -562,31 +731,54 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: 2,
-    borderRadius: 8,
+    borderRadius: 20,
   },
   monthDaySelected: {
-    backgroundColor: '#6366F1',
+    backgroundColor: '#E5E7EB',
   },
   monthDayToday: {
-    borderWidth: 2,
-    borderColor: '#6366F1',
+    backgroundColor: '#007AFF',
   },
   monthDayNumber: {
     fontSize: 16,
-    color: '#333',
+    color: '#000',
+    fontWeight: '400',
   },
   monthDayNumberOther: {
-    color: '#CCC',
+    color: '#D1D5DB',
   },
   monthDayNumberSelected: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    color: '#000',
+    fontWeight: '600',
   },
   monthTaskDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#FF4444',
     marginTop: 2,
+    position: 'absolute',
+    bottom: 4,
+  },
+  // Floating Action Button
+  fab: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  fabIcon: {
+    fontSize: 32,
+    color: '#FFFFFF',
+    fontWeight: '300',
   },
 });

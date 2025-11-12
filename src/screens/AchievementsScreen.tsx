@@ -308,20 +308,20 @@ const styles = StyleSheet.create({
   achievementName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#000',
     textAlign: 'center',
     marginBottom: 4,
   },
   achievementNameLocked: {
-    color: '#999',
+    color: '#000',
   },
   achievementDescription: {
     fontSize: 12,
-    color: '#666',
+    color: '#000',
     textAlign: 'center',
   },
   achievementDescriptionLocked: {
-    color: '#AAA',
+    color: '#000',
   },
   achievementProgressContainer: {
     width: '100%',
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   },
   achievementProgressText: {
     fontSize: 10,
-    color: '#999',
+    color: '#000',
     marginTop: 4,
     textAlign: 'center',
   },

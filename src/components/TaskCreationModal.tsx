@@ -15,6 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { TaskCreationModalProps, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
 import { PREDEFINED_CATEGORIES } from '../utils/categories';
@@ -39,6 +40,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   } | null>(null);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [filteredCategories, setFilteredCategories] = useState<string[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const translateY = useSharedValue(1000);
 
@@ -271,6 +274,123 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   ))}
                 </View>
               </View>
+
+              {/* Date and Time Selection */}
+              <View style={styles.field}>
+                <Text style={styles.label}>Due Date</Text>
+                <Pressable
+                  style={styles.dateTimeButton}
+                  onPress={() => setShowDatePicker(true)}
+                >
+                  <Text style={styles.dateTimeText}>
+                    📅{' '}
+                    {dueDate.toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>Due Time (Optional)</Text>
+                <View style={styles.timeRow}>
+                  <Pressable
+                    style={[styles.dateTimeButton, { flex: 1 }]}
+                    onPress={() => {
+                      if (!dueTime) {
+                        const newTime = new Date(dueDate);
+                        newTime.setHours(9, 0, 0, 0);
+                        setDueTime(newTime);
+                      }
+                      setShowTimePicker(true);
+                    }}
+                  >
+                    <Text style={styles.dateTimeText}>
+                      {dueTime
+                        ? `🕐 ${dueTime.toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true,
+                          })}`
+                        : '🕐 Set time (optional)'}
+                    </Text>
+                  </Pressable>
+                  {dueTime && (
+                    <Pressable
+                      style={styles.clearTimeButton}
+                      onPress={() => setDueTime(undefined)}
+                    >
+                      <Text style={styles.clearTimeText}>✕</Text>
+                    </Pressable>
+                  )}
+                </View>
+              </View>
+
+              {/* Date Picker */}
+              {showDatePicker && (
+                <View style={styles.pickerContainer}>
+                  <DateTimePicker
+                    value={dueDate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={(event, selectedDate) => {
+                      if (Platform.OS === 'android') {
+                        setShowDatePicker(false);
+                      }
+                      if (selectedDate) {
+                        setDueDate(selectedDate);
+                        // Update dueTime date if it exists
+                        if (dueTime) {
+                          const newTime = new Date(selectedDate);
+                          newTime.setHours(
+                            dueTime.getHours(),
+                            dueTime.getMinutes(),
+                          );
+                          setDueTime(newTime);
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === 'ios' && (
+                    <Pressable
+                      style={styles.pickerDoneButton}
+                      onPress={() => setShowDatePicker(false)}
+                    >
+                      <Text style={styles.pickerDoneText}>Done</Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
+
+              {/* Time Picker */}
+              {showTimePicker && dueTime && (
+                <View style={styles.pickerContainer}>
+                  <DateTimePicker
+                    value={dueTime}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={(event, selectedTime) => {
+                      if (Platform.OS === 'android') {
+                        setShowTimePicker(false);
+                      }
+                      if (selectedTime) {
+                        setDueTime(selectedTime);
+                      }
+                    }}
+                  />
+                  {Platform.OS === 'ios' && (
+                    <Pressable
+                      style={styles.pickerDoneButton}
+                      onPress={() => setShowTimePicker(false)}
+                    >
+                      <Text style={styles.pickerDoneText}>Done</Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
 
               {/* Smart Suggestions */}
               {showSmartSuggestions && smartSuggestion && !editTask && (
@@ -547,5 +667,55 @@ const styles = StyleSheet.create({
   categoryItemText: {
     fontSize: 15,
     color: '#333',
+  },
+  dateTimeButton: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 12,
+    padding: 14,
+    backgroundColor: '#FAFAFA',
+  },
+  dateTimeText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
+  timeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  clearTimeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FF4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearTimeText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  pickerContainer: {
+    marginTop: 8,
+    backgroundColor: '#FAFAFA',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  pickerDoneButton: {
+    backgroundColor: '#6366F1',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  pickerDoneText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
