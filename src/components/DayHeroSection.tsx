@@ -33,9 +33,10 @@ export const DayHeroSection: React.FC<DayHeroSectionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
+    width: "100%",
+    marginHorizontal: 0,
     marginVertical: 8,
-    borderRadius: 20,
+    borderRadius: 0,
     overflow: 'hidden',
     elevation: 4,
     shadowColor: '#000',
@@ -48,20 +49,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
     paddingVertical: 24,
+    borderRadius: 16,
+    marginHorizontal: 8,
   },
   dayName: {
     fontSize: 48,
     fontWeight: '700',
     color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
   dayVibe: {
     fontSize: 20,
     fontWeight: '500',
-    color: '#000000',
+    color: '#FFFFFF',
     marginTop: 8,
-    opacity: 0.8,
+    marginBottom: 12,
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
 });

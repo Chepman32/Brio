@@ -166,10 +166,17 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     });
     const capitalizedDayName =
       dayName.charAt(0).toUpperCase() + dayName.slice(1);
-    const { vibe, gradientColors } = analyzeDayVibe(dayTasks);
+    const { vibe, gradientColors } = analyzeDayVibe(dayTasks, currentDate);
+
+    // Calculate current time indicator position
+    const now = new Date();
+    const isToday = isSameDay(currentDate, now);
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const showTimeIndicator = isToday && currentHour >= 6 && currentHour < 24;
 
     return (
-      <ScrollView style={styles.dayView} showsVerticalScrollIndicator={false}>
+      <View style={styles.dayView}>
         <Text style={styles.compactHeader}>
           {formatDayHeaderLocalized(currentDate)}
         </Text>
@@ -178,34 +185,63 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           dayVibe={vibe}
           gradientColors={gradientColors}
         />
-        {hours.map(hour => {
-          const hourTasks = dayTasks.filter(task => {
-            if (!task.dueTime) return false;
-            return task.dueTime.getHours() === hour;
-          });
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.timelineContainer}>
+            {hours.map(hour => {
+              const hourTasks = dayTasks.filter(task => {
+                if (!task.dueTime) return false;
+                return task.dueTime.getHours() === hour;
+              });
 
-          return (
-            <View key={hour} style={styles.hourSlot}>
-              <Text style={styles.hourLabel}>{`${hour}:00`}</Text>
-              <View style={styles.hourContent}>
-                {hourTasks.map(task => {
-                  const taskColor = getCategoryColor(task.category);
-                  const timeRange = formatTimeRange(task.dueTime, 60);
+              return (
+                <View key={hour} style={styles.hourSlot}>
+                  <Text style={styles.hourLabel}>{`${hour}:00`}</Text>
+                  <View style={styles.hourContent}>
+                    {hourTasks.map(task => {
+                      const taskColor = getCategoryColor(task.category);
+                      const timeRange = formatTimeRange(task.dueTime, 60);
 
-                  return (
-                    <TaskBlock
-                      key={task._id}
-                      task={task}
-                      timeRange={timeRange}
-                      taskColor={taskColor}
-                      onPress={() => onDateSelect(task.dueDate)}
-                    />
-                  );
-                })}
+                      return (
+                        <TaskBlock
+                          key={task._id}
+                          task={task}
+                          timeRange={timeRange}
+                          taskColor={taskColor}
+                          onPress={() => onDateSelect(task.dueDate)}
+                        />
+                      );
+                    })}
+                  </View>
+                </View>
+              );
+            })}
+            {showTimeIndicator && (
+              <View
+                style={[
+                  styles.currentTimeIndicator,
+                  {
+                    top: (currentHour - 6) * 70 + (currentMinute / 60) * 70,
+                  },
+                ]}
+              >
+                <View style={styles.currentTimeDot} />
+                <View style={styles.currentTimeLine} />
+                <Text
+                  style={[
+                    styles.currentTimeText,
+                    {
+                      top: currentMinute < 30 ? 6 : -20,
+                    },
+                  ]}
+                >
+                  {`${currentHour}:${currentMinute
+                    .toString()
+                    .padStart(2, '0')}`}
+                </Text>
               </View>
-            </View>
-          );
-        })}
+            )}
+          </View>
+        </ScrollView>
         {onCreateTask && (
           <Pressable
             style={styles.fab}
@@ -218,7 +254,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <Text style={styles.fabIcon}>+</Text>
           </Pressable>
         )}
-      </ScrollView>
+      </View>
     );
   };
 
@@ -523,11 +559,14 @@ const styles = StyleSheet.create({
   dayView: {
     flex: 1,
   },
+  timelineContainer: {
+    position: 'relative',
+  },
   hourSlot: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
-    minHeight: 70,
+    height: 70,
   },
   hourLabel: {
     width: 60,
@@ -539,6 +578,38 @@ const styles = StyleSheet.create({
   hourContent: {
     flex: 1,
     padding: 4,
+    position: 'relative',
+  },
+  currentTimeIndicator: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  currentTimeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EF4444',
+    marginLeft: 4,
+  },
+  currentTimeLine: {
+    flex: 1,
+    height: 2,
+    backgroundColor: '#EF4444',
+  },
+  currentTimeText: {
+    position: 'absolute',
+    left: 8,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#EF4444',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   taskBlock: {
     borderRadius: 8,
