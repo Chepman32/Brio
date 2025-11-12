@@ -242,18 +242,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             )}
           </View>
         </ScrollView>
-        {onCreateTask && (
-          <Pressable
-            style={styles.fab}
-            onPress={() => onCreateTask(currentDate)}
-            accessible={true}
-            accessibilityLabel="Create new task"
-            accessibilityRole="button"
-            accessibilityHint="Opens task creation form"
-          >
-            <Text style={styles.fabIcon}>+</Text>
-          </Pressable>
-        )}
       </View>
     );
   };
