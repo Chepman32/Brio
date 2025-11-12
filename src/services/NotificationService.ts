@@ -38,7 +38,10 @@ class NotificationServiceClass {
   }
 
   /**
-   * Schedule a notification for a task
+   * Schedule notifications for a task
+   * Schedules two notifications:
+   * 1. Warning notification X minutes before (e.g., "Warning! It's 5 minutes to [Task]")
+   * 2. Task time notification at exact time (e.g., "It's time for [Task]!")
    */
   async scheduleNotification(task: TaskType): Promise<void> {
     try {
@@ -52,43 +55,73 @@ class NotificationServiceClass {
         return; // No time set, can't schedule
       }
 
-      // Calculate notification time (default reminder time before due)
-      const notificationDate = new Date(task.dueTime);
-      notificationDate.setMinutes(
-        notificationDate.getMinutes() - settings.defaultReminderTime,
+      const now = new Date();
+      const taskTime = new Date(task.dueTime);
+
+      // Schedule warning notification (X minutes before)
+      const warningTime = new Date(taskTime);
+      warningTime.setMinutes(
+        warningTime.getMinutes() - settings.defaultReminderTime,
       );
 
-      // Don't schedule if notification time is in the past
-      if (notificationDate <= new Date()) {
-        return;
+      if (warningTime > now) {
+        const minutesText =
+          settings.defaultReminderTime === 1
+            ? 'minute'
+            : `${settings.defaultReminderTime} minutes`;
+
+        PushNotificationIOS.addNotificationRequest({
+          id: `${task._id}_warning`,
+          title: '⚠️ Task Warning',
+          body: `Warning! It's ${minutesText} to ${task.title}`,
+          fireDate: warningTime,
+          userInfo: {
+            taskId: task._id,
+            type: 'warning',
+          },
+        });
+
+        console.log(
+          `Warning notification scheduled for: ${
+            task.title
+          } at ${warningTime.toLocaleTimeString()}`,
+        );
       }
 
-      // Schedule the notification
-      PushNotificationIOS.addNotificationRequest({
-        id: task._id,
-        title: 'Task Reminder',
-        body: task.title,
-        fireDate: notificationDate,
-        userInfo: {
-          taskId: task._id,
-        },
-      });
+      // Schedule task time notification (at exact time)
+      if (taskTime > now) {
+        PushNotificationIOS.addNotificationRequest({
+          id: `${task._id}_time`,
+          title: '🔔 Task Time!',
+          body: `It's time for ${task.title}!`,
+          fireDate: taskTime,
+          userInfo: {
+            taskId: task._id,
+            type: 'time',
+          },
+        });
 
-      console.log(
-        `Notification scheduled for task: ${task.title} at ${notificationDate}`,
-      );
+        console.log(
+          `Task time notification scheduled for: ${
+            task.title
+          } at ${taskTime.toLocaleTimeString()}`,
+        );
+      }
     } catch (error) {
       console.error('Error scheduling notification:', error);
     }
   }
 
   /**
-   * Cancel a notification for a task
+   * Cancel all notifications for a task (both warning and time notifications)
    */
   async cancelNotification(taskId: string): Promise<void> {
     try {
-      PushNotificationIOS.removePendingNotificationRequests([taskId]);
-      console.log(`Notification cancelled for task: ${taskId}`);
+      PushNotificationIOS.removePendingNotificationRequests([
+        `${taskId}_warning`,
+        `${taskId}_time`,
+      ]);
+      console.log(`Notifications cancelled for task: ${taskId}`);
     } catch (error) {
       console.error('Error cancelling notification:', error);
     }

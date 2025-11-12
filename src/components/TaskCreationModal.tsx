@@ -277,120 +277,118 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
 
               {/* Date and Time Selection */}
               <View style={styles.field}>
-                <Text style={styles.label}>Due Date</Text>
                 <Pressable
-                  style={styles.dateTimeButton}
-                  onPress={() => setShowDatePicker(true)}
+                  style={styles.accordionHeader}
+                  onPress={() => setShowDatePicker(!showDatePicker)}
                 >
-                  <Text style={styles.dateTimeText}>
-                    📅{' '}
-                    {dueDate.toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
+                  <View style={styles.accordionHeaderContent}>
+                    <Text style={styles.label}>Due Date</Text>
+                    <Text style={styles.accordionValue}>
+                      📅{' '}
+                      {dueDate.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </Text>
+                  </View>
+                  <Text style={styles.accordionArrow}>
+                    {showDatePicker ? '▼' : '▶'}
                   </Text>
                 </Pressable>
+
+                {/* Date Picker - Inline Accordion */}
+                {showDatePicker && (
+                  <View style={styles.pickerContainer}>
+                    <DateTimePicker
+                      value={dueDate}
+                      mode="date"
+                      display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                      onChange={(event, selectedDate) => {
+                        if (Platform.OS === 'android') {
+                          setShowDatePicker(false);
+                        }
+                        if (selectedDate) {
+                          setDueDate(selectedDate);
+                          // Update dueTime date if it exists
+                          if (dueTime) {
+                            const newTime = new Date(selectedDate);
+                            newTime.setHours(
+                              dueTime.getHours(),
+                              dueTime.getMinutes(),
+                            );
+                            setDueTime(newTime);
+                          }
+                        }
+                      }}
+                    />
+                  </View>
+                )}
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.label}>Due Time (Optional)</Text>
-                <View style={styles.timeRow}>
-                  <Pressable
-                    style={[styles.dateTimeButton, { flex: 1 }]}
-                    onPress={() => {
-                      if (!dueTime) {
-                        const newTime = new Date(dueDate);
-                        newTime.setHours(9, 0, 0, 0);
-                        setDueTime(newTime);
-                      }
-                      setShowTimePicker(true);
-                    }}
-                  >
-                    <Text style={styles.dateTimeText}>
+                <Pressable
+                  style={styles.accordionHeader}
+                  onPress={() => {
+                    if (!dueTime) {
+                      const newTime = new Date(dueDate);
+                      newTime.setHours(9, 0, 0, 0);
+                      setDueTime(newTime);
+                    }
+                    setShowTimePicker(!showTimePicker);
+                  }}
+                >
+                  <View style={styles.accordionHeaderContent}>
+                    <Text style={styles.label}>Due Time (Optional)</Text>
+                    <Text style={styles.accordionValue}>
                       {dueTime
                         ? `🕐 ${dueTime.toLocaleTimeString('en-US', {
                             hour: 'numeric',
                             minute: '2-digit',
                             hour12: true,
                           })}`
-                        : '🕐 Set time (optional)'}
+                        : '🕐 Set time'}
                     </Text>
-                  </Pressable>
-                  {dueTime && (
-                    <Pressable
-                      style={styles.clearTimeButton}
-                      onPress={() => setDueTime(undefined)}
-                    >
-                      <Text style={styles.clearTimeText}>✕</Text>
-                    </Pressable>
-                  )}
-                </View>
-              </View>
+                  </View>
+                  <View style={styles.accordionRightContent}>
+                    {dueTime && (
+                      <Pressable
+                        style={styles.clearTimeButtonSmall}
+                        onPress={e => {
+                          e.stopPropagation();
+                          setDueTime(undefined);
+                          setShowTimePicker(false);
+                        }}
+                      >
+                        <Text style={styles.clearTimeText}>✕</Text>
+                      </Pressable>
+                    )}
+                    <Text style={styles.accordionArrow}>
+                      {showTimePicker ? '▼' : '▶'}
+                    </Text>
+                  </View>
+                </Pressable>
 
-              {/* Date Picker */}
-              {showDatePicker && (
-                <View style={styles.pickerContainer}>
-                  <DateTimePicker
-                    value={dueDate}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                    onChange={(event, selectedDate) => {
-                      if (Platform.OS === 'android') {
-                        setShowDatePicker(false);
-                      }
-                      if (selectedDate) {
-                        setDueDate(selectedDate);
-                        // Update dueTime date if it exists
-                        if (dueTime) {
-                          const newTime = new Date(selectedDate);
-                          newTime.setHours(
-                            dueTime.getHours(),
-                            dueTime.getMinutes(),
-                          );
-                          setDueTime(newTime);
+                {/* Time Picker - Inline Accordion */}
+                {showTimePicker && dueTime && (
+                  <View style={styles.pickerContainer}>
+                    <DateTimePicker
+                      value={dueTime}
+                      mode="time"
+                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                      onChange={(event, selectedTime) => {
+                        if (Platform.OS === 'android') {
+                          setShowTimePicker(false);
                         }
-                      }
-                    }}
-                  />
-                  {Platform.OS === 'ios' && (
-                    <Pressable
-                      style={styles.pickerDoneButton}
-                      onPress={() => setShowDatePicker(false)}
-                    >
-                      <Text style={styles.pickerDoneText}>Done</Text>
-                    </Pressable>
-                  )}
-                </View>
-              )}
-
-              {/* Time Picker */}
-              {showTimePicker && dueTime && (
-                <View style={styles.pickerContainer}>
-                  <DateTimePicker
-                    value={dueTime}
-                    mode="time"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={(event, selectedTime) => {
-                      if (Platform.OS === 'android') {
-                        setShowTimePicker(false);
-                      }
-                      if (selectedTime) {
-                        setDueTime(selectedTime);
-                      }
-                    }}
-                  />
-                  {Platform.OS === 'ios' && (
-                    <Pressable
-                      style={styles.pickerDoneButton}
-                      onPress={() => setShowTimePicker(false)}
-                    >
-                      <Text style={styles.pickerDoneText}>Done</Text>
-                    </Pressable>
-                  )}
-                </View>
-              )}
+                        if (selectedTime) {
+                          setDueTime(selectedTime);
+                        }
+                      }}
+                    />
+                  </View>
+                )}
+              </View>
 
               {/* Smart Suggestions */}
               {showSmartSuggestions && smartSuggestion && !editTask && (
@@ -694,15 +692,52 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   clearTimeText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '600',
   },
+  clearTimeButtonSmall: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#FF4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 12,
+    padding: 14,
+    backgroundColor: '#FAFAFA',
+  },
+  accordionHeaderContent: {
+    flex: 1,
+  },
+  accordionValue: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  accordionArrow: {
+    fontSize: 12,
+    color: '#999',
+    marginLeft: 8,
+  },
+  accordionRightContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   pickerContainer: {
     marginTop: 8,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 12,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
