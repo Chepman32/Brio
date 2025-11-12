@@ -14,20 +14,23 @@ export const AppNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#6366F1',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: '#F0F0F0',
+          borderTopWidth: 0.5,
+          borderTopColor: '#E5E5EA',
           paddingBottom: 20,
           paddingTop: 8,
           height: 80,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-          marginBottom: 4,
+          fontSize: 10,
+          fontWeight: '500',
+          marginTop: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { CalendarView } from '../components/CalendarView';
+import { FloatingActionButton } from '../components/FloatingActionButton';
 import { getTasks } from '../database/operations';
 import { TaskType } from '../types';
 
@@ -8,6 +9,7 @@ export const PlannerScreen: React.FC = () => {
   const [mode, setMode] = useState<'day' | 'week' | 'month'>('week');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [showTaskModal, setShowTaskModal] = useState(false);
 
   useEffect(() => {
     loadTasks();
@@ -28,6 +30,11 @@ export const PlannerScreen: React.FC = () => {
 
   const handleModeChange = (newMode: 'day' | 'week' | 'month') => {
     setMode(newMode);
+  };
+
+  const handleAddTask = () => {
+    setShowTaskModal(true);
+    // TODO: Open task creation modal
   };
 
   return (
@@ -61,6 +68,8 @@ export const PlannerScreen: React.FC = () => {
         onDateSelect={handleDateSelect}
         onModeChange={handleModeChange}
       />
+
+      <FloatingActionButton onPress={handleAddTask} />
     </View>
   );
 };
@@ -68,20 +77,15 @@ export const PlannerScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     backgroundColor: '#FFFFFF',
     paddingTop: 60,
     paddingHorizontal: 20,
-    paddingBottom: 16,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
   title: {
     fontSize: 28,
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   modeButtonActive: {
-    backgroundColor: '#6366F1',
+    backgroundColor: '#007AFF',
   },
   modeButtonText: {
     fontSize: 14,

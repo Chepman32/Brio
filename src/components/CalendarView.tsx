@@ -166,55 +166,130 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       return date;
     });
 
+    const hours = Array.from({ length: 18 }, (_, i) => i + 6); // 6:00 to 23:00
+    const selectedDayTasks = getTasksForDate(selectedDate);
+
+    const getTaskPosition = (task: any) => {
+      if (!task.dueTime) return null;
+      const hour = task.dueTime.getHours();
+      const minute = task.dueTime.getMinutes();
+      return (hour - 6) * 60 + minute; // Minutes from 6:00
+    };
+
+    const getTaskDuration = (task: any) => {
+      // Default 1 hour duration, can be customized
+      return 60;
+    };
+
     return (
       <View style={styles.weekView}>
-        <Text style={styles.dateHeader}>
-          {startOfWeek.toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric',
-          })}
-        </Text>
-        <View style={styles.weekGrid}>
+        <View style={styles.weekHeader}>
+          <Pressable onPress={navigatePrevious} style={styles.navButton}>
+            <Text style={styles.navButtonText}>‹</Text>
+          </Pressable>
+          <Text style={styles.weekDateRange}>
+            {startOfWeek.toLocaleDateString('en-US', {
+              day: 'numeric',
+            })}
+            –
+            {days[6].toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'long',
+            })}
+          </Text>
+          <Pressable onPress={navigateNext} style={styles.navButton}>
+            <Text style={styles.navButtonText}>›</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.weekDaysStrip}>
           {days.map(date => {
-            const dayTasks = getTasksForDate(date);
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, new Date());
 
             return (
               <Pressable
                 key={date.toISOString()}
-                style={[
-                  styles.weekDay,
-                  isSelected && styles.weekDaySelected,
-                  isToday && styles.weekDayToday,
-                ]}
+                style={styles.weekDayColumn}
                 onPress={() => onDateSelect(date)}
               >
-                <Text
+                <Text style={styles.weekDayLabel}>
+                  {date
+                    .toLocaleDateString('en-US', { weekday: 'short' })
+                    .toUpperCase()}
+                </Text>
+                <View
                   style={[
-                    styles.weekDayName,
-                    isSelected && styles.weekDayNameSelected,
+                    styles.weekDayCircle,
+                    isSelected && styles.weekDayCircleSelected,
+                    isToday && !isSelected && styles.weekDayCircleToday,
                   ]}
                 >
-                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                </Text>
-                <Text
-                  style={[
-                    styles.weekDayNumber,
-                    isSelected && styles.weekDayNumberSelected,
-                  ]}
-                >
-                  {date.getDate()}
-                </Text>
-                {dayTasks.length > 0 && (
-                  <View style={styles.taskDot}>
-                    <Text style={styles.taskCount}>{dayTasks.length}</Text>
-                  </View>
-                )}
+                  <Text
+                    style={[
+                      styles.weekDayDate,
+                      isSelected && styles.weekDayDateSelected,
+                    ]}
+                  >
+                    {date.getDate()}
+                  </Text>
+                </View>
               </Pressable>
             );
           })}
         </View>
+
+        <ScrollView
+          style={styles.weekTimeline}
+          showsVerticalScrollIndicator={false}
+        >
+          {hours.map(hour => {
+            const hourTasks = selectedDayTasks.filter(task => {
+              if (!task.dueTime) return false;
+              return task.dueTime.getHours() === hour;
+            });
+
+            return (
+              <View key={hour} style={styles.timeSlot}>
+                <Text style={styles.timeLabel}>
+                  {hour === 0
+                    ? '12:00'
+                    : hour < 10
+                    ? `${hour}:00`
+                    : `${hour}:00`}
+                </Text>
+                <View style={styles.timeSlotContent}>
+                  <View style={styles.timeSlotLine} />
+                  {hourTasks.map((task, index) => {
+                    const position = getTaskPosition(task);
+                    const duration = getTaskDuration(task);
+                    const minute = task.dueTime?.getMinutes() || 0;
+
+                    return (
+                      <Pressable
+                        key={task._id}
+                        style={[
+                          styles.taskBlock,
+                          {
+                            top: minute,
+                            height: Math.max(duration, 40),
+                            backgroundColor:
+                              task.category === 'work' ? '#6B9EFF' : '#7BC67E',
+                          },
+                        ]}
+                        onPress={() => onDateSelect(task.dueDate)}
+                      >
+                        <Text style={styles.taskBlockText} numberOfLines={2}>
+                          {task.title}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            );
+          })}
+        </ScrollView>
       </View>
     );
   };
@@ -354,53 +429,112 @@ const styles = StyleSheet.create({
   // Week view styles
   weekView: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  weekGrid: {
+  weekHeader: {
     flexDirection: 'row',
-    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
-  weekDay: {
+  weekDateRange: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#000',
+  },
+  navButton: {
+    padding: 8,
+    width: 40,
+    alignItems: 'center',
+  },
+  navButtonText: {
+    fontSize: 28,
+    color: '#000',
+    fontWeight: '300',
+  },
+  weekDaysStrip: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  weekDayColumn: {
     flex: 1,
     alignItems: 'center',
-    padding: 12,
-    margin: 4,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
   },
-  weekDaySelected: {
-    backgroundColor: '#6366F1',
+  weekDayLabel: {
+    fontSize: 11,
+    color: '#8E8E93',
+    marginBottom: 6,
+    fontWeight: '500',
   },
-  weekDayToday: {
-    borderWidth: 2,
-    borderColor: '#6366F1',
+  weekDayCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  weekDayName: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
+  weekDayCircleSelected: {
+    backgroundColor: '#007AFF',
   },
-  weekDayNameSelected: {
+  weekDayCircleToday: {
+    borderWidth: 1,
+    borderColor: '#007AFF',
+  },
+  weekDayDate: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400',
+  },
+  weekDayDateSelected: {
     color: '#FFFFFF',
+    fontWeight: '600',
   },
-  weekDayNumber: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+  weekTimeline: {
+    flex: 1,
   },
-  weekDayNumberSelected: {
+  timeSlot: {
+    flexDirection: 'row',
+    height: 60,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  timeLabel: {
+    width: 60,
+    paddingTop: 4,
+    paddingLeft: 12,
+    fontSize: 13,
+    color: '#8E8E93',
+  },
+  timeSlotContent: {
+    flex: 1,
+    position: 'relative',
+  },
+  timeSlotLine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: '#F0F0F0',
+  },
+  taskBlock: {
+    position: 'absolute',
+    left: 8,
+    right: 8,
+    borderRadius: 8,
+    padding: 8,
+    justifyContent: 'center',
+  },
+  taskBlockText: {
     color: '#FFFFFF',
-  },
-  taskDot: {
-    marginTop: 4,
-    backgroundColor: '#FF4444',
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  taskCount: {
-    fontSize: 10,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '600',
   },
   // Month view styles
   monthView: {
