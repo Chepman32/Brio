@@ -8,7 +8,6 @@ import {
   Pressable,
   ScrollView,
   Platform,
-  FlatList,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -16,6 +15,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { TaskCreationModalProps, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
 import { PREDEFINED_CATEGORIES } from '../utils/categories';
@@ -33,7 +33,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const [dueDate, setDueDate] = useState(new Date());
   const [dueTime, setDueTime] = useState<Date | undefined>(undefined);
   const [category, setCategory] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [priority, setPriority] = useState<
+    'low' | 'medium' | 'high' | undefined
+  >(undefined);
   const [showSmartSuggestions, setShowSmartSuggestions] = useState(false);
   const [smartSuggestion, setSmartSuggestion] = useState<{
     suggestedTime: Date;
@@ -80,7 +82,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setDueDate(new Date());
       setDueTime(undefined);
       setCategory('');
-      setPriority('medium');
+      setPriority(undefined);
       setShowSmartSuggestions(false);
       setSmartSuggestion(null);
       setShowCategoryPicker(false);
@@ -88,7 +90,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setShowDatePicker(false);
       setShowTimePicker(false);
     }
-  }, [visible, editTask]);
+  }, [visible, editTask, translateY]);
 
   // Filter categories based on input
   useEffect(() => {
@@ -105,22 +107,23 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     }
   }, [category, showCategoryPicker]);
 
-  // Generate smart suggestion when priority changes
+  // Generate smart suggestion when priority or category changes
   useEffect(() => {
-    if (visible && !editTask && title.trim()) {
+    if (visible && !editTask && (priority || category.trim())) {
       generateSmartSuggestion();
     }
-  }, [priority, title]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priority, category, visible, editTask]);
 
   const generateSmartSuggestion = () => {
     try {
       const taskInput: TaskInput = {
-        title: title.trim(),
+        title: title.trim() || 'New Task',
         notes: notes.trim() || undefined,
         dueDate,
         dueTime,
         category: category.trim() || undefined,
-        priority,
+        priority: priority || 'medium',
       };
 
       const suggestions = SmartPlanningService.getSmartSuggestions(taskInput);
@@ -130,6 +133,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         reason: suggestions.reason,
       });
       setShowSmartSuggestions(true);
+
+      // Auto-scroll to show suggestions
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     } catch (error) {
       console.error('Error generating smart suggestion:', error);
     }
@@ -188,7 +196,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       dueDate,
       dueTime,
       category: category.trim() || undefined,
-      priority,
+      priority: priority || 'medium',
     };
 
     onSave(taskInput);
@@ -210,7 +218,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               {editTask ? 'Edit Task' : 'New Task'}
             </Text>
             <Pressable onPress={onClose}>
-              <Text style={styles.closeButton}>✕</Text>
+              <Icon name="close" size={24} color="#999" />
             </Pressable>
           </View>
 
@@ -306,6 +314,12 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                       ]}
                       onPress={() => setPriority(p)}
                     >
+                      <Icon
+                        name={getPriorityIcon(p)}
+                        size={18}
+                        color={priority === p ? '#FFFFFF' : '#666'}
+                        style={styles.priorityIcon}
+                      />
                       <Text
                         style={[
                           styles.priorityText,
@@ -327,19 +341,23 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 >
                   <View style={styles.accordionHeaderContent}>
                     <Text style={styles.label}>Due Date</Text>
-                    <Text style={styles.accordionValue}>
-                      📅{' '}
-                      {dueDate.toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </Text>
+                    <View style={styles.accordionValueRow}>
+                      <Icon name="calendar-outline" size={18} color="#666" />
+                      <Text style={styles.accordionValue}>
+                        {dueDate.toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </Text>
+                    </View>
                   </View>
-                  <Text style={styles.accordionArrow}>
-                    {showDatePicker ? '▼' : '▶'}
-                  </Text>
+                  <Icon
+                    name={showDatePicker ? 'chevron-down' : 'chevron-forward'}
+                    size={20}
+                    color="#999"
+                  />
                 </Pressable>
 
                 {/* Date Picker - Inline Accordion */}
@@ -349,7 +367,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                       value={dueDate}
                       mode="date"
                       display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                      onChange={(event, selectedDate) => {
+                      onChange={(_event, selectedDate) => {
                         if (Platform.OS === 'android') {
                           setShowDatePicker(false);
                         }
@@ -385,9 +403,12 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 >
                   <View style={styles.accordionHeaderContent}>
                     <Text style={styles.label}>Due Time (Optional)</Text>
-                    <Text style={styles.accordionValue}>
-                      {dueTime ? `🕐 ${formatTime(dueTime)}` : '🕐 Set time'}
-                    </Text>
+                    <View style={styles.accordionValueRow}>
+                      <Icon name="time-outline" size={18} color="#666" />
+                      <Text style={styles.accordionValue}>
+                        {dueTime ? formatTime(dueTime) : 'Set time'}
+                      </Text>
+                    </View>
                   </View>
                   <View style={styles.accordionRightContent}>
                     {dueTime && (
@@ -399,12 +420,14 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                           setShowTimePicker(false);
                         }}
                       >
-                        <Text style={styles.clearTimeText}>✕</Text>
+                        <Icon name="close" size={16} color="#FFFFFF" />
                       </Pressable>
                     )}
-                    <Text style={styles.accordionArrow}>
-                      {showTimePicker ? '▼' : '▶'}
-                    </Text>
+                    <Icon
+                      name={showTimePicker ? 'chevron-down' : 'chevron-forward'}
+                      size={20}
+                      color="#999"
+                    />
                   </View>
                 </Pressable>
 
@@ -416,7 +439,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                       mode="time"
                       is24Hour={is24Hour}
                       display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                      onChange={(event, selectedTime) => {
+                      onChange={(_event, selectedTime) => {
                         if (Platform.OS === 'android') {
                           setShowTimePicker(false);
                         }
@@ -433,9 +456,12 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               {showSmartSuggestions && smartSuggestion && !editTask && (
                 <View style={styles.suggestionCard}>
                   <View style={styles.suggestionHeader}>
-                    <Text style={styles.suggestionTitle}>
-                      🤖 Smart Suggestion
-                    </Text>
+                    <View style={styles.suggestionTitleRow}>
+                      <Icon name="bulb-outline" size={20} color="#6366F1" />
+                      <Text style={styles.suggestionTitle}>
+                        Smart Suggestion
+                      </Text>
+                    </View>
                     <View style={styles.confidenceBadge}>
                       <Text style={styles.confidenceText}>
                         {Math.round(smartSuggestion.confidence * 100)}% match
@@ -498,6 +524,17 @@ const getPriorityColor = (priority: 'low' | 'medium' | 'high') => {
   }
 };
 
+const getPriorityIcon = (priority: 'low' | 'medium' | 'high') => {
+  switch (priority) {
+    case 'high':
+      return 'alert-circle';
+    case 'medium':
+      return 'remove-circle';
+    case 'low':
+      return 'checkmark-circle';
+  }
+};
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -531,10 +568,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  closeButton: {
-    fontSize: 24,
-    color: '#999',
-  },
+
   scrollContainer: {
     flex: 1,
   },
@@ -574,7 +608,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
     backgroundColor: '#FAFAFA',
+  },
+  priorityIcon: {
+    marginRight: 4,
   },
   priorityButtonActive: {
     borderColor: 'transparent',
@@ -640,6 +680,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#6366F1',
+    marginLeft: 6,
+  },
+  suggestionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   confidenceBadge: {
     backgroundColor: '#6366F1',
@@ -725,11 +770,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clearTimeText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
+
   clearTimeButtonSmall: {
     width: 28,
     height: 28,
@@ -755,12 +796,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     fontWeight: '500',
-    marginTop: 4,
-  },
-  accordionArrow: {
-    fontSize: 12,
-    color: '#999',
     marginLeft: 8,
+  },
+  accordionValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
   },
   accordionRightContent: {
     flexDirection: 'row',
