@@ -44,6 +44,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const [filteredCategories, setFilteredCategories] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [scrollKey, setScrollKey] = useState(0);
 
   const translateY = useSharedValue(1000);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -56,6 +57,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         damping: 30,
         stiffness: 300,
       });
+
+      // Force ScrollView to remount with fresh state
+      setScrollKey(prev => prev + 1);
 
       if (editTask) {
         setTitle(editTask.title);
@@ -81,6 +85,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setSmartSuggestion(null);
       setShowCategoryPicker(false);
       setFilteredCategories([]);
+      setShowDatePicker(false);
+      setShowTimePicker(false);
     }
   }, [visible, editTask]);
 
@@ -217,9 +223,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             }}
           >
             <ScrollView
+              key={scrollKey}
               ref={scrollViewRef}
               style={styles.content}
               showsVerticalScrollIndicator={false}
+              contentOffset={{ x: 0, y: 0 }}
             >
               <View style={styles.field}>
                 <Text style={styles.label}>Title *</Text>
@@ -503,7 +511,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    height: '85%',
+    height: '90%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
