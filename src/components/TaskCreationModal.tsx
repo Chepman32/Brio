@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
   Platform,
+  FlatList,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -16,6 +17,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TaskCreationModalProps, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
+import { PREDEFINED_CATEGORIES } from '../utils/categories';
 
 export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   visible,
@@ -35,6 +37,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     confidence: number;
     reason: string;
   } | null>(null);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [filteredCategories, setFilteredCategories] = useState<string[]>([]);
 
   const translateY = useSharedValue(1000);
 
@@ -67,8 +71,25 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setPriority('medium');
       setShowSmartSuggestions(false);
       setSmartSuggestion(null);
+      setShowCategoryPicker(false);
+      setFilteredCategories([]);
     }
   }, [visible, editTask]);
+
+  // Filter categories based on input
+  useEffect(() => {
+    if (category.trim()) {
+      const filtered = PREDEFINED_CATEGORIES.filter(cat =>
+        cat.toLowerCase().includes(category.toLowerCase()),
+      );
+      setFilteredCategories(filtered);
+    } else if (showCategoryPicker) {
+      // Show all categories when input is empty but picker is open
+      setFilteredCategories([...PREDEFINED_CATEGORIES]);
+    } else {
+      setFilteredCategories([]);
+    }
+  }, [category, showCategoryPicker]);
 
   // Generate smart suggestion when priority changes
   useEffect(() => {
@@ -149,113 +170,149 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             </Pressable>
           </View>
 
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}
+          <Pressable
+            style={styles.scrollContainer}
+            onPress={() => {
+              if (showCategoryPicker) {
+                setShowCategoryPicker(false);
+              }
+            }}
           >
-            <View style={styles.field}>
-              <Text style={styles.label}>Title *</Text>
-              <TextInput
-                style={styles.input}
-                value={title}
-                onChangeText={setTitle}
-                placeholder="Enter task title"
-                placeholderTextColor="#999"
-              />
-            </View>
+            <ScrollView
+              style={styles.content}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.field}>
+                <Text style={styles.label}>Title *</Text>
+                <TextInput
+                  style={styles.input}
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder="Enter task title"
+                  placeholderTextColor="#999"
+                />
+              </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Notes</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                value={notes}
-                onChangeText={setNotes}
-                placeholder="Add notes (optional)"
-                placeholderTextColor="#999"
-                multiline
-                numberOfLines={4}
-              />
-            </View>
+              <View style={styles.field}>
+                <Text style={styles.label}>Notes</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  value={notes}
+                  onChangeText={setNotes}
+                  placeholder="Add notes (optional)"
+                  placeholderTextColor="#999"
+                  multiline
+                  numberOfLines={4}
+                />
+              </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Category</Text>
-              <TextInput
-                style={styles.input}
-                value={category}
-                onChangeText={setCategory}
-                placeholder="e.g., Work, Personal"
-                placeholderTextColor="#999"
-              />
-            </View>
+              <View style={styles.field}>
+                <Text style={styles.label}>Category</Text>
+                <TextInput
+                  style={styles.input}
+                  value={category}
+                  onChangeText={setCategory}
+                  placeholder="e.g., Work, Personal"
+                  placeholderTextColor="#999"
+                  onFocus={() => {
+                    setFilteredCategories([...PREDEFINED_CATEGORIES]);
+                    setShowCategoryPicker(true);
+                  }}
+                />
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Priority</Text>
-              <View style={styles.priorityContainer}>
-                {(['low', 'medium', 'high'] as const).map(p => (
-                  <Pressable
-                    key={p}
-                    style={[
-                      styles.priorityButton,
-                      priority === p && styles.priorityButtonActive,
-                      priority === p && {
-                        backgroundColor: getPriorityColor(p),
-                      },
-                    ]}
-                    onPress={() => setPriority(p)}
-                  >
-                    <Text
-                      style={[
-                        styles.priorityText,
-                        priority === p && styles.priorityTextActive,
-                      ]}
+                {showCategoryPicker && filteredCategories.length > 0 && (
+                  <View style={styles.categoryPicker}>
+                    <ScrollView
+                      style={styles.categoryList}
+                      nestedScrollEnabled
+                      keyboardShouldPersistTaps="handled"
                     >
-                      {p.charAt(0).toUpperCase() + p.slice(1)}
+                      {filteredCategories.map((cat, index) => (
+                        <Pressable
+                          key={index}
+                          style={styles.categoryItem}
+                          onPress={() => {
+                            setCategory(cat);
+                            setShowCategoryPicker(false);
+                          }}
+                        >
+                          <Text style={styles.categoryItemText}>{cat}</Text>
+                        </Pressable>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>Priority</Text>
+                <View style={styles.priorityContainer}>
+                  {(['low', 'medium', 'high'] as const).map(p => (
+                    <Pressable
+                      key={p}
+                      style={[
+                        styles.priorityButton,
+                        priority === p && styles.priorityButtonActive,
+                        priority === p && {
+                          backgroundColor: getPriorityColor(p),
+                        },
+                      ]}
+                      onPress={() => setPriority(p)}
+                    >
+                      <Text
+                        style={[
+                          styles.priorityText,
+                          priority === p && styles.priorityTextActive,
+                        ]}
+                      >
+                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+
+              {/* Smart Suggestions */}
+              {showSmartSuggestions && smartSuggestion && !editTask && (
+                <View style={styles.suggestionCard}>
+                  <View style={styles.suggestionHeader}>
+                    <Text style={styles.suggestionTitle}>
+                      🤖 Smart Suggestion
+                    </Text>
+                    <View style={styles.confidenceBadge}>
+                      <Text style={styles.confidenceText}>
+                        {Math.round(smartSuggestion.confidence * 100)}% match
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.suggestionReason}>
+                    {smartSuggestion.reason}
+                  </Text>
+                  <Text style={styles.suggestionTime}>
+                    {smartSuggestion.suggestedTime.toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })}{' '}
+                    at{' '}
+                    {smartSuggestion.suggestedTime.toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    })}
+                  </Text>
+                  <Pressable
+                    style={styles.applySuggestionButton}
+                    onPress={applySuggestion}
+                  >
+                    <Text style={styles.applySuggestionText}>
+                      Apply Suggestion
                     </Text>
                   </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {/* Smart Suggestions */}
-            {showSmartSuggestions && smartSuggestion && !editTask && (
-              <View style={styles.suggestionCard}>
-                <View style={styles.suggestionHeader}>
-                  <Text style={styles.suggestionTitle}>
-                    🤖 Smart Suggestion
-                  </Text>
-                  <View style={styles.confidenceBadge}>
-                    <Text style={styles.confidenceText}>
-                      {Math.round(smartSuggestion.confidence * 100)}% match
-                    </Text>
-                  </View>
                 </View>
-                <Text style={styles.suggestionReason}>
-                  {smartSuggestion.reason}
-                </Text>
-                <Text style={styles.suggestionTime}>
-                  {smartSuggestion.suggestedTime.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}{' '}
-                  at{' '}
-                  {smartSuggestion.suggestedTime.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                  })}
-                </Text>
-                <Pressable
-                  style={styles.applySuggestionButton}
-                  onPress={applySuggestion}
-                >
-                  <Text style={styles.applySuggestionText}>
-                    Apply Suggestion
-                  </Text>
-                </Pressable>
-              </View>
-            )}
-          </ScrollView>
+              )}
+            </ScrollView>
+          </Pressable>
 
           <View style={styles.footer}>
             <Pressable style={styles.cancelButton} onPress={onClose}>
@@ -302,7 +359,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '90%',
+    height: '85%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
@@ -325,6 +382,9 @@ const styles = StyleSheet.create({
   closeButton: {
     fontSize: 24,
     color: '#999',
+  },
+  scrollContainer: {
+    flex: 1,
   },
   content: {
     padding: 20,
@@ -461,5 +521,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  categoryPicker: {
+    marginTop: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    maxHeight: 300,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  categoryList: {
+    maxHeight: 300,
+  },
+  categoryItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  categoryItemText: {
+    fontSize: 15,
+    color: '#333',
   },
 });
