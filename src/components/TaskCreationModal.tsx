@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -46,6 +46,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   const translateY = useSharedValue(1000);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const dateFieldRef = useRef<View>(null);
+  const timeFieldRef = useRef<View>(null);
 
   useEffect(() => {
     if (visible) {
@@ -138,6 +141,36 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     transform: [{ translateY: translateY.value }],
   }));
 
+  // Auto-scroll when date picker opens
+  useEffect(() => {
+    if (showDatePicker && dateFieldRef.current && scrollViewRef.current) {
+      setTimeout(() => {
+        dateFieldRef.current?.measureLayout(
+          scrollViewRef.current as any,
+          (_x, y) => {
+            scrollViewRef.current?.scrollTo({ y: y - 20, animated: true });
+          },
+          () => {},
+        );
+      }, 100);
+    }
+  }, [showDatePicker]);
+
+  // Auto-scroll when time picker opens
+  useEffect(() => {
+    if (showTimePicker && timeFieldRef.current && scrollViewRef.current) {
+      setTimeout(() => {
+        timeFieldRef.current?.measureLayout(
+          scrollViewRef.current as any,
+          (_x, y) => {
+            scrollViewRef.current?.scrollTo({ y: y - 20, animated: true });
+          },
+          () => {},
+        );
+      }, 100);
+    }
+  }, [showTimePicker]);
+
   const handleSave = () => {
     if (!title.trim()) {
       return; // Title is required
@@ -184,6 +217,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             }}
           >
             <ScrollView
+              ref={scrollViewRef}
               style={styles.content}
               showsVerticalScrollIndicator={false}
             >
@@ -278,7 +312,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               </View>
 
               {/* Date and Time Selection */}
-              <View style={styles.field}>
+              <View style={styles.field} ref={dateFieldRef}>
                 <Pressable
                   style={styles.accordionHeader}
                   onPress={() => setShowDatePicker(!showDatePicker)}
@@ -329,7 +363,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 )}
               </View>
 
-              <View style={styles.field}>
+              <View style={styles.field} ref={timeFieldRef}>
                 <Pressable
                   style={styles.accordionHeader}
                   onPress={() => {
