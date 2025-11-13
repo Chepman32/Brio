@@ -139,3 +139,6 @@ export interface NotificationServiceInterface {
 
 // Re-export RT types
 export * from './notification-rt.types';
+
+// Re-export recurring suggestion types
+export * from './recurring-suggestion.types';

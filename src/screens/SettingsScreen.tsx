@@ -7,6 +7,7 @@ import {
   Pressable,
   Switch,
   Alert,
+  Modal,
 } from 'react-native';
 import {
   getSettings,
@@ -16,6 +17,7 @@ import {
   setTimeFormat,
 } from '../database/operations';
 import { closeRealm } from '../database/realm';
+import { RecurringPatternsView } from '../components/RecurringPatternsView';
 
 export const SettingsScreen: React.FC = () => {
   const [theme, setThemeState] = useState<'light' | 'dark'>('light');
@@ -24,6 +26,7 @@ export const SettingsScreen: React.FC = () => {
   const [timeFormat, setTimeFormatState] = useState<'auto' | '12h' | '24h'>(
     'auto',
   );
+  const [showPatternsModal, setShowPatternsModal] = useState(false);
 
   const loadSettings = React.useCallback(() => {
     try {
@@ -208,12 +211,28 @@ export const SettingsScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Smart Planning</Text>
 
+          <Pressable
+            style={styles.settingRow}
+            onPress={() => setShowPatternsModal(true)}
+          >
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>
+                🔄 Recurring Task Patterns
+              </Text>
+              <Text style={styles.settingDescription}>
+                View and manage learned patterns
+              </Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </Pressable>
+
           <View style={styles.infoCard}>
             <Text style={styles.infoCardTitle}>🤖 AI-Powered Suggestions</Text>
             <Text style={styles.infoCardText}>
-              Brio learns from your task completion patterns to suggest optimal
-              scheduling times. The more you use the app, the smarter the
-              suggestions become!
+              Brio learns from your task creation patterns and suggests tasks
+              you typically add at specific times. For example, if you add "Go
+              gym" every Monday at 17:00, Brio will remind you to add it if you
+              forget!
             </Text>
           </View>
         </View>
@@ -248,6 +267,15 @@ export const SettingsScreen: React.FC = () => {
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
+
+      {/* Recurring Patterns Modal */}
+      <Modal
+        visible={showPatternsModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <RecurringPatternsView onClose={() => setShowPatternsModal(false)} />
+      </Modal>
     </View>
   );
 };
@@ -396,6 +424,11 @@ const styles = StyleSheet.create({
     color: '#666',
     lineHeight: 24,
     textAlign: 'left',
+  },
+  chevron: {
+    fontSize: 24,
+    color: '#999',
+    fontWeight: '300',
   },
   bottomSpacer: {
     height: 40,

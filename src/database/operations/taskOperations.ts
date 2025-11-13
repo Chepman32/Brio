@@ -1,6 +1,7 @@
 import { getRealm } from '../realm';
 import { Task } from '../schemas';
 import { BSON } from 'realm';
+import { RecurringSuggestionService } from '../../services/RecurringSuggestionService';
 
 export interface TaskInput {
   title: string;
@@ -14,16 +15,27 @@ export interface TaskInput {
 export const createTask = (input: TaskInput): Task => {
   const realm = getRealm();
   let task: Task;
+  const createdAt = new Date();
 
   realm.write(() => {
     task = realm.create<Task>('Task', {
       _id: new BSON.ObjectId().toHexString(),
       ...input,
       completed: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt,
+      updatedAt: createdAt,
     });
   });
+
+  // Log task creation for recurring pattern detection
+  RecurringSuggestionService.logTaskCreation(
+    input.title,
+    input.category || 'general',
+    input.dueDate,
+    createdAt,
+  ).catch(err =>
+    console.error('Error logging task creation for patterns:', err),
+  );
 
   return task!;
 };

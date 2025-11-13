@@ -19,20 +19,33 @@ import {
   getSettings,
 } from './src/database/operations';
 import { NotificationService } from './src/services/NotificationService';
+import { useRecurringSuggestions } from './src/hooks/useRecurringSuggestions';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
+  // Initialize recurring task suggestions
+  const { initialized: suggestionsInitialized, pendingSuggestions } =
+    useRecurringSuggestions();
+
   useEffect(() => {
     initializeApp();
   }, []);
 
+  useEffect(() => {
+    if (suggestionsInitialized) {
+      console.log(
+        `✅ Recurring suggestions initialized with ${pendingSuggestions.length} pending suggestions`,
+      );
+    }
+  }, [suggestionsInitialized, pendingSuggestions.length]);
+
   const initializeApp = async () => {
     try {
       // Initialize Realm database
-      await initializeRealm();
+      const realm = await initializeRealm();
 
       // Initialize default data
       initializeSettings();
@@ -41,6 +54,13 @@ function App() {
 
       // Initialize notification service
       await NotificationService.initialize();
+
+      // Initialize recurring suggestions service
+      const { RecurringSuggestionService } = await import(
+        './src/services/RecurringSuggestionService'
+      );
+      await RecurringSuggestionService.initialize(realm);
+      console.log('✅ Recurring suggestions service initialized');
 
       // Check if onboarding is completed
       const settings = getSettings();
