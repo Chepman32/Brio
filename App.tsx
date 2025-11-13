@@ -9,18 +9,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SplashScreen } from './src/screens/SplashScreen';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { initializeRealm } from './src/database/realm';
 import {
   initializeAchievements,
   initializeStats,
   initializeSettings,
+  getSettings,
 } from './src/database/operations';
 import { NotificationService } from './src/services/NotificationService';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     initializeApp();
@@ -39,6 +42,10 @@ function App() {
       // Initialize notification service
       await NotificationService.initialize();
 
+      // Check if onboarding is completed
+      const settings = getSettings();
+      setShowOnboarding(!settings.onboardingCompleted);
+
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to initialize app:', error);
@@ -48,6 +55,10 @@ function App() {
 
   const handleSplashComplete = () => {
     setShowSplash(false);
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
   };
 
   if (isLoading) {
@@ -60,6 +71,17 @@ function App() {
         <SafeAreaProvider>
           <StatusBar barStyle="dark-content" />
           <SplashScreen onComplete={handleSplashComplete} />
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    );
+  }
+
+  if (showOnboarding) {
+    return (
+      <GestureHandlerRootView style={styles.container}>
+        <SafeAreaProvider>
+          <StatusBar barStyle="dark-content" />
+          <OnboardingScreen onComplete={handleOnboardingComplete} />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
