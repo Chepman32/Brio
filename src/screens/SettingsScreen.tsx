@@ -25,11 +25,7 @@ export const SettingsScreen: React.FC = () => {
     'auto',
   );
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  const loadSettings = () => {
+  const loadSettings = React.useCallback(() => {
     try {
       const settings = getSettings();
       setThemeState(settings.theme);
@@ -39,7 +35,11 @@ export const SettingsScreen: React.FC = () => {
     } catch (error) {
       console.error('Error loading settings:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   const handleThemeToggle = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';

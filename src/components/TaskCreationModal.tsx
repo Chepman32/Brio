@@ -107,15 +107,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     }
   }, [category, showCategoryPicker]);
 
-  // Generate smart suggestion when priority or category changes
-  useEffect(() => {
-    if (visible && !editTask && (priority || category.trim())) {
-      generateSmartSuggestion();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priority, category, visible, editTask]);
-
-  const generateSmartSuggestion = () => {
+  // Define generateSmartSuggestion before useEffect
+  const generateSmartSuggestion = React.useCallback(() => {
     try {
       const taskInput: TaskInput = {
         title: title.trim() || 'New Task',
@@ -141,7 +134,14 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     } catch (error) {
       console.error('Error generating smart suggestion:', error);
     }
-  };
+  }, [title, dueDate, dueTime, category, priority]);
+
+  // Generate smart suggestion when priority or category changes
+  useEffect(() => {
+    if (visible && !editTask && (priority || category.trim())) {
+      generateSmartSuggestion();
+    }
+  }, [priority, category, visible, editTask, generateSmartSuggestion]);
 
   const applySuggestion = () => {
     if (smartSuggestion) {

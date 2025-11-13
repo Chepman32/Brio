@@ -1,9 +1,12 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import { TaskType } from '../types';
 import { getSettings } from '../database/operations';
+import { NotificationRTService } from './NotificationRTService';
+import { NotifyLogEvent, NotifyAction } from '../types/notification-rt.types';
 
 class NotificationServiceClass {
   private initialized = false;
+  private deliveryTracking: Map<string, number> = new Map(); // taskId -> deliveredAt timestamp
 
   /**
    * Initialize notification service
@@ -13,6 +16,7 @@ class NotificationServiceClass {
 
     try {
       await this.requestPermissions();
+      await NotificationRTService.initialize();
       this.initialized = true;
     } catch (error) {
       console.error('Error initializing notifications:', error);
@@ -38,10 +42,8 @@ class NotificationServiceClass {
   }
 
   /**
-   * Schedule notifications for a task
-   * Schedules two notifications:
-   * 1. Warning notification X minutes before (e.g., "Warning! It's 5 minutes to [Task]")
-   * 2. Task time notification at exact time (e.g., "It's time for [Task]!")
+   * Schedule notifications for a task using RT-optimized timing
+   * Uses the RT service to determine optimal notification time
    */
   async scheduleNotification(task: TaskType): Promise<void> {
     try {
@@ -58,10 +60,29 @@ class NotificationServiceClass {
       const now = new Date();
       const taskTime = new Date(task.dueTime);
 
-      // Schedule warning notification (X minutes before)
-      const warningTime = new Date(taskTime);
-      warningTime.setMinutes(
-        warningTime.getMinutes() - settings.defaultReminderTime,
+      // Get RT-optimized slot recommendation
+      const category = task.category || 'general';
+      const dueMs = taskTime.getTime();
+      const estDurationMs = 30 * 60 * 1000; // Default 30 min estimate
+
+      const recommendation = await NotificationRTService.getOptimalSlot(
+        category,
+        task.priority,
+        dueMs,
+        estDurationMs,
+      );
+
+      // Calculate optimal notification time based on RT patterns
+      const medianRtMs =
+        recommendation.estimatedOpenTime.getTime() - Date.now();
+      const optimalNotifyTime = new Date(taskTime.getTime() - medianRtMs);
+
+      // Schedule warning notification (RT-adjusted)
+      const warningTime = new Date(
+        Math.max(
+          optimalNotifyTime.getTime(),
+          taskTime.getTime() - settings.defaultReminderTime * 60 * 1000,
+        ),
       );
 
       if (warningTime > now) {
@@ -70,21 +91,33 @@ class NotificationServiceClass {
             ? 'minute'
             : `${settings.defaultReminderTime} minutes`;
 
+        const isSilent =
+          recommendation.channelConfig.volume === 'silent' ||
+          recommendation.channelConfig.volume === 'quiet';
+
         PushNotificationIOS.addNotificationRequest({
           id: `${task._id}_warning`,
-          title: '⚠️ Task Warning',
+          title: isSilent ? '📋 Task Reminder' : '⚠️ Task Warning',
           body: `Warning! It's ${minutesText} to ${task.title}`,
           fireDate: warningTime,
+          isSilent,
           userInfo: {
             taskId: task._id,
             type: 'warning',
+            category,
+            priority: task.priority,
           },
         });
 
+        // Track delivery for RT learning
+        this.deliveryTracking.set(task._id, warningTime.getTime());
+
         console.log(
-          `Warning notification scheduled for: ${
+          `RT-optimized warning notification scheduled for: ${
             task.title
-          } at ${warningTime.toLocaleTimeString()}`,
+          } at ${warningTime.toLocaleTimeString()} (confidence: ${Math.round(
+            recommendation.confidence * 100,
+          )}%)`,
         );
       }
 
@@ -98,6 +131,8 @@ class NotificationServiceClass {
           userInfo: {
             taskId: task._id,
             type: 'time',
+            category,
+            priority: task.priority,
           },
         });
 
@@ -163,15 +198,116 @@ class NotificationServiceClass {
   }
 
   /**
-   * Handle notification tap
+   * Handle notification tap and log RT event
    */
   setupNotificationHandlers(onNotificationTap: (taskId: string) => void): void {
     PushNotificationIOS.addEventListener('notification', notification => {
       const data = notification.getData();
       if (data && data.taskId) {
+        // Log RT event
+        this.logNotificationInteraction(
+          data.taskId,
+          'open',
+          data.category,
+          data.priority,
+        );
         onNotificationTap(data.taskId);
       }
     });
+  }
+
+  /**
+   * Log notification interaction for RT learning
+   */
+  async logNotificationInteraction(
+    taskId: string,
+    action: NotifyAction,
+    category?: string,
+    priority?: 'low' | 'medium' | 'high',
+  ): Promise<void> {
+    try {
+      const deliveredAt = this.deliveryTracking.get(taskId);
+      if (!deliveredAt) {
+        console.warn('No delivery tracking found for task:', taskId);
+        return;
+      }
+
+      const now = Date.now();
+      const deliveryDate = new Date(deliveredAt);
+
+      const event: NotifyLogEvent = {
+        id: `${taskId}_${now}`,
+        taskId,
+        category: category || 'general',
+        deliveredAt,
+        openedAt:
+          action === 'open' || action === 'completeFromPush' ? now : undefined,
+        action,
+        dayOfWeek: deliveryDate.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+        hourBin: this.calculateHourBin(deliveryDate),
+        priority01: this.normalizePriority(priority || 'medium'),
+        dueInMinAtDelivery: 0, // Can be enhanced with actual due time
+        isSilent: false,
+      };
+
+      await NotificationRTService.logEvent(event);
+
+      // Clean up tracking
+      if (
+        action === 'open' ||
+        action === 'completeFromPush' ||
+        action === 'dismiss'
+      ) {
+        this.deliveryTracking.delete(taskId);
+      }
+    } catch (error) {
+      console.error('Error logging notification interaction:', error);
+    }
+  }
+
+  /**
+   * Get smart snooze suggestions based on RT patterns
+   */
+  async getSmartSnoozeOptions(
+    taskId: string,
+    category: string,
+  ): Promise<Array<{ minutes: number; label: string; reason: string }>> {
+    try {
+      const now = new Date();
+      const dow = now.getDay();
+      const bin = this.calculateHourBin(now);
+
+      return await NotificationRTService.proposeSnoozeOptions(
+        category,
+        dow,
+        bin,
+      );
+    } catch (error) {
+      console.error('Error getting smart snooze options:', error);
+      // Fallback to default options
+      return [
+        { minutes: 15, label: '15 min', reason: 'Quick break' },
+        { minutes: 30, label: '30 min', reason: 'Short delay' },
+        { minutes: 60, label: '1 hour', reason: 'Later today' },
+      ];
+    }
+  }
+
+  private calculateHourBin(date: Date): number {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    return Math.floor((hours * 60 + minutes) / 30); // 30-minute bins
+  }
+
+  private normalizePriority(priority: 'low' | 'medium' | 'high'): number {
+    switch (priority) {
+      case 'high':
+        return 1.0;
+      case 'medium':
+        return 0.6;
+      case 'low':
+        return 0.3;
+    }
   }
 
   /**

@@ -12,18 +12,18 @@ export const PlannerScreen: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  const loadTasks = () => {
+  const loadTasks = React.useCallback(() => {
     try {
       const allTasks = getTasks();
       setTasks(Array.from(allTasks));
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);

@@ -25,7 +25,7 @@ export const TodayScreen: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
   const [editingTask, setEditingTask] = useState<TaskType | null>(null);
 
-  const loadTasks = () => {
+  const loadTasks = React.useCallback(() => {
     try {
       const today = new Date();
       console.log('Loading tasks for date:', today);
@@ -52,11 +52,11 @@ export const TodayScreen: React.FC = () => {
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
 
   const handleRefresh = () => {
     setRefreshing(true);

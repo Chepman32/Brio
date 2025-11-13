@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import { Task, Achievement, UserStats, Settings } from './schemas';
+import { Task, Achievement, UserStats, Settings, RTStats } from './schemas';
 
 let realmInstance: Realm | null = null;
 
@@ -9,8 +9,8 @@ export const initializeRealm = async (): Promise<Realm> => {
   }
 
   const config: Realm.Configuration = {
-    schema: [Task, Achievement, UserStats, Settings],
-    schemaVersion: 2,
+    schema: [Task, Achievement, UserStats, Settings, RTStats],
+    schemaVersion: 3,
     migration: (oldRealm, newRealm) => {
       // Migration for schema version 2: add timeFormat field
       if (oldRealm.schemaVersion < 2) {
@@ -21,6 +21,9 @@ export const initializeRealm = async (): Promise<Realm> => {
           newSettings[i].timeFormat = 'auto';
         }
       }
+
+      // Migration for schema version 3: add RTStats schema
+      // No data migration needed, RTStats will be created as needed
     },
   };
 

@@ -136,3 +136,6 @@ export interface NotificationServiceInterface {
   updateNotification(task: TaskType): Promise<void>;
   requestPermissions(): Promise<boolean>;
 }
+
+// Re-export RT types
+export * from './notification-rt.types';

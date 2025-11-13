@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -15,7 +8,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { CalendarViewProps } from '../types';
-import { addDays, getStartOfDay, isSameDay } from '../utils/dateHelpers';
+import { isSameDay } from '../utils/dateHelpers';
 import { getCategoryColor } from '../utils/categoryColors';
 import {
   formatDayHeader as formatDayHeaderLocalized,
@@ -26,7 +19,6 @@ import { analyzeDayVibe } from '../utils/dayVibeAnalysis';
 import { DayHeroSection } from './DayHeroSection';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 
-const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 50;
 
 // Memoized TaskBlock component for better performance
@@ -69,6 +61,31 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
   const { formatTime, formatTimeRange, formatHourLabel } = useTimeFormat();
+
+  // Define navigation functions before gesture handlers
+  const navigatePrevious = React.useCallback(() => {
+    const newDate = new Date(currentDate);
+    if (mode === 'day') {
+      newDate.setDate(newDate.getDate() - 1);
+    } else if (mode === 'week') {
+      newDate.setDate(newDate.getDate() - 7);
+    } else {
+      newDate.setMonth(newDate.getMonth() - 1);
+    }
+    setCurrentDate(newDate);
+  }, [currentDate, mode]);
+
+  const navigateNext = React.useCallback(() => {
+    const newDate = new Date(currentDate);
+    if (mode === 'day') {
+      newDate.setDate(newDate.getDate() + 1);
+    } else if (mode === 'week') {
+      newDate.setDate(newDate.getDate() + 7);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
+  }, [currentDate, mode]);
 
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
@@ -117,30 +134,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     transform: [{ translateX: translateX.value }, { scale: scale.value }],
   }));
 
-  const navigatePrevious = () => {
-    const newDate = new Date(currentDate);
-    if (mode === 'day') {
-      newDate.setDate(newDate.getDate() - 1);
-    } else if (mode === 'week') {
-      newDate.setDate(newDate.getDate() - 7);
-    } else {
-      newDate.setMonth(newDate.getMonth() - 1);
-    }
-    setCurrentDate(newDate);
-  };
-
-  const navigateNext = () => {
-    const newDate = new Date(currentDate);
-    if (mode === 'day') {
-      newDate.setDate(newDate.getDate() + 1);
-    } else if (mode === 'week') {
-      newDate.setDate(newDate.getDate() + 7);
-    } else {
-      newDate.setMonth(newDate.getMonth() + 1);
-    }
-    setCurrentDate(newDate);
-  };
-
   const getTasksForDate = (date: Date) => {
     return tasks.filter(task => isSameDay(task.dueDate, date));
   };
@@ -152,6 +145,33 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     if (!startTime) return '';
     const endTime = new Date(startTime.getTime() + duration * 60000);
     return formatTimeRange(startTime, endTime);
+  };
+
+  // Calculate ISO week number
+  const getWeekNumber = (date: Date): number => {
+    const d = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  };
+
+  // Format week range: "November 2 - 8 (week 46)"
+  const formatWeekRange = (startDate: Date, endDate: Date): string => {
+    const weekNum = getWeekNumber(startDate);
+    const startDay = startDate.getDate();
+    const endDay = endDate.getDate();
+    const month = startDate.toLocaleDateString('en-US', { month: 'long' });
+
+    // If week spans two months
+    if (startDate.getMonth() !== endDate.getMonth()) {
+      const endMonth = endDate.toLocaleDateString('en-US', { month: 'long' });
+      return `${month} ${startDay} - ${endMonth} ${endDay} (week ${weekNum})`;
+    }
+
+    return `${month} ${startDay} - ${endDay} (week ${weekNum})`;
   };
 
   const renderDayView = () => {
@@ -275,14 +295,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <Text style={styles.navButtonText}>‹</Text>
           </Pressable>
           <Text style={styles.weekDateRange}>
-            {startOfWeek.toLocaleDateString('en-US', {
-              day: 'numeric',
-            })}
-            –
-            {days[6].toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'long',
-            })}
+            {formatWeekRange(startOfWeek, days[6])}
           </Text>
           <Pressable onPress={navigateNext} style={styles.navButton}>
             <Text style={styles.navButtonText}>›</Text>
@@ -422,18 +435,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <Text style={styles.monthNavButtonText}>←</Text>
           </Pressable>
           <Text style={styles.monthTitle}>{formatMonthYear(currentDate)}</Text>
-          {onCreateTask && (
-            <Pressable
-              onPress={() => onCreateTask(currentDate)}
-              style={styles.monthNavButton}
-              accessible={true}
-              accessibilityLabel="Create new task"
-              accessibilityRole="button"
-            >
-              <Text style={styles.monthNavButtonText}>+</Text>
-            </Pressable>
-          )}
-          {!onCreateTask && <View style={styles.monthNavButton} />}
+          <Pressable
+            onPress={navigateNext}
+            style={styles.monthNavButton}
+            accessible={true}
+            accessibilityLabel="Next month"
+            accessibilityRole="button"
+          >
+            <Text style={styles.monthNavButtonText}>→</Text>
+          </Pressable>
         </View>
         <View style={styles.weekDayHeaders}>
           {getWeekdays(true).map(day => (

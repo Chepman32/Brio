@@ -15,11 +15,7 @@ export const AchievementsScreen: React.FC = () => {
     'all' | 'streak' | 'milestone' | 'special'
   >('all');
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = () => {
+  const loadData = React.useCallback(() => {
     try {
       const allAchievements = AchievementService.getAchievementsByType('streak')
         .concat(AchievementService.getAchievementsByType('milestone'))
@@ -36,7 +32,11 @@ export const AchievementsScreen: React.FC = () => {
     } catch (error) {
       console.error('Error loading achievements:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const filteredAchievements =
     selectedType === 'all'
