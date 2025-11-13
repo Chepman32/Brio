@@ -142,3 +142,12 @@ export * from './notification-rt.types';
 
 // Re-export recurring suggestion types
 export * from './recurring-suggestion.types';
+
+// Re-export NLP types
+export * from './nlp.types';
+
+// Re-export priority types
+export * from './priority.types';
+
+// Re-export pattern types
+export * from './pattern.types';

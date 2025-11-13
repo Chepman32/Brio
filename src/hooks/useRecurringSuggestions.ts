@@ -32,6 +32,9 @@ export const useRecurringSuggestions = () => {
 
   const initializeService = async () => {
     try {
+      // Wait a bit for Realm to initialize
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const realm = getRealm();
       await RecurringSuggestionService.initialize(realm);
       setInitialized(true);
@@ -40,6 +43,10 @@ export const useRecurringSuggestions = () => {
       await planSuggestions();
     } catch (error) {
       console.error('Error initializing RecurringSuggestionService:', error);
+      // Retry after a delay
+      setTimeout(() => {
+        initializeService();
+      }, 1000);
     }
   };
 
