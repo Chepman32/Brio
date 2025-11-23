@@ -308,7 +308,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   const renderWeekView = () => {
     const startOfWeek = new Date(currentDate);
-    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+    const currentWeekDay = startOfWeek.getDay();
+    const diff = currentWeekDay === 0 ? -6 : 1 - currentWeekDay; // start on Monday
+    startOfWeek.setDate(startOfWeek.getDate() + diff);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
 
     const days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date(startOfWeek);
@@ -316,20 +320,31 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       return date;
     });
 
-    const hours = Array.from({ length: 18 }, (_, i) => i + 6); // 6:00 to 23:00
-    const selectedDayTasks = getTasksForDate(selectedDate);
+    const startHour = 6;
+    const endHour = 22;
+    const hourHeight = 64;
+    const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) =>
+      startHour + i,
+    );
+    const totalHeight = (endHour - startHour + 1) * hourHeight;
+    const timeColumnWidth = 56;
+    const dayGap = 10;
+    const weekPadding = 12;
+    const dayColumnWidth = Math.max(
+      90,
+      (contentWidth - timeColumnWidth - weekPadding * 2 - dayGap * 6) / 7,
+    );
 
-    const getTaskPosition = (task: any) => {
-      if (!task.dueTime) return null;
-      const hour = task.dueTime.getHours();
-      const minute = task.dueTime.getMinutes();
-      return (hour - 6) * 60 + minute; // Minutes from 6:00
-    };
+    const dayTasks = days.map(date => ({
+      date,
+      tasks: tasks.filter(task => isSameDay(task.dueDate, date)),
+    }));
 
-    const getTaskDuration = (task: any) => {
-      // Default 1 hour duration, can be customized
-      return 60;
-    };
+    const now = new Date();
+    const isCurrentWeek = now >= startOfWeek && now <= endOfWeek;
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const currentLineTop =
+      ((currentMinutes - startHour * 60) / 60) * hourHeight;
 
     return (
       <View style={styles.weekView}>
@@ -345,38 +360,36 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </Pressable>
         </View>
 
-        <View style={styles.weekDaysStrip}>
+        <View
+          style={[
+            styles.weekDayHeaderRow,
+            { paddingHorizontal: weekPadding, paddingRight: weekPadding + dayGap },
+          ]}
+        >
+          <View style={{ width: timeColumnWidth }} />
           {days.map(date => {
+            const isToday = isSameDay(date, now);
             const isSelected = isSameDay(date, selectedDate);
-            const isToday = isSameDay(date, new Date());
+            const weekday = date
+              .toLocaleDateString('en-US', { weekday: 'short' })
+              .toUpperCase();
+            const dayNumber = date.toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+            });
 
             return (
               <Pressable
                 key={date.toISOString()}
-                style={styles.weekDayColumn}
+                style={[
+                  styles.weekDayHeaderCell,
+                  { width: dayColumnWidth },
+                  (isToday || isSelected) && styles.weekDayHeaderCellActive,
+                ]}
                 onPress={() => onDateSelect(date)}
               >
-                <Text style={styles.weekDayLabel}>
-                  {date
-                    .toLocaleDateString('en-US', { weekday: 'short' })
-                    .toUpperCase()}
-                </Text>
-                <View
-                  style={[
-                    styles.weekDayCircle,
-                    isSelected && styles.weekDayCircleSelected,
-                    isToday && !isSelected && styles.weekDayCircleToday,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.weekDayDate,
-                      isSelected && styles.weekDayDateSelected,
-                    ]}
-                  >
-                    {date.getDate()}
-                  </Text>
-                </View>
+                <Text style={styles.weekDayHeaderWeekday}>{weekday}</Text>
+                <Text style={styles.weekDayHeaderDate}>{dayNumber}</Text>
               </Pressable>
             );
           })}
@@ -385,56 +398,143 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <ScrollView
           style={styles.weekTimeline}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: weekPadding,
+            paddingRight: weekPadding + dayGap,
+            paddingBottom: 24,
+            minHeight: totalHeight + 32,
+          }}
         >
-          {hours.map(hour => {
-            const hourTasks = selectedDayTasks.filter(task => {
-              if (!task.dueTime) return false;
-              return task.dueTime.getHours() === hour;
-            });
-
-            return (
-              <View key={hour} style={styles.timeSlot}>
-                <Text style={styles.timeLabel}>
-                  {hour === 0
-                    ? '12:00'
-                    : hour < 10
-                    ? `${hour}:00`
-                    : `${hour}:00`}
-                </Text>
-                <View style={styles.timeSlotContent}>
-                  <View style={styles.timeSlotLine} />
-                  {hourTasks.map((task, index) => {
-                    const position = getTaskPosition(task);
-                    const duration = getTaskDuration(task);
-                    const minute = task.dueTime?.getMinutes() || 0;
-
-                    return (
-                      <Pressable
-                        key={task._id}
-                        style={[
-                          styles.weekTaskBlock,
-                          {
-                            top: minute,
-                            height: Math.max(duration, 40),
-                            backgroundColor:
-                              task.category === 'work' ? '#6B9EFF' : '#7BC67E',
-                          },
-                        ]}
-                        onPress={() => onDateSelect(task.dueDate)}
-                      >
-                        <Text
-                          style={styles.weekTaskBlockText}
-                          numberOfLines={2}
-                        >
-                          {task.title}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
+          <View style={[styles.weekGridRow, { minHeight: totalHeight }]}>
+            <View
+              style={[
+                styles.weekTimeColumn,
+                { width: timeColumnWidth, minHeight: totalHeight },
+              ]}
+            >
+              {hours.map(hour => {
+                const formatted =
+                  hour === 0
+                    ? '12 AM'
+                    : hour < 12
+                    ? `${hour} AM`
+                    : hour === 12
+                    ? '12 PM'
+                    : `${hour - 12} PM`;
+                return (
+                  <Text
+                    key={hour}
+                    style={[styles.weekTimeLabel, { height: hourHeight }]}
+                  >
+                    {formatted}
+                  </Text>
+                );
+              })}
+            </View>
+            <View
+              style={[
+                styles.weekDaysWrapper,
+                { height: totalHeight, marginLeft: dayGap },
+              ]}
+            >
+              <View style={styles.weekGridLines}>
+                {hours.map((_, idx) => (
+                  <View
+                    key={idx}
+                    style={[
+                      styles.weekGridLine,
+                      { top: idx * hourHeight, width: '100%', height: 1 },
+                    ]}
+                  />
+                ))}
               </View>
-            );
-          })}
+              <View style={styles.weekColumnsOverlay}>
+                {dayTasks.map(({ date, tasks: dayTasksForDate }, dayIndex) => {
+                  const isWeekend =
+                    date.getDay() === 0 || date.getDay() === 6;
+                  const isToday = isSameDay(date, now);
+                  return (
+                    <View
+                      key={date.toISOString()}
+                      style={[
+                        styles.weekDayColumn,
+                        {
+                          width: dayColumnWidth,
+                          marginRight: dayIndex === 6 ? 0 : dayGap,
+                        },
+                        isWeekend && styles.weekendColumn,
+                        isToday && styles.todayColumn,
+                      ]}
+                    >
+                      {dayTasksForDate.map(task => {
+                        if (!task.dueTime) return null;
+                        const taskStartMinutes =
+                          task.dueTime.getHours() * 60 +
+                          task.dueTime.getMinutes();
+                        const offsetMinutes = taskStartMinutes - startHour * 60;
+                        const top =
+                          Math.max(offsetMinutes, 0) * (hourHeight / 60);
+                        const durationMinutes = 60;
+                        const height =
+                          (durationMinutes / 60) * hourHeight;
+                        const timeRange = formatTimeRangeLocal(
+                          task.dueTime,
+                          durationMinutes,
+                        );
+                        const cardColor = getCategoryColor(task.category);
+
+                        return (
+                          <Pressable
+                            key={task._id}
+                            style={[
+                              styles.weekEventCard,
+                              {
+                                top,
+                                height: Math.max(height, 50),
+                                backgroundColor: `${cardColor}1A`,
+                                borderColor: `${cardColor}33`,
+                              },
+                            ]}
+                            onPress={() => onDateSelect(task.dueDate)}
+                            accessible={true}
+                            accessibilityLabel={`${task.title}, ${timeRange}`}
+                          >
+                            <View
+                              style={[
+                                styles.weekEventAccent,
+                                { backgroundColor: cardColor },
+                              ]}
+                            />
+                            <Text
+                              style={styles.weekEventTitle}
+                              numberOfLines={2}
+                            >
+                              {task.title}
+                            </Text>
+                            {timeRange && (
+                              <Text style={styles.weekEventTime}>
+                                {timeRange}
+                              </Text>
+                            )}
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  );
+                })}
+                {isCurrentWeek &&
+                  currentLineTop >= 0 &&
+                  currentLineTop <= totalHeight && (
+                    <View
+                      style={[
+                        styles.weekNowLine,
+                        { top: currentLineTop, left: 0, right: 0 },
+                      ]}
+                    />
+                  )}
+              </View>
+            </View>
+          </View>
         </ScrollView>
       </View>
     );
@@ -695,86 +795,120 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: '300',
   },
-  weekDaysStrip: {
+  weekDayHeaderRow: {
     flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  weekDayColumn: {
-    flex: 1,
     alignItems: 'center',
+    paddingVertical: 10,
   },
-  weekDayLabel: {
-    fontSize: 11,
-    color: '#8E8E93',
-    marginBottom: 6,
-    fontWeight: '500',
-  },
-  weekDayCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  weekDayHeaderCell: {
+    paddingVertical: 8,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  weekDayCircleSelected: {
-    backgroundColor: '#007AFF',
+  weekDayHeaderCellActive: {
+    backgroundColor: '#EEF2FF',
   },
-  weekDayCircleToday: {
-    borderWidth: 1,
-    borderColor: '#007AFF',
+  weekDayHeaderWeekday: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1F2937',
   },
-  weekDayDate: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '400',
-  },
-  weekDayDateSelected: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+  weekDayHeaderDate: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 2,
   },
   weekTimeline: {
     flex: 1,
   },
-  timeSlot: {
+  weekGridRow: {
     flexDirection: 'row',
-    height: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
-  timeLabel: {
-    width: 60,
-    paddingTop: 4,
-    paddingLeft: 12,
-    fontSize: 13,
-    color: '#8E8E93',
+  weekTimeColumn: {
+    paddingTop: 6,
   },
-  timeSlotContent: {
+  weekTimeLabel: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    textAlign: 'right',
+    paddingRight: 8,
+  },
+  weekDaysWrapper: {
     flex: 1,
     position: 'relative',
   },
-  timeSlotLine: {
+  weekGridLines: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 1,
-    backgroundColor: '#F0F0F0',
+    bottom: 0,
   },
-  weekTaskBlock: {
+  weekGridLine: {
     position: 'absolute',
-    left: 8,
-    right: 8,
-    borderRadius: 8,
-    padding: 8,
-    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
   },
-  weekTaskBlockText: {
-    color: '#FFFFFF',
+  weekColumnsOverlay: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  weekDayColumn: {
+    height: '100%',
+    borderLeftWidth: 1,
+    borderLeftColor: '#F3F4F6',
+    borderRightWidth: 1,
+    borderRightColor: '#F3F4F6',
+    paddingHorizontal: 4,
+  },
+  weekendColumn: {
+    backgroundColor: 'rgba(249, 250, 251, 0.7)',
+  },
+  todayColumn: {
+    backgroundColor: 'rgba(238, 242, 255, 0.7)',
+  },
+  weekEventCard: {
+    position: 'absolute',
+    left: 4,
+    right: 4,
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+  },
+  weekEventAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 6,
+    bottom: 6,
+    width: 4,
+    borderRadius: 4,
+  },
+  weekEventTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
+    color: '#111827',
+    marginLeft: 8,
+  },
+  weekEventTime: {
+    fontSize: 12,
+    color: '#4B5563',
+    marginLeft: 8,
+    marginTop: 2,
+  },
+  weekNowLine: {
+    position: 'absolute',
+    height: 2,
+    backgroundColor: '#EF4444',
+    opacity: 0.8,
   },
   // Month view styles
   monthView: {
