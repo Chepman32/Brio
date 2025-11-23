@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  useWindowDimensions,
+} from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -18,6 +25,7 @@ import {
 import { analyzeDayVibe } from '../utils/dayVibeAnalysis';
 import { DayHeroSection } from './DayHeroSection';
 import { useTimeFormat } from '../hooks/useTimeFormat';
+import { ResponsiveSizes } from '../utils/responsiveDimensions';
 
 const SWIPE_THRESHOLD = 50;
 
@@ -61,6 +69,41 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
   const { formatTime, formatTimeRange, formatHourLabel } = useTimeFormat();
+  const { width: screenWidth } = useWindowDimensions();
+  const contentWidth = Math.min(screenWidth, ResponsiveSizes.contentMaxWidth);
+  const monthCellSpacing = 8;
+  const monthCellSize = Math.max(
+    32,
+    (contentWidth - monthCellSpacing * 2 - monthCellSpacing * 6) / 7,
+  );
+  const monthCellStyle = React.useMemo(
+    () => ({
+      width: monthCellSize,
+      height: monthCellSize,
+      borderRadius: Math.min(20, monthCellSize / 2),
+    }),
+    [monthCellSize],
+  );
+  const monthDays = React.useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    const endDate = new Date(lastDay);
+    endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
+
+    const days: Date[] = [];
+    for (
+      let d = new Date(startDate);
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
+      days.push(new Date(d));
+    }
+    return days;
+  }, [currentDate]);
 
   // Define navigation functions before gesture handlers
   const navigatePrevious = React.useCallback(() => {
@@ -398,29 +441,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const renderMonthView = () => {
-    const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-    const weeks = [];
-    let currentWeek = [];
-    const endDate = new Date(lastDay);
-    endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
-
-    for (
-      let d = new Date(startDate);
-      d <= endDate;
-      d.setDate(d.getDate() + 1)
-    ) {
-      currentWeek.push(new Date(d));
-      if (currentWeek.length === 7) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-    }
+    const today = new Date();
 
     return (
       <View style={styles.monthView}>
@@ -452,60 +474,69 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </Text>
           ))}
         </View>
-        {weeks.map((week, weekIndex) => (
-          <View key={weekIndex} style={styles.monthWeek}>
-            {week.map(date => {
-              const dayTasks = getTasksForDate(date);
-              const isSelected = isSameDay(date, selectedDate);
-              const isToday = isSameDay(date, new Date());
-              const isCurrentMonth = date.getMonth() === month;
+        <View
+          style={[
+            styles.monthGrid,
+            { paddingHorizontal: monthCellSpacing, width: contentWidth },
+          ]}
+        >
+          {monthDays.map((date, index) => {
+            const dayTasks = getTasksForDate(date);
+            const isSelected = isSameDay(date, selectedDate);
+            const isToday = isSameDay(date, today);
+            const isCurrentMonth = date.getMonth() === month;
+            const isEndOfWeek = (index + 1) % 7 === 0;
 
-              const dateLabel = `${date.toLocaleDateString('ru-RU', {
-                month: 'long',
-                day: 'numeric',
-              })}${dayTasks.length > 0 ? `, ${dayTasks.length} tasks` : ''}`;
+            const dateLabel = `${date.toLocaleDateString('ru-RU', {
+              month: 'long',
+              day: 'numeric',
+            })}${dayTasks.length > 0 ? `, ${dayTasks.length} tasks` : ''}`;
 
-              return (
-                <Pressable
-                  key={date.toISOString()}
+            return (
+              <Pressable
+                key={date.toISOString()}
+                style={[
+                  styles.monthDay,
+                  monthCellStyle,
+                  {
+                    marginRight: isEndOfWeek ? 0 : monthCellSpacing,
+                    marginBottom: monthCellSpacing,
+                  },
+                  isToday && styles.monthDayToday,
+                  isSelected && !isToday && styles.monthDaySelected,
+                ]}
+                onPress={() => onDateSelect(date)}
+                accessible={true}
+                accessibilityLabel={dateLabel}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isSelected }}
+              >
+                <Text
                   style={[
-                    styles.monthDay,
-                    isToday && styles.monthDayToday,
-                    isSelected && !isToday && styles.monthDaySelected,
+                    styles.monthDayNumber,
+                    !isCurrentMonth && styles.monthDayNumberOther,
+                    isToday && { color: '#FFFFFF', fontWeight: '600' },
+                    isSelected && !isToday && styles.monthDayNumberSelected,
                   ]}
-                  onPress={() => onDateSelect(date)}
-                  accessible={true}
-                  accessibilityLabel={dateLabel}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isSelected }}
                 >
-                  <Text
+                  {date.getDate()}
+                </Text>
+                {dayTasks.length > 0 && isCurrentMonth && (
+                  <View
                     style={[
-                      styles.monthDayNumber,
-                      !isCurrentMonth && styles.monthDayNumberOther,
-                      isToday && { color: '#FFFFFF', fontWeight: '600' },
-                      isSelected && !isToday && styles.monthDayNumberSelected,
+                      styles.monthTaskDot,
+                      {
+                        backgroundColor: getCategoryColor(
+                          dayTasks[0].category,
+                        ),
+                      },
                     ]}
-                  >
-                    {date.getDate()}
-                  </Text>
-                  {dayTasks.length > 0 && isCurrentMonth && (
-                    <View
-                      style={[
-                        styles.monthTaskDot,
-                        {
-                          backgroundColor: getCategoryColor(
-                            dayTasks[0].category,
-                          ),
-                        },
-                      ]}
-                    />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
+                  />
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
     );
   };
@@ -786,18 +817,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#8E8E93',
   },
-  monthWeek: {
+  monthGrid: {
+    paddingBottom: 24,
     flexDirection: 'row',
-    paddingHorizontal: 8,
-    marginBottom: 4,
+    flexWrap: 'wrap',
   },
   monthDay: {
-    flex: 1,
-    aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 2,
-    borderRadius: 20,
+    borderRadius: 16,
   },
   monthDaySelected: {
     backgroundColor: '#E5E7EB',
