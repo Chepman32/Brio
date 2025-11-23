@@ -105,6 +105,7 @@ export interface TaskCreationModalProps {
   onClose: () => void;
   onSave: (task: TaskInput) => void;
   editTask?: TaskType;
+  defaultDate?: Date;
 }
 
 export interface TaskDetailModalProps {

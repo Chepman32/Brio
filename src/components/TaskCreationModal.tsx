@@ -26,6 +26,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   onClose,
   onSave,
   editTask,
+  defaultDate,
 }) => {
   const { formatTime, is24Hour } = useTimeFormat();
   const [title, setTitle] = useState('');
@@ -70,6 +71,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         setDueTime(editTask.dueTime);
         setCategory(editTask.category || '');
         setPriority(editTask.priority);
+      } else {
+        // Prefill with the selected date (fallback to today)
+        const initialDate = defaultDate ? new Date(defaultDate) : new Date();
+        setDueDate(initialDate);
+        setDueTime(undefined);
       }
     } else {
       translateY.value = withSpring(1000, {
@@ -90,7 +96,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setShowDatePicker(false);
       setShowTimePicker(false);
     }
-  }, [visible, editTask, translateY]);
+  }, [visible, editTask, defaultDate, translateY]);
 
   // Filter categories based on input
   useEffect(() => {

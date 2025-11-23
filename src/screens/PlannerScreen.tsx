@@ -115,6 +115,7 @@ export const PlannerScreen: React.FC = () => {
         visible={showTaskModal}
         onClose={handleCloseModal}
         onSave={handleSaveTask}
+        defaultDate={selectedDate}
       />
     </View>
   );

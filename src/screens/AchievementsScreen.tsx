@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions, Image, ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AchievementService } from '../services/AchievementService';
 import { getStats } from '../database/operations';
 import { AchievementType } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle, ResponsiveSizes } from '../utils/responsiveDimensions';
+
+// Import achievement images
+const achievementImages = {
+  fire: require('../assets/goals/fire.png'),
+  'check-circle': require('../assets/goals/done.png'),
+  trophy: require('../assets/goals/champion.png'),
+  star: require('../assets/goals/star.png'),
+  award: require('../assets/goals/medal.png'),
+  medal: require('../assets/goals/medal.png'),
+  default: require('../assets/goals/star.png'),
+};
 
 export const AchievementsScreen: React.FC = () => {
   const [achievements, setAchievements] = useState<AchievementType[]>([]);
@@ -53,23 +64,17 @@ export const AchievementsScreen: React.FC = () => {
 
   const achievementStats = AchievementService.getAchievementStats();
 
-  const getIconForAchievement = (achievement: AchievementType) => {
-    // Map icon names to emojis
-    const iconMap: { [key: string]: string } = {
-      fire: '🔥',
-      'check-circle': '✅',
-      trophy: '🏆',
-      star: '⭐',
-      award: '🎖️',
-    };
-    return iconMap[achievement.iconName] || '🎯';
+  const getImageForAchievement = (achievement: AchievementType): ImageSourcePropType => {
+    const iconName = achievement.iconName as keyof typeof achievementImages;
+    return achievementImages[iconName] || achievementImages.default;
   };
 
-  // Calculate card width based on grid columns
+  // Calculate card width based on grid columns (minimum 2 columns for grid layout)
   const cardGap = 12;
   const contentPadding = isTablet ? 24 : 16;
   const availableWidth = Math.min(screenWidth, 700) - contentPadding * 2;
-  const cardWidth = (availableWidth - (gridColumns - 1) * cardGap) / gridColumns;
+  const actualColumns = Math.max(2, gridColumns); // Force at least 2 columns for grid
+  const cardWidth = (availableWidth - (actualColumns - 1) * cardGap) / actualColumns;
 
   return (
     <View style={styles.container}>
@@ -90,31 +95,31 @@ export const AchievementsScreen: React.FC = () => {
           {/* Stats Cards */}
           <View style={styles.statsContainer}>
             <View style={styles.statCard}>
+              <Image source={achievementImages.fire} style={styles.statImage} />
               <Text style={[styles.statValue, { fontSize: isTablet ? 28 : 24 }]}>
                 {stats.currentStreak}
               </Text>
               <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
                 Current Streak
               </Text>
-              <Text style={styles.statIcon}>🔥</Text>
             </View>
             <View style={styles.statCard}>
+              <Image source={achievementImages.star} style={styles.statImage} />
               <Text style={[styles.statValue, { fontSize: isTablet ? 28 : 24 }]}>
                 {stats.longestStreak}
               </Text>
               <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
                 Longest Streak
               </Text>
-              <Text style={styles.statIcon}>⚡</Text>
             </View>
             <View style={styles.statCard}>
+              <Image source={achievementImages['check-circle']} style={styles.statImage} />
               <Text style={[styles.statValue, { fontSize: isTablet ? 28 : 24 }]}>
                 {stats.totalTasksCompleted}
               </Text>
               <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
                 Tasks Done
               </Text>
-              <Text style={styles.statIcon}>✅</Text>
             </View>
           </View>
 
@@ -176,9 +181,13 @@ export const AchievementsScreen: React.FC = () => {
                 { width: cardWidth },
               ]}
             >
-              <Text style={styles.achievementIcon}>
-                {getIconForAchievement(achievement)}
-              </Text>
+              <Image
+                source={getImageForAchievement(achievement)}
+                style={[
+                  styles.achievementImage,
+                  !achievement.unlocked && styles.achievementImageLocked,
+                ]}
+              />
               <Text
                 style={[
                   styles.achievementName,
@@ -272,9 +281,11 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
-  statIcon: {
-    fontSize: 20,
-    marginTop: 4,
+  statImage: {
+    width: 32,
+    height: 32,
+    marginBottom: 4,
+    resizeMode: 'contain',
   },
   progressContainer: {
     marginBottom: 16,
@@ -339,9 +350,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     opacity: 0.6,
   },
-  achievementIcon: {
-    fontSize: 40,
+  achievementImage: {
+    width: 48,
+    height: 48,
     marginBottom: 8,
+    resizeMode: 'contain',
+  },
+  achievementImageLocked: {
+    opacity: 0.4,
   },
   achievementName: {
     fontSize: 14,
