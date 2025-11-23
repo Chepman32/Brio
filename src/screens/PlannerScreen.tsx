@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CalendarView } from '../components/CalendarView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { TaskCreationModal } from '../components/TaskCreationModal';
 import { getTasks, createTask } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
+import { useResponsive } from '../hooks/useResponsive';
+import { getContentContainerStyle } from '../utils/responsiveDimensions';
 
 export const PlannerScreen: React.FC = () => {
   const [mode, setMode] = useState<'day' | 'week' | 'month'>('week');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const insets = useSafeAreaInsets();
+  const { isTablet } = useResponsive();
+  const contentContainerStyle = getContentContainerStyle();
 
   const loadTasks = React.useCallback(() => {
     try {
@@ -53,36 +59,55 @@ export const PlannerScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Planner</Text>
-        <View style={styles.modeSelector}>
-          {(['day', 'week', 'month'] as const).map(m => (
-            <Pressable
-              key={m}
-              style={[styles.modeButton, mode === m && styles.modeButtonActive]}
-              onPress={() => setMode(m)}
-            >
-              <Text
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 20,
+            paddingHorizontal: isTablet ? 32 : 20,
+          },
+        ]}
+      >
+        <View style={contentContainerStyle}>
+          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28 }]}>
+            Planner
+          </Text>
+          <View style={styles.modeSelector}>
+            {(['day', 'week', 'month'] as const).map(m => (
+              <Pressable
+                key={m}
                 style={[
-                  styles.modeButtonText,
-                  mode === m && styles.modeButtonTextActive,
+                  styles.modeButton,
+                  mode === m && styles.modeButtonActive,
+                  { paddingHorizontal: isTablet ? 20 : 16 },
                 ]}
+                onPress={() => setMode(m)}
               >
-                {m.charAt(0).toUpperCase() + m.slice(1)}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    mode === m && styles.modeButtonTextActive,
+                    { fontSize: isTablet ? 16 : 14 },
+                  ]}
+                >
+                  {m.charAt(0).toUpperCase() + m.slice(1)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
       </View>
 
-      <CalendarView
-        mode={mode}
-        selectedDate={selectedDate}
-        tasks={tasks}
-        onDateSelect={handleDateSelect}
-        onModeChange={handleModeChange}
-        onCreateTask={handleAddTask}
-      />
+      <View style={contentContainerStyle}>
+        <CalendarView
+          mode={mode}
+          selectedDate={selectedDate}
+          tasks={tasks}
+          onDateSelect={handleDateSelect}
+          onModeChange={handleModeChange}
+          onCreateTask={handleAddTask}
+        />
+      </View>
 
       <FloatingActionButton onPress={handleAddTask} />
 
@@ -102,14 +127,11 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 60,
-    paddingHorizontal: 20,
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
   },
   title: {
-    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 16,

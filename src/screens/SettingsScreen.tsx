@@ -9,6 +9,7 @@ import {
   Alert,
   Modal,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   getSettings,
   setTheme,
@@ -18,6 +19,8 @@ import {
 } from '../database/operations';
 import { closeRealm } from '../database/realm';
 import { RecurringPatternsView } from '../components/RecurringPatternsView';
+import { useResponsive } from '../hooks/useResponsive';
+import { getContentContainerStyle } from '../utils/responsiveDimensions';
 
 export const SettingsScreen: React.FC = () => {
   const [theme, setThemeState] = useState<'light' | 'dark'>('light');
@@ -27,6 +30,9 @@ export const SettingsScreen: React.FC = () => {
     'auto',
   );
   const [showPatternsModal, setShowPatternsModal] = useState(false);
+  const insets = useSafeAreaInsets();
+  const { isTablet } = useResponsive();
+  const contentContainerStyle = getContentContainerStyle();
 
   const loadSettings = React.useCallback(() => {
     try {
@@ -93,11 +99,27 @@ export const SettingsScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 20,
+            paddingHorizontal: isTablet ? 32 : 20,
+          },
+        ]}
+      >
+        <View style={contentContainerStyle}>
+          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28 }]}>
+            Settings
+          </Text>
+        </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={contentContainerStyle}
+      >
         {/* Appearance Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Appearance</Text>
@@ -287,8 +309,6 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 60,
-    paddingHorizontal: 20,
     paddingBottom: 20,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
@@ -299,7 +319,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
-    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -308,7 +327,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginTop: 24,
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
   },
   sectionTitle: {
     fontSize: 18,

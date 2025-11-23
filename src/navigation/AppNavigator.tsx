@@ -6,10 +6,14 @@ import { PlannerScreen } from '../screens/PlannerScreen';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { MainTabParamList } from '../types';
+import { useResponsive } from '../hooks/useResponsive';
+import { ResponsiveSizes } from '../utils/responsiveDimensions';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const AppNavigator: React.FC = () => {
+  const { isTablet } = useResponsive();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -20,12 +24,12 @@ export const AppNavigator: React.FC = () => {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 0.5,
           borderTopColor: '#E5E5EA',
-          paddingBottom: 20,
-          paddingTop: 8,
-          height: 80,
+          paddingBottom: isTablet ? 24 : 20,
+          paddingTop: isTablet ? 12 : 8,
+          height: ResponsiveSizes.tabBarHeight,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: isTablet ? 12 : 10,
           fontWeight: '500',
           marginTop: 4,
         },

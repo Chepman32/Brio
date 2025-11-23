@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TaskListView } from '../components/TaskListView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { TaskCreationModal } from '../components/TaskCreationModal';
@@ -16,6 +17,8 @@ import { TaskType, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
 import { AchievementService } from '../services/AchievementService';
 import { NotificationService } from '../services/NotificationService';
+import { useResponsive } from '../hooks/useResponsive';
+import { ResponsiveSizes, getContentContainerStyle } from '../utils/responsiveDimensions';
 
 export const TodayScreen: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
@@ -24,6 +27,8 @@ export const TodayScreen: React.FC = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
   const [editingTask, setEditingTask] = useState<TaskType | null>(null);
+  const insets = useSafeAreaInsets();
+  const { isTablet } = useResponsive();
 
   const loadTasks = React.useCallback(() => {
     try {
@@ -180,26 +185,44 @@ export const TodayScreen: React.FC = () => {
     });
   };
 
+  const contentContainerStyle = getContentContainerStyle();
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>{getGreeting()}</Text>
-        <Text style={styles.date}>{formatDate()}</Text>
-        <Text style={styles.taskCount}>
-          {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'} due today
-        </Text>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 20,
+            paddingHorizontal: isTablet ? 32 : 20,
+          },
+        ]}
+      >
+        <View style={contentContainerStyle}>
+          <Text style={[styles.greeting, { fontSize: isTablet ? 34 : 28 }]}>
+            {getGreeting()}
+          </Text>
+          <Text style={[styles.date, { fontSize: isTablet ? 18 : 16 }]}>
+            {formatDate()}
+          </Text>
+          <Text style={[styles.taskCount, { fontSize: isTablet ? 16 : 14 }]}>
+            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'} due today
+          </Text>
+        </View>
       </View>
 
-      <TaskListView
-        tasks={tasks}
-        onTaskComplete={handleTaskComplete}
-        onTaskSnooze={handleTaskSnooze}
-        onTaskPress={handleTaskPress}
-        onReorder={taskIds => {
-          // TODO: Implement reordering
-          console.log('Reorder tasks:', taskIds);
-        }}
-      />
+      <View style={contentContainerStyle}>
+        <TaskListView
+          tasks={tasks}
+          onTaskComplete={handleTaskComplete}
+          onTaskSnooze={handleTaskSnooze}
+          onTaskPress={handleTaskPress}
+          onReorder={taskIds => {
+            // TODO: Implement reordering
+            console.log('Reorder tasks:', taskIds);
+          }}
+        />
+      </View>
 
       <FloatingActionButton onPress={handleAddTask} />
 
@@ -233,8 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   header: {
-    padding: 20,
-    paddingTop: 60,
+    paddingBottom: 20,
     backgroundColor: '#FFFFFF',
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
@@ -245,18 +267,15 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   greeting: {
-    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
   },
   date: {
-    fontSize: 16,
     color: '#666',
     marginBottom: 12,
   },
   taskCount: {
-    fontSize: 14,
     color: '#6366F1',
     fontWeight: '600',
   },

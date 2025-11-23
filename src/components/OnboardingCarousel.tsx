@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   Pressable,
   ScrollView,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -16,10 +16,11 @@ import Animated, {
   withSpring,
   interpolate,
   Extrapolate,
+  SharedValue,
 } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { useResponsive } from '../hooks/useResponsive';
+import { ResponsiveSizes } from '../utils/responsiveDimensions';
 
 interface OnboardingSlide {
   id: number;
@@ -76,18 +77,20 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollX = useSharedValue(0);
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
+  const { isTablet } = useResponsive();
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     scrollX.value = offsetX;
-    const index = Math.round(offsetX / SCREEN_WIDTH);
+    const index = Math.round(offsetX / screenWidth);
     setCurrentIndex(index);
   };
 
   const handleNext = () => {
     if (currentIndex < slides.length - 1) {
       scrollViewRef.current?.scrollTo({
-        x: (currentIndex + 1) * SCREEN_WIDTH,
+        x: (currentIndex + 1) * screenWidth,
         animated: true,
       });
     } else {
@@ -136,15 +139,15 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
         {slides.map((_, index) => {
           const dotStyle = useAnimatedStyle(() => {
             const inputRange = [
-              (index - 1) * SCREEN_WIDTH,
-              index * SCREEN_WIDTH,
-              (index + 1) * SCREEN_WIDTH,
+              (index - 1) * screenWidth,
+              index * screenWidth,
+              (index + 1) * screenWidth,
             ];
 
             const width = interpolate(
               scrollX.value,
               inputRange,
-              [8, 24, 8],
+              [8, isTablet ? 32 : 24, 8],
               Extrapolate.CLAMP,
             );
 
@@ -161,7 +164,7 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
             };
           });
 
-          return <Animated.View key={index} style={[styles.dot, dotStyle]} />;
+          return <Animated.View key={index} style={[styles.dot, { height: isTablet ? 10 : 8 }, dotStyle]} />;
         })}
       </View>
 
@@ -169,11 +172,15 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
       <Pressable
         style={[
           styles.nextButton,
-          { marginBottom: Math.max(insets.bottom, 20) + 20 },
+          {
+            marginBottom: Math.max(insets.bottom, 20) + 20,
+            marginHorizontal: isTablet ? 80 : 40,
+            paddingVertical: isTablet ? 20 : 16,
+          },
         ]}
         onPress={handleNext}
       >
-        <Text style={styles.nextButtonText}>
+        <Text style={[styles.nextButtonText, { fontSize: isTablet ? 20 : 18 }]}>
           {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
         </Text>
       </Pressable>
@@ -184,24 +191,32 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
 interface SlideItemProps {
   slide: OnboardingSlide;
   index: number;
-  scrollX: Animated.SharedValue<number>;
+  scrollX: SharedValue<number>;
 }
 
 const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
+  const { isTablet } = useResponsive();
+
+  const iconContainerSize = ResponsiveSizes.onboardingIconContainer;
+  const titleSize = ResponsiveSizes.onboardingTitleSize;
+  const subtitleSize = ResponsiveSizes.onboardingSubtitleSize;
+  const horizontalPadding = ResponsiveSizes.onboardingPadding;
+  const iconSize = isTablet ? 160 : 120;
 
   // Horizontal slide animation for top section (title, subtitle, icon)
   const topSectionStyle = useAnimatedStyle(() => {
     const inputRange = [
-      (index - 1) * SCREEN_WIDTH,
-      index * SCREEN_WIDTH,
-      (index + 1) * SCREEN_WIDTH,
+      (index - 1) * screenWidth,
+      index * screenWidth,
+      (index + 1) * screenWidth,
     ];
 
     const translateX = interpolate(
       scrollX.value,
       inputRange,
-      [SCREEN_WIDTH * 0.5, 0, -SCREEN_WIDTH * 0.5],
+      [screenWidth * 0.5, 0, -screenWidth * 0.5],
       Extrapolate.CLAMP,
     );
 
@@ -221,9 +236,9 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
   // Vertical slide animation for bottom section (demo content)
   const bottomSectionStyle = useAnimatedStyle(() => {
     const inputRange = [
-      (index - 1) * SCREEN_WIDTH,
-      index * SCREEN_WIDTH,
-      (index + 1) * SCREEN_WIDTH,
+      (index - 1) * screenWidth,
+      index * screenWidth,
+      (index + 1) * screenWidth,
     ];
 
     const translateY = interpolate(
@@ -247,24 +262,29 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
   });
 
   return (
-    <View style={styles.slide}>
-      <View style={[styles.slideContent, { paddingTop: insets.top + 80 }]}>
+    <View style={[styles.slide, { width: screenWidth, paddingHorizontal: horizontalPadding }]}>
+      <View style={[styles.slideContent, { paddingTop: insets.top + (isTablet ? 100 : 80) }]}>
         {/* Top Section - Horizontal Animation */}
         <Animated.View style={[styles.topSection, topSectionStyle]}>
           {/* Title */}
-          <Text style={styles.title}>{slide.title}</Text>
+          <Text style={[styles.title, { fontSize: titleSize }]}>{slide.title}</Text>
 
           {/* Subtitle */}
-          <Text style={styles.subtitle}>{slide.subtitle}</Text>
+          <Text style={[styles.subtitle, { fontSize: subtitleSize, lineHeight: subtitleSize * 1.4 }]}>{slide.subtitle}</Text>
 
           {/* Icon */}
           <View
             style={[
               styles.iconContainer,
-              { backgroundColor: slide.backgroundColor },
+              {
+                backgroundColor: slide.backgroundColor,
+                width: iconContainerSize,
+                height: iconContainerSize,
+                borderRadius: iconContainerSize / 2,
+              },
             ]}
           >
-            <Icon name={slide.icon} size={120} color={slide.iconColor} />
+            <Icon name={slide.icon} size={iconSize} color={slide.iconColor} />
           </View>
         </Animated.View>
 
@@ -377,16 +397,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   slide: {
-    width: SCREEN_WIDTH,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
   },
   slideContent: {
     alignItems: 'center',
     width: '100%',
     flex: 1,
+    maxWidth: 600,
   },
   topSection: {
     alignItems: 'center',
@@ -398,23 +417,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 32,
     fontWeight: 'bold',
     color: '#111827',
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
-    fontSize: 18,
     color: '#6B7280',
     textAlign: 'center',
     marginBottom: 48,
-    lineHeight: 26,
   },
   iconContainer: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
@@ -427,19 +440,15 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   dot: {
-    height: 8,
-    borderRadius: 4,
+    borderRadius: 5,
     backgroundColor: '#3B82F6',
   },
   nextButton: {
-    marginHorizontal: 40,
     backgroundColor: '#3B82F6',
-    paddingVertical: 16,
     borderRadius: 28,
     alignItems: 'center',
   },
   nextButtonText: {
-    fontSize: 18,
     fontWeight: '600',
     color: '#FFFFFF',
   },

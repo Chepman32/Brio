@@ -7,10 +7,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Canvas, Circle, Group, Blur } from '@shopify/react-native-skia';
 import { FABProps } from '../types';
+import { ResponsiveSizes } from '../utils/responsiveDimensions';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
+  const fabSize = ResponsiveSizes.fabSize;
+  const fabBottom = ResponsiveSizes.fabBottom;
+  const fabRight = ResponsiveSizes.fabRight;
+  const fabIconSize = ResponsiveSizes.fabIconSize;
   const scale = useSharedValue(1);
   const rippleScale = useSharedValue(0);
 
@@ -37,13 +42,34 @@ export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
     };
   });
 
+  const dynamicFabStyle = {
+    bottom: fabBottom,
+    right: fabRight,
+    width: fabSize,
+    height: fabSize,
+    borderRadius: fabSize / 2,
+  };
+
+  const dynamicRippleStyle = {
+    bottom: fabBottom,
+    right: fabRight,
+    width: fabSize,
+    height: fabSize,
+    borderRadius: fabSize / 2,
+  };
+
+  const dynamicCanvasStyle = {
+    width: fabSize,
+    height: fabSize,
+  };
+
   return (
     <>
       {/* Ripple effect background */}
-      <Animated.View style={[styles.ripple, rippleStyle]}>
-        <Canvas style={styles.canvas}>
+      <Animated.View style={[styles.ripple, dynamicRippleStyle, rippleStyle]}>
+        <Canvas style={dynamicCanvasStyle}>
           <Group>
-            <Circle cx={28} cy={28} r={28} color="rgba(100, 100, 255, 0.3)" />
+            <Circle cx={fabSize / 2} cy={fabSize / 2} r={fabSize / 2} color="rgba(100, 100, 255, 0.3)" />
             <Blur blur={10} />
           </Group>
         </Canvas>
@@ -51,12 +77,12 @@ export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
 
       {/* Main FAB */}
       <AnimatedPressable
-        style={[styles.fab, animatedStyle]}
+        style={[styles.fab, dynamicFabStyle, animatedStyle]}
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
-        <Animated.Text style={styles.icon}>+</Animated.Text>
+        <Animated.Text style={[styles.icon, { fontSize: fabIconSize }]}>+</Animated.Text>
       </AnimatedPressable>
     </>
   );
@@ -65,11 +91,6 @@ export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
-    bottom: 24,
-    right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     backgroundColor: '#6366F1',
     justifyContent: 'center',
     alignItems: 'center',
@@ -80,22 +101,12 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   icon: {
-    fontSize: 32,
     color: '#FFFFFF',
     fontWeight: '300',
   },
   ripple: {
     position: 'absolute',
-    bottom: 24,
-    right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  canvas: {
-    width: 56,
-    height: 56,
   },
 });

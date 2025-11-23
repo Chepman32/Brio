@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const HERO_HEIGHT = SCREEN_HEIGHT * 0.2; // 20% of screen height
+import { useResponsive } from '../hooks/useResponsive';
+import { ResponsiveSizes } from '../utils/responsiveDimensions';
 
 interface DayHeroSectionProps {
   dayName: string;
@@ -16,16 +15,35 @@ export const DayHeroSection: React.FC<DayHeroSectionProps> = ({
   dayVibe,
   gradientColors,
 }) => {
+  const { height: screenHeight } = useWindowDimensions();
+  const { isTablet, isLandscape } = useResponsive();
+
+  // Responsive hero height: smaller percentage on tablets/landscape
+  const heroHeightPercent = isTablet ? (isLandscape ? 0.25 : 0.18) : 0.2;
+  const heroHeight = screenHeight * heroHeightPercent;
+
+  const titleSize = ResponsiveSizes.heroTitleSize;
+  const subtitleSize = ResponsiveSizes.heroSubtitleSize;
+  const horizontalPadding = isTablet ? 32 : 24;
+  const marginHorizontal = isTablet ? 16 : 8;
+
   return (
     <View style={styles.container}>
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
-        style={styles.gradient}
+        style={[
+          styles.gradient,
+          {
+            height: heroHeight,
+            paddingHorizontal: horizontalPadding,
+            marginHorizontal: marginHorizontal,
+          },
+        ]}
       >
-        <Text style={styles.dayName}>{dayName}</Text>
-        <Text style={styles.dayVibe}>{dayVibe}</Text>
+        <Text style={[styles.dayName, { fontSize: titleSize }]}>{dayName}</Text>
+        <Text style={[styles.dayVibe, { fontSize: subtitleSize }]}>{dayVibe}</Text>
       </LinearGradient>
     </View>
   );
@@ -45,15 +63,11 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   gradient: {
-    height: HERO_HEIGHT,
     justifyContent: 'center',
-    paddingHorizontal: 24,
     paddingVertical: 24,
     borderRadius: 16,
-    marginHorizontal: 8,
   },
   dayName: {
-    fontSize: 48,
     fontWeight: '700',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
@@ -61,7 +75,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   dayVibe: {
-    fontSize: 20,
     fontWeight: '500',
     color: '#FFFFFF',
     marginTop: 8,

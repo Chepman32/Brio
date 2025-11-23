@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AchievementService } from '../services/AchievementService';
 import { getStats } from '../database/operations';
 import { AchievementType } from '../types';
+import { useResponsive } from '../hooks/useResponsive';
+import { getContentContainerStyle, ResponsiveSizes } from '../utils/responsiveDimensions';
 
 export const AchievementsScreen: React.FC = () => {
   const [achievements, setAchievements] = useState<AchievementType[]>([]);
@@ -14,6 +17,11 @@ export const AchievementsScreen: React.FC = () => {
   const [selectedType, setSelectedType] = useState<
     'all' | 'streak' | 'milestone' | 'special'
   >('all');
+  const insets = useSafeAreaInsets();
+  const { isTablet } = useResponsive();
+  const { width: screenWidth } = useWindowDimensions();
+  const contentContainerStyle = getContentContainerStyle();
+  const gridColumns = ResponsiveSizes.gridColumns;
 
   const loadData = React.useCallback(() => {
     try {
@@ -57,71 +65,107 @@ export const AchievementsScreen: React.FC = () => {
     return iconMap[achievement.iconName] || '🎯';
   };
 
+  // Calculate card width based on grid columns
+  const cardGap = 12;
+  const contentPadding = isTablet ? 24 : 16;
+  const availableWidth = Math.min(screenWidth, 700) - contentPadding * 2;
+  const cardWidth = (availableWidth - (gridColumns - 1) * cardGap) / gridColumns;
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Achievements</Text>
-
-        {/* Stats Cards */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{stats.currentStreak}</Text>
-            <Text style={styles.statLabel}>Current Streak</Text>
-            <Text style={styles.statIcon}>🔥</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{stats.longestStreak}</Text>
-            <Text style={styles.statLabel}>Longest Streak</Text>
-            <Text style={styles.statIcon}>⚡</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{stats.totalTasksCompleted}</Text>
-            <Text style={styles.statLabel}>Tasks Done</Text>
-            <Text style={styles.statIcon}>✅</Text>
-          </View>
-        </View>
-
-        {/* Progress Bar */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${achievementStats.percentComplete}%` },
-              ]}
-            />
-          </View>
-          <Text style={styles.progressText}>
-            {achievementStats.unlocked} / {achievementStats.total} Unlocked
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 20,
+            paddingHorizontal: isTablet ? 32 : 20,
+          },
+        ]}
+      >
+        <View style={contentContainerStyle}>
+          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28 }]}>
+            Achievements
           </Text>
-        </View>
 
-        {/* Filter Buttons */}
-        <View style={styles.filterContainer}>
-          {(['all', 'streak', 'milestone', 'special'] as const).map(type => (
-            <Pressable
-              key={type}
-              style={[
-                styles.filterButton,
-                selectedType === type && styles.filterButtonActive,
-              ]}
-              onPress={() => setSelectedType(type)}
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  selectedType === type && styles.filterButtonTextActive,
-                ]}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
+          {/* Stats Cards */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <Text style={[styles.statValue, { fontSize: isTablet ? 28 : 24 }]}>
+                {stats.currentStreak}
               </Text>
-            </Pressable>
-          ))}
+              <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
+                Current Streak
+              </Text>
+              <Text style={styles.statIcon}>🔥</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={[styles.statValue, { fontSize: isTablet ? 28 : 24 }]}>
+                {stats.longestStreak}
+              </Text>
+              <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
+                Longest Streak
+              </Text>
+              <Text style={styles.statIcon}>⚡</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={[styles.statValue, { fontSize: isTablet ? 28 : 24 }]}>
+                {stats.totalTasksCompleted}
+              </Text>
+              <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
+                Tasks Done
+              </Text>
+              <Text style={styles.statIcon}>✅</Text>
+            </View>
+          </View>
+
+          {/* Progress Bar */}
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${achievementStats.percentComplete}%` },
+                ]}
+              />
+            </View>
+            <Text style={styles.progressText}>
+              {achievementStats.unlocked} / {achievementStats.total} Unlocked
+            </Text>
+          </View>
+
+          {/* Filter Buttons */}
+          <View style={styles.filterContainer}>
+            {(['all', 'streak', 'milestone', 'special'] as const).map(type => (
+              <Pressable
+                key={type}
+                style={[
+                  styles.filterButton,
+                  selectedType === type && styles.filterButtonActive,
+                  { paddingHorizontal: isTablet ? 16 : 12 },
+                ]}
+                onPress={() => setSelectedType(type)}
+              >
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    selectedType === type && styles.filterButtonTextActive,
+                    { fontSize: isTablet ? 14 : 12 },
+                  ]}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
       </View>
 
       {/* Achievements Grid */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[contentContainerStyle, { padding: contentPadding }]}
+      >
         <View style={styles.achievementsGrid}>
           {filteredAchievements.map(achievement => (
             <View
@@ -129,6 +173,7 @@ export const AchievementsScreen: React.FC = () => {
               style={[
                 styles.achievementCard,
                 !achievement.unlocked && styles.achievementCardLocked,
+                { width: cardWidth },
               ]}
             >
               <Text style={styles.achievementIcon}>
@@ -193,8 +238,6 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 60,
-    paddingHorizontal: 20,
     paddingBottom: 16,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
@@ -205,7 +248,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
-    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 16,
@@ -223,12 +265,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 24,
     fontWeight: 'bold',
     color: '#6366F1',
   },
   statLabel: {
-    fontSize: 12,
     color: '#666',
     marginTop: 4,
   },
@@ -278,7 +318,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
   },
   achievementsGrid: {
     flexDirection: 'row',
@@ -286,7 +325,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   achievementCard: {
-    width: '48%',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
