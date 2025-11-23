@@ -448,7 +448,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   />
                 ))}
               </View>
-              <View style={styles.weekColumnsOverlay}>
+              <View style={[styles.weekColumnsOverlay, { height: totalHeight }]}>
                 {dayTasks.map(({ date, tasks: dayTasksForDate }, dayIndex) => {
                   const isWeekend =
                     date.getDay() === 0 || date.getDay() === 6;
@@ -860,6 +860,7 @@ const styles = StyleSheet.create({
   },
   weekDayColumn: {
     height: '100%',
+    position: 'relative',
     borderLeftWidth: 1,
     borderLeftColor: '#F3F4F6',
     borderRightWidth: 1,

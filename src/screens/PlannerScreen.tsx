@@ -98,7 +98,7 @@ export const PlannerScreen: React.FC = () => {
         </View>
       </View>
 
-      <View style={contentContainerStyle}>
+      <View style={[contentContainerStyle, { flex: 1 }]}>
         <CalendarView
           mode={mode}
           selectedDate={selectedDate}
