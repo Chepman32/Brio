@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -20,6 +20,8 @@ import {
 } from './src/database/operations';
 import { NotificationService } from './src/services/NotificationService';
 import { useRecurringSuggestions } from './src/hooks/useRecurringSuggestions';
+import { ThemeProvider } from './src/contexts/ThemeContext';
+import { LocalizationProvider } from './src/contexts/LocalizationContext';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -96,24 +98,20 @@ function App() {
     );
   }
 
-  if (showOnboarding) {
-    return (
-      <GestureHandlerRootView style={styles.container}>
-        <SafeAreaProvider>
-          <StatusBar barStyle="dark-content" />
-          <OnboardingScreen onComplete={handleOnboardingComplete} />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    );
-  }
-
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" />
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
+        <ThemeProvider>
+          <LocalizationProvider>
+            {showOnboarding ? (
+              <OnboardingScreen onComplete={handleOnboardingComplete} />
+            ) : (
+              <NavigationContainer>
+                <AppNavigator />
+              </NavigationContainer>
+            )}
+          </LocalizationProvider>
+        </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

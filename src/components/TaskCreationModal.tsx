@@ -20,6 +20,8 @@ import { TaskCreationModalProps, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
 import { PREDEFINED_CATEGORIES } from '../utils/categories';
 import { useTimeFormat } from '../hooks/useTimeFormat';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   visible,
@@ -29,6 +31,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   defaultDate,
 }) => {
   const { formatTime, is24Hour } = useTimeFormat();
+  const { colors } = useTheme();
+  const { t } = useLocalization();
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
@@ -218,13 +222,13 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     >
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={onClose} />
-        <Animated.View style={[styles.modalContainer, animatedStyle]}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>
-              {editTask ? 'Edit Task' : 'New Task'}
+        <Animated.View style={[styles.modalContainer, { backgroundColor: colors.surface, shadowColor: colors.shadow }, animatedStyle]}>
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {editTask ? t('task.editTask') : t('task.createTask')}
             </Text>
             <Pressable onPress={onClose}>
-              <Icon name="close" size={24} color="#999" />
+              <Icon name="close" size={24} color={colors.textSecondary} />
             </Pressable>
           </View>
 
@@ -244,37 +248,37 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               contentOffset={{ x: 0, y: 0 }}
             >
               <View style={styles.field}>
-                <Text style={styles.label}>Title *</Text>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.title')} *</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surfaceSecondary }]}
                   value={title}
                   onChangeText={setTitle}
-                  placeholder="Enter task title"
-                  placeholderTextColor="#999"
+                  placeholder={t('task.title')}
+                  placeholderTextColor={colors.textTertiary}
                 />
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.label}>Notes</Text>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.notes')}</Text>
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surfaceSecondary }]}
                   value={notes}
                   onChangeText={setNotes}
-                  placeholder="Add notes (optional)"
-                  placeholderTextColor="#999"
+                  placeholder={t('task.notes')}
+                  placeholderTextColor={colors.textTertiary}
                   multiline
                   numberOfLines={4}
                 />
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.label}>Category</Text>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.category')}</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surfaceSecondary }]}
                   value={category}
                   onChangeText={setCategory}
-                  placeholder="e.g., Work, Personal"
-                  placeholderTextColor="#999"
+                  placeholder={t('task.category')}
+                  placeholderTextColor={colors.textTertiary}
                   onFocus={() => {
                     setFilteredCategories([...PREDEFINED_CATEGORIES]);
                     setShowCategoryPicker(true);
@@ -500,19 +504,20 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             </ScrollView>
           </Pressable>
 
-          <View style={styles.footer}>
-            <Pressable style={styles.cancelButton} onPress={onClose}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+          <View style={[styles.footer, { borderTopColor: colors.border }]}>
+            <Pressable style={[styles.cancelButton, { borderColor: colors.border }]} onPress={onClose}>
+              <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
             </Pressable>
             <Pressable
               style={[
                 styles.saveButton,
-                !title.trim() && styles.saveButtonDisabled,
+                { backgroundColor: colors.primary },
+                !title.trim() && { backgroundColor: colors.disabled },
               ]}
               onPress={handleSave}
               disabled={!title.trim()}
             >
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>{t('common.save')}</Text>
             </Pressable>
           </View>
         </Animated.View>

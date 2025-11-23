@@ -21,6 +21,8 @@ import Animated, {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useResponsive } from '../hooks/useResponsive';
 import { ResponsiveSizes } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 interface OnboardingSlide {
   id: number;
@@ -79,6 +81,8 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const { isTablet } = useResponsive();
+  const { colors } = useTheme();
+  const { t } = useLocalization();
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -103,14 +107,14 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Skip button */}
       {currentIndex < slides.length - 1 && (
         <Pressable
           style={[styles.skipButton, { top: insets.top + 20 }]}
           onPress={handleSkip}
         >
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={[styles.skipText, { color: colors.textSecondary }]}>{t('common.skip')}</Text>
         </Pressable>
       )}
 
@@ -164,7 +168,7 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
             };
           });
 
-          return <Animated.View key={index} style={[styles.dot, { height: isTablet ? 10 : 8 }, dotStyle]} />;
+          return <Animated.View key={index} style={[styles.dot, { height: isTablet ? 10 : 8, backgroundColor: colors.primary }, dotStyle]} />;
         })}
       </View>
 
@@ -176,12 +180,13 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
             marginBottom: Math.max(insets.bottom, 20) + 20,
             marginHorizontal: isTablet ? 80 : 40,
             paddingVertical: isTablet ? 20 : 16,
+            backgroundColor: colors.primary,
           },
         ]}
         onPress={handleNext}
       >
         <Text style={[styles.nextButtonText, { fontSize: isTablet ? 20 : 18 }]}>
-          {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
+          {currentIndex === slides.length - 1 ? t('onboarding.getStarted') : t('common.next')}
         </Text>
       </Pressable>
     </View>
@@ -198,6 +203,7 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const { isTablet } = useResponsive();
+  const { colors } = useTheme();
 
   const iconContainerSize = ResponsiveSizes.onboardingIconContainer;
   const titleSize = ResponsiveSizes.onboardingTitleSize;
@@ -267,10 +273,10 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
         {/* Top Section - Horizontal Animation */}
         <Animated.View style={[styles.topSection, topSectionStyle]}>
           {/* Title */}
-          <Text style={[styles.title, { fontSize: titleSize }]}>{slide.title}</Text>
+          <Text style={[styles.title, { fontSize: titleSize, color: colors.text }]}>{slide.title}</Text>
 
           {/* Subtitle */}
-          <Text style={[styles.subtitle, { fontSize: subtitleSize, lineHeight: subtitleSize * 1.4 }]}>{slide.subtitle}</Text>
+          <Text style={[styles.subtitle, { fontSize: subtitleSize, lineHeight: subtitleSize * 1.4, color: colors.textSecondary }]}>{slide.subtitle}</Text>
 
           {/* Icon */}
           <View
@@ -302,25 +308,26 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
 
 // Demo components for specific slides
 const GestureDemo: React.FC = () => {
+  const { colors } = useTheme();
   return (
     <View style={styles.demoContainer}>
-      <View style={styles.taskItem}>
-        <View style={styles.taskCircle} />
-        <Text style={styles.taskText}>Meeting</Text>
+      <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.taskCircle, { borderColor: colors.border }]} />
+        <Text style={[styles.taskText, { color: colors.text }]}>Meeting</Text>
       </View>
-      <View style={styles.taskItem}>
-        <View style={styles.taskCircle} />
-        <Text style={styles.taskText}>Call Anna</Text>
-        <View style={styles.snoozeButton}>
+      <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.taskCircle, { borderColor: colors.border }]} />
+        <Text style={[styles.taskText, { color: colors.text }]}>Call Anna</Text>
+        <View style={[styles.snoozeButton, { backgroundColor: colors.primary }]}>
           <Text style={styles.snoozeText}>Snooze</Text>
         </View>
       </View>
-      <View style={styles.taskItem}>
-        <View style={styles.taskCircle} />
-        <Text style={styles.taskText}>Groceries</Text>
+      <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.taskCircle, { borderColor: colors.border }]} />
+        <Text style={[styles.taskText, { color: colors.text }]}>Groceries</Text>
       </View>
       <View style={styles.swipeHint}>
-        <Icon name="arrow-back" size={32} color="#D1D5DB" />
+        <Icon name="arrow-back" size={32} color={colors.border} />
         <Icon name="hand-left" size={48} color="#F59E0B" />
       </View>
     </View>
@@ -328,50 +335,52 @@ const GestureDemo: React.FC = () => {
 };
 
 const CalendarDemo: React.FC = () => {
+  const { colors } = useTheme();
   return (
     <View style={styles.calendarContainer}>
       <View style={styles.calendarIllustration}>
-        <Icon name="time-outline" size={48} color="#6366F1" />
+        <Icon name="time-outline" size={48} color={colors.primary} />
         <View style={styles.personIllustration}>
           <View style={styles.personHead} />
           <View style={styles.personBody} />
         </View>
-        <Icon name="checkmark-circle" size={48} color="#6366F1" />
+        <Icon name="checkmark-circle" size={48} color={colors.primary} />
       </View>
-      <View style={styles.bottomNav}>
-        <Icon name="home-outline" size={28} color="#9CA3AF" />
-        <Icon name="calendar-outline" size={28} color="#9CA3AF" />
-        <Icon name="search-outline" size={28} color="#9CA3AF" />
+      <View style={[styles.bottomNav, { borderTopColor: colors.border }]}>
+        <Icon name="home-outline" size={28} color={colors.textSecondary} />
+        <Icon name="calendar-outline" size={28} color={colors.textSecondary} />
+        <Icon name="search-outline" size={28} color={colors.textSecondary} />
       </View>
     </View>
   );
 };
 
 const SmartRemindersDemo: React.FC = () => {
+  const { colors } = useTheme();
   return (
     <View style={styles.smartContainer}>
-      <View style={styles.dayCard}>
+      <View style={[styles.dayCard, { backgroundColor: colors.surfaceSecondary }]}>
         <Text style={styles.dayCardTitle}>Busy Wednesday</Text>
         <View style={styles.weekDays}>
           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
             <Text
               key={day}
-              style={[styles.weekDay, i === 2 && styles.weekDayActive]}
+              style={[styles.weekDay, { color: colors.textSecondary }, i === 2 && [styles.weekDayActive, { backgroundColor: colors.primary }]]}
             >
               {day}
             </Text>
           ))}
         </View>
         <View style={styles.timeSlot}>
-          <Text style={styles.timeLabel}>12:00</Text>
+          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>12:00</Text>
           <View style={[styles.eventBlock, { backgroundColor: '#BBF7D0' }]}>
-            <Text style={styles.eventText}>12:00 Meeting</Text>
+            <Text style={[styles.eventText, { color: colors.text }]}>12:00 Meeting</Text>
           </View>
         </View>
         <View style={styles.timeSlot}>
-          <Text style={styles.timeLabel}>15:00</Text>
+          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>15:00</Text>
           <View style={[styles.eventBlock, { backgroundColor: '#FED7AA' }]}>
-            <Text style={styles.eventText}>15:00 Call</Text>
+            <Text style={[styles.eventText, { color: colors.text }]}>15:00 Call</Text>
           </View>
         </View>
       </View>
@@ -382,7 +391,6 @@ const SmartRemindersDemo: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   skipButton: {
     position: 'absolute',
@@ -393,7 +401,6 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 16,
-    color: '#6B7280',
     fontWeight: '600',
   },
   slide: {
@@ -418,12 +425,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    color: '#111827',
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
-    color: '#6B7280',
     textAlign: 'center',
     marginBottom: 48,
   },
@@ -441,10 +446,8 @@ const styles = StyleSheet.create({
   },
   dot: {
     borderRadius: 5,
-    backgroundColor: '#3B82F6',
   },
   nextButton: {
-    backgroundColor: '#3B82F6',
     borderRadius: 28,
     alignItems: 'center',
   },
@@ -462,7 +465,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: '#F9FAFB',
     borderRadius: 12,
     marginBottom: 12,
   },
@@ -471,16 +473,13 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
     marginRight: 12,
   },
   taskText: {
     fontSize: 16,
-    color: '#111827',
     flex: 1,
   },
   snoozeButton: {
-    backgroundColor: '#3B82F6',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -530,14 +529,12 @@ const styles = StyleSheet.create({
     marginTop: 40,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
   },
   smartContainer: {
     width: '100%',
     marginTop: 20,
   },
   dayCard: {
-    backgroundColor: '#F9FAFB',
     borderRadius: 16,
     padding: 20,
   },
@@ -551,6 +548,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     textAlign: 'center',
     marginBottom: 16,
+    overflow: 'hidden',
   },
   weekDays: {
     flexDirection: 'row',
@@ -559,15 +557,14 @@ const styles = StyleSheet.create({
   },
   weekDay: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '500',
   },
   weekDayActive: {
     color: '#FFFFFF',
-    backgroundColor: '#3B82F6',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    overflow: 'hidden',
   },
   timeSlot: {
     flexDirection: 'row',
@@ -576,7 +573,6 @@ const styles = StyleSheet.create({
   },
   timeLabel: {
     fontSize: 14,
-    color: '#6B7280',
     width: 50,
   },
   eventBlock: {
@@ -587,7 +583,6 @@ const styles = StyleSheet.create({
   },
   eventText: {
     fontSize: 14,
-    color: '#111827',
     fontWeight: '500',
   },
 });

@@ -1,5 +1,5 @@
 import { getRealm } from '../realm';
-import { Settings } from '../schemas';
+import { Settings, ThemeType, LocaleType } from '../schemas';
 
 const SETTINGS_ID = 'app_settings';
 
@@ -18,6 +18,9 @@ export const initializeSettings = (): void => {
     realm.create<Settings>('Settings', {
       _id: SETTINGS_ID,
       theme: 'light',
+      soundEnabled: true,
+      hapticsEnabled: true,
+      locale: 'en',
       notificationsEnabled: true,
       defaultReminderTime: 15,
       onboardingCompleted: false,
@@ -52,8 +55,20 @@ export const updateSettings = (
   });
 };
 
-export const setTheme = (theme: 'light' | 'dark'): void => {
+export const setTheme = (theme: ThemeType): void => {
   updateSettings({ theme });
+};
+
+export const setSoundEnabled = (enabled: boolean): void => {
+  updateSettings({ soundEnabled: enabled });
+};
+
+export const setHapticsEnabled = (enabled: boolean): void => {
+  updateSettings({ hapticsEnabled: enabled });
+};
+
+export const setLocale = (locale: LocaleType): void => {
+  updateSettings({ locale });
 };
 
 export const setNotificationsEnabled = (enabled: boolean): void => {

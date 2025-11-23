@@ -6,6 +6,8 @@ import { getStats } from '../database/operations';
 import { AchievementType } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle, ResponsiveSizes } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 // Import achievement images
 const achievementImages = {
@@ -44,6 +46,8 @@ export const AchievementsScreen: React.FC = () => {
   const { width: screenWidth } = useWindowDimensions();
   const contentContainerStyle = getContentContainerStyle();
   const gridColumns = ResponsiveSizes.gridColumns;
+  const { colors } = useTheme();
+  const { t } = useLocalization();
 
   const loadData = React.useCallback(() => {
     try {
@@ -106,20 +110,20 @@ export const AchievementsScreen: React.FC = () => {
   const cardWidth = (availableWidth - (actualColumns - 1) * cardGap) / actualColumns;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View
         style={[
           styles.header,
           {
             paddingTop: insets.top + 20,
             paddingHorizontal: isTablet ? 32 : 20,
+            backgroundColor: colors.surface,
           },
         ]}
       >
         <View style={contentContainerStyle}>
-          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28 }]}>
-            Achievements
-          </Text>
+          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28, color: colors.text }]}>
+            {t('achievements.title')}</Text>
 
           {/* Stats Cards */}
           <View style={styles.statsContainer}>

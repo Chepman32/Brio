@@ -1,0 +1,26 @@
+Brio AI é um aplicativo de lembretes inteligentes que funciona totalmente offline e se ajusta ao seu ritmo. A IA no dispositivo aprende quando você realmente responde e oferece os melhores horários de exibição, adiamentos sutis e modelos de ações. Sem contas ou nuvem — seus dados permanecem somente com você.
+Por que o Brio AI:
+•IA no dispositivo. Treinamento e recomendações ocorrem localmente: sugestões rápidas, zero dependência de rede, privacidade preservada.
+•Adaptação de horários. O app analisa os horários reais em que você abre ou adia lembretes e ajusta automaticamente a programação futura para os seus “próprios” intervalos.
+•Gestos e agilidade. A maioria das ações é feita com deslizar e toque longo: concluir, adiar, arquivar, edição rápida.
+•Privacidade transparente. Sem contas nem sincronização. As permissões são solicitadas apenas quando necessário (notificações, calendário, contatos, saúde – opcional).
+Principais recursos:
+•Adição inteligente. Digite “Pagar contas sex 9:00, todo mês” — o Brio AI reconhece offline a data, hora e periodicidade e cria o evento corretamente.
+•Agenda adaptativa. O sistema avalia a probabilidade de “abertura rápida” em dias e horários diferentes e sugere os intervalos mais eficazes. Se você costuma empurrar uma tarefa da manhã para a noite, o Brio AI reajustará suavemente o horário.
+•Snooze personalizado. As opções de soneca se adaptam à sua reação típica (ex: “+40 min” ou “amanhã 7h30”) para que o lembrete chegue quando você estiver realmente pronto.
+•Modelos e sequências. Percebe sequências repetitivas (“Academia” → “Shake de proteína”, “Arrumar mochila para amanhã”) e sugere criá-las com um toque.
+•Day Vibe. Uma breve etiqueta do dia (Busy / Balanced / Chill) é formada a partir de suas categorias e volume de tarefas; influencia o tom da interface e as sugestões de horário.
+•Sugestões de calendário e contatos. Com sua permissão, o app analisa offline eventos locais e aniversários e oferece lembretes úteis (ex: “Lembrar de sair 30 min antes da reunião?”).
+•Widgets e Live Activities. Cards rápidos de “Próxima ação”, contagem regressiva para o prazo, progresso do dia — tudo offline, sem requisições de rede.
+•Sequências e conquistas. Motivação sem “redes sociais”: sequências de aberturas e conclusões, metas semanais por categoria, recompensas leves.
+•Priorização flexível. Leva em conta a proximidade do prazo, palavras-chave e categorias. A seção “Hoje” sempre mostra o mais importante primeiro.
+•Busca e agrupamento. Busca instantânea offline, filtros por data, categoria e prioridade, remoção automática de duplicatas de tarefas semelhantes.
+Privacidade e offline:
+•Todos os cálculos são feitos localmente no dispositivo.
+•Nenhuma conta, rastreador ou armazenamento em nuvem.
+•As permissões são solicitadas somente ao usar a função específica.
+•Você pode exportar seus dados e transferi-los manualmente entre dispositivos (backup local).
+Para perfeccionistas:
+•Tipografia precisa, animações elegantes, interface limpa.
+•Suporte ao modo escuro, tamanho de fonte dinâmico e retorno tátil.
+•Configurações flexíveis de categorias, cores, sons e janelas “silenciosas”.

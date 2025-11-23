@@ -1,0 +1,26 @@
+Brio AI est une application de rappels intelligents qui fonctionne entièrement hors ligne et s’adapte à votre rythme. L’IA embarquée apprend quand vous réagissez réellement et propose les meilleurs moments d’affichage, des reports discrets et des modèles d’actions. Pas de compte ni de cloud – vos données restent avec vous.
+Pourquoi choisir Brio AI :
+•IA sur l’appareil. L’apprentissage et les recommandations se font en local : suggestions rapides, aucune dépendance réseau, confidentialité préservée.
+•Adaptation temporelle. L’application analyse les heures réelles auxquelles vous ouvrez ou reportez les rappels et décale automatiquement le planning futur sur vos « propres » créneaux.
+•Gestes et rapidité. La plupart des actions s’effectuent par glissement ou appui long : terminer, reporter, archiver, édition rapide.
+•Confidentialité transparente. Pas de compte ni de synchronisation. Les autorisations ne sont demandées qu’en cas de besoin (notifications, calendrier, contacts, santé – optionnels).
+Fonctionnalités clés :
+•Ajout intelligent. Entrez « Payer les factures ven 9h00, chaque mois » — Brio AI reconnaît hors ligne la date, l’heure et la périodicité, puis crée l’événement adéquat.
+•Planning adaptatif. Le système évalue la probabilité d’« ouverture rapide » selon les jours et heures, et propose les créneaux les plus efficaces. Si vous repoussez régulièrement une tâche du matin au soir, Brio AI réajustera doucement l’horaire.
+•Snooze personnalisé. Les options de rappel s’adaptent à vos réactions typiques (par ex. « +40 min » ou « demain 7h30 ») pour que le rappel revienne quand vous êtes vraiment prêt.
+•Modèles et séquences. Repère des séquences récurrentes (« Salle de sport » → « Milk-shake protéiné », « Préparer le sac pour demain ») et propose de les enregistrer d’un seul toucher.
+•Day Vibe. Un court indicateur du jour (Busy / Balanced / Chill) est généré à partir de vos catégories et du volume de tâches ; il influence le ton de l’interface et les suggestions de créneaux.
+•Suggestions calendrier et contacts. Avec votre autorisation, l’application analyse hors ligne les événements locaux et anniversaires et propose des rappels utiles (par ex. « Vous rappeler de partir 30 min avant la réunion ? »).
+•Widgets et Live Activities. Cartes rapides « Action suivante », compte à rebours jusqu’à l’échéance, progression du jour — le tout hors ligne, sans requêtes réseau.
+•Séries et succès. Motivation sans « réseaux sociaux » : séries d’ouvertures et d’accomplissements, objectifs hebdomadaires par catégorie, petites récompenses.
+•Priorisation flexible. Prend en compte la proximité des échéances, les mots-clés et les catégories. La section « Aujourd’hui » affiche toujours ce qu’il y a de plus important.
+•Recherche et regroupement. Recherche instantanée hors ligne, filtres par date, catégorie et priorité, déduplication automatique des tâches similaires.
+Confidentialité et hors‑ligne :
+•Tous les calculs sont effectués localement sur l’appareil.
+•Aucun compte, traqueur ni stockage cloud.
+•Les autorisations ne sont demandées qu’à l’utilisation de la fonction concernée.
+•Vous pouvez exporter vos données et les transférer manuellement entre appareils (sauvegarde locale).
+Pour les perfectionnistes :
+•Typographie précise, animations soignées, interface épurée.
+•Prise en charge du mode sombre, de la taille de police dynamique et du retour haptique.
+•Réglages flexibles pour les catégories, couleurs, sons et plages « silence ».

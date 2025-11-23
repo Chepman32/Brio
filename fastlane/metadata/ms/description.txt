@@ -1,0 +1,26 @@
+Brio AI ialah aplikasi peringatan pintar yang berfungsi sepenuhnya di luar talian dan menyesuaikan diri dengan rentak anda. AI pada peranti mempelajari masa anda benar-benar bertindak balas dan menawarkan masa paparan terbaik, penangguhan yang tidak mengganggu serta templat tindakan. Tiada akaun atau awan — data anda kekal hanya pada anda.
+Mengapa Brio AI:
+•AI pada peranti. Pembelajaran dan cadangan berlaku secara lokal: cadangan pantas, sifar kebergantungan rangkaian, privasi terpelihara.
+•Penyesuaian masa. Aplikasi menganalisis masa sebenar anda membuka atau menangguhkan peringatan dan secara automatik mengubah jadual masa depan kepada “slot masa” peribadi anda.
+•Gerak isyarat & kepantasan. Kebanyakan tindakan dilakukan dengan leretan dan tekan lama: selesai, tangguh, arkib, sunting pantas.
+•Privasi telus. Tiada akaun dan penyelarasan. Kebenaran diminta hanya bila perlu (notifikasi, kalendar, kenalan, kesihatan – pilihan).
+Ciri-ciri utama:
+•Penambahan pintar. Taip “Bayar bil Jum 9:00, setiap bulan” — Brio AI akan mengenal pasti tarikh, masa dan kekerapan secara luar talian dan mencipta acara yang betul.
+•Jadual adaptif. Sistem menilai kebarangkalian “buka cepat” pada pelbagai hari dan waktu dan mencadangkan slot masa paling berkesan. Jika anda kerap menangguhkan tugasan dari pagi ke malam, Brio AI akan melaraskan waktu dengan lembut.
+•Snooze peribadi. Pilihan tunda disesuaikan dengan reaksi lazim anda (cth: “+40 min” atau “esok 7:30”) supaya peringatan tiba apabila anda benar-benar bersedia.
+•Templat dan rangkaian. Mengesan urutan berulang (“Gim” → “Protein shake”, “Kemas beg untuk esok”) dan mencadangkan penciptaannya dengan satu ketikan.
+•Day Vibe. Label ringkas hari (Busy / Balanced / Chill) dijana daripada kategori dan jumlah tugasan anda; mempengaruhi nada antara muka dan cadangan waktu.
+•Cadangan kalendar & kenalan. Dengan kebenaran anda, apl menganalisis secara luar talian acara tempatan dan hari lahir dan menawarkan peringatan berguna (cth: “Ingin diingatkan untuk keluar 30 min sebelum mesyuarat?”).
+•Widget & Live Activities. Kad “Tindakan seterusnya” pantas, kira detik tarikh akhir, kemajuan hari — semua luar talian, tanpa permintaan rangkaian.
+•Rentetan & pencapaian. Motivasi tanpa “media sosial”: rentetan membuka dan menyiapkan, sasaran mingguan per kategori, ganjaran ringan.
+•Keutamaan fleksibel. Mengambil kira jarak tarikh akhir, kata kunci dan kategori. Bahagian “Hari ini” sentiasa memaparkan perkara paling penting dahulu.
+•Carian & pengelompokan. Carian serta-merta luar talian, penapis ikut tarikh, kategori dan keutamaan, penyingkiran pendua automatik bagi tugasan serupa.
+Privasi & luar talian:
+•Semua pemprosesan dilakukan secara lokal pada peranti.
+•Tiada akaun, penjejak atau storan awan.
+•Kebenaran diminta hanya apabila menggunakan ciri tertentu.
+•Anda boleh mengeksport data anda dan memindahkannya secara manual antara peranti (sandaran tempatan).
+Untuk perfeksionis:
+•Tipografi tepat, animasi kemas, antara muka ringkas.
+•Sokongan mod gelap, saiz fon dinamik dan maklum balas haptik.
+•Tetapan fleksibel untuk kategori, warna, bunyi dan jangka masa “senyap”.

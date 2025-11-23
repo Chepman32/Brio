@@ -19,6 +19,8 @@ import { AchievementService } from '../services/AchievementService';
 import { NotificationService } from '../services/NotificationService';
 import { useResponsive } from '../hooks/useResponsive';
 import { ResponsiveSizes, getContentContainerStyle } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 export const TodayScreen: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
@@ -29,6 +31,8 @@ export const TodayScreen: React.FC = () => {
   const [editingTask, setEditingTask] = useState<TaskType | null>(null);
   const insets = useSafeAreaInsets();
   const { isTablet } = useResponsive();
+  const { colors } = useTheme();
+  const { t } = useLocalization();
 
   const loadTasks = React.useCallback(() => {
     try {
@@ -171,9 +175,9 @@ export const TodayScreen: React.FC = () => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return t('today.goodMorning');
+    if (hour < 18) return t('today.goodAfternoon');
+    return t('today.goodEvening');
   };
 
   const formatDate = () => {
@@ -187,11 +191,42 @@ export const TodayScreen: React.FC = () => {
 
   const contentContainerStyle = getContentContainerStyle();
 
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      paddingBottom: 20,
+      backgroundColor: colors.surface,
+      borderBottomLeftRadius: 24,
+      borderBottomRightRadius: 24,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
+      elevation: 2,
+    },
+    greeting: {
+      fontWeight: 'bold',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    date: {
+      color: colors.textSecondary,
+      marginBottom: 12,
+    },
+    taskCount: {
+      color: colors.primary,
+      fontWeight: '600',
+    },
+  });
+
   return (
-    <View style={styles.container}>
+    <View style={dynamicStyles.container}>
       <View
         style={[
-          styles.header,
+          dynamicStyles.header,
           {
             paddingTop: insets.top + 20,
             paddingHorizontal: isTablet ? 32 : 20,
@@ -199,14 +234,14 @@ export const TodayScreen: React.FC = () => {
         ]}
       >
         <View style={contentContainerStyle}>
-          <Text style={[styles.greeting, { fontSize: isTablet ? 34 : 28 }]}>
+          <Text style={[dynamicStyles.greeting, { fontSize: isTablet ? 34 : 28 }]}>
             {getGreeting()}
           </Text>
-          <Text style={[styles.date, { fontSize: isTablet ? 18 : 16 }]}>
+          <Text style={[dynamicStyles.date, { fontSize: isTablet ? 18 : 16 }]}>
             {formatDate()}
           </Text>
-          <Text style={[styles.taskCount, { fontSize: isTablet ? 16 : 14 }]}>
-            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'} due today
+          <Text style={[dynamicStyles.taskCount, { fontSize: isTablet ? 16 : 14 }]}>
+            {t('today.tasksRemaining', { count: tasks.length })}
           </Text>
         </View>
       </View>
@@ -250,33 +285,4 @@ export const TodayScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  header: {
-    paddingBottom: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  greeting: {
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  date: {
-    color: '#666',
-    marginBottom: 12,
-  },
-  taskCount: {
-    color: '#6366F1',
-    fontWeight: '600',
-  },
-});
+const styles = StyleSheet.create({});

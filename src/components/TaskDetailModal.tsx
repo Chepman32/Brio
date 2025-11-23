@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { TaskDetailModalProps } from '../types';
 import { useTimeFormat } from '../hooks/useTimeFormat';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   visible,
@@ -18,6 +20,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onDelete,
 }) => {
   const { formatTime } = useTimeFormat();
+  const { colors } = useTheme();
+  const { t } = useLocalization();
 
   if (!task) return null;
 
@@ -52,13 +56,13 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
+      <View style={[styles.overlay, { backgroundColor: colors.overlay }]}>
         <Pressable style={styles.backdrop} onPress={onClose} />
-        <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Task Details</Text>
+        <View style={[styles.modalContainer, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('task.title')}</Text>
             <Pressable onPress={onClose}>
-              <Text style={styles.closeButton}>✕</Text>
+              <Text style={[styles.closeButton, { color: colors.textSecondary }]}>✕</Text>
             </Pressable>
           </View>
 
@@ -67,7 +71,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.section}>
-              <Text style={styles.title}>{task.title}</Text>
+              <Text style={[styles.title, { color: colors.text }]}>{task.title}</Text>
               <View
                 style={[
                   styles.priorityBadge,
@@ -82,52 +86,52 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
             {task.notes && (
               <View style={styles.section}>
-                <Text style={styles.label}>Notes</Text>
-                <Text style={styles.value}>{task.notes}</Text>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.notes')}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>{task.notes}</Text>
               </View>
             )}
 
             <View style={styles.section}>
-              <Text style={styles.label}>Due Date</Text>
-              <Text style={styles.value}>{formatDate(task.dueDate)}</Text>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.dueDate')}</Text>
+              <Text style={[styles.value, { color: colors.text }]}>{formatDate(task.dueDate)}</Text>
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.label}>Due Time</Text>
-              <Text style={styles.value}>{formatTimeLocal(task.dueTime)}</Text>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.dueTime')}</Text>
+              <Text style={[styles.value, { color: colors.text }]}>{formatTimeLocal(task.dueTime)}</Text>
             </View>
 
             {task.category && (
               <View style={styles.section}>
-                <Text style={styles.label}>Category</Text>
-                <Text style={styles.value}>{task.category}</Text>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.category')}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>{task.category}</Text>
               </View>
             )}
 
             <View style={styles.section}>
-              <Text style={styles.label}>Created</Text>
-              <Text style={styles.value}>{formatDate(task.createdAt)}</Text>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>Created</Text>
+              <Text style={[styles.value, { color: colors.text }]}>{formatDate(task.createdAt)}</Text>
             </View>
           </ScrollView>
 
-          <View style={styles.footer}>
+          <View style={[styles.footer, { borderTopColor: colors.border }]}>
             <Pressable
-              style={[styles.button, styles.deleteButton]}
+              style={[styles.button, styles.deleteButton, { backgroundColor: colors.errorLight }]}
               onPress={() => {
                 onDelete(task._id);
                 onClose();
               }}
             >
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Text style={[styles.deleteButtonText, { color: colors.error }]}>{t('common.delete')}</Text>
             </Pressable>
             <Pressable
-              style={[styles.button, styles.editButton]}
+              style={[styles.button, styles.editButton, { backgroundColor: colors.primary }]}
               onPress={() => {
                 onEdit(task);
                 onClose();
               }}
             >
-              <Text style={styles.editButtonText}>Edit</Text>
+              <Text style={styles.editButtonText}>{t('common.edit')}</Text>
             </Pressable>
           </View>
         </View>
@@ -141,7 +145,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
@@ -149,9 +152,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '90%',
     maxHeight: '80%',
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 12,
@@ -163,16 +164,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
   },
   closeButton: {
     fontSize: 24,
-    color: '#999',
   },
   content: {
     padding: 20,
@@ -183,7 +181,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 8,
   },
   priorityBadge: {
@@ -200,19 +197,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#666',
     marginBottom: 4,
   },
   value: {
     fontSize: 16,
-    color: '#333',
   },
   footer: {
     flexDirection: 'row',
     padding: 20,
     gap: 12,
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
   },
   button: {
     flex: 1,
@@ -220,17 +214,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-  deleteButton: {
-    backgroundColor: '#FFE5E5',
-  },
+  deleteButton: {},
   deleteButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FF4444',
   },
-  editButton: {
-    backgroundColor: '#6366F1',
-  },
+  editButton: {},
   editButtonText: {
     fontSize: 16,
     fontWeight: '600',

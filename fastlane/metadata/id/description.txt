@@ -1,0 +1,26 @@
+Brio AI adalah aplikasi pengingat pintar yang bekerja sepenuhnya offline dan menyesuaikan dengan ritme Anda. AI di perangkat mempelajari kapan Anda benar-benar merespons dan menawarkan waktu tampilan terbaik, penundaan yang tidak mengganggu, serta templat tindakan. Tanpa akun atau cloud — data Anda tetap hanya milik Anda.
+Mengapa Brio AI?
+•AI pada perangkat. Pelatihan dan rekomendasi terjadi secara lokal: saran cepat, nol ketergantungan jaringan, privasi terjaga.
+•Penyesuaian waktu. Aplikasi menganalisis waktu nyata saat Anda membuka atau menunda pengingat, dan secara otomatis menggeser jadwal mendatang ke “slot waktu” Anda sendiri.
+•Gerakan & kecepatan. Sebagian besar tindakan cukup dengan geser dan tahan lama: selesaikan, tunda, arsipkan, edit cepat.
+•Privasi transparan. Tanpa akun dan sinkronisasi. Izin diminta hanya saat diperlukan (notifikasi, kalender, kontak, kesehatan – opsional).
+Fitur utama:
+•Penambahan cerdas. Ketik “Bayar tagihan Jum 9:00, setiap bulan” — Brio AI akan mengenali tanggal, waktu, dan frekuensi secara offline dan membuat acara yang tepat.
+•Jadwal adaptif. Sistem memperkirakan kemungkinan “buka cepat” pada berbagai hari dan jam dan menyarankan slot waktu paling efektif. Jika Anda secara teratur menggeser tugas dari pagi ke malam, Brio AI akan menyesuaikan waktunya dengan lembut.
+•Snooze personal. Opsi tunda disesuaikan dengan respons khas Anda (mis. “+40 mnt” atau “besok 7.30”) sehingga pengingat muncul ketika Anda benar-benar siap.
+•Templat dan rantai. Mendeteksi rangkaian berulang (“Gym” → “Protein shake”, “Bereskan tas untuk besok”) dan menyarankan untuk membuatnya dengan satu ketukan.
+•Day Vibe. Sebuah label singkat hari (Busy / Balanced / Chill) dibuat dari kategori dan beban tugas Anda; memengaruhi nuansa antarmuka dan saran waktu.
+•Saran kalender & kontak. Dengan izin Anda, aplikasi menganalisis offline acara lokal dan ulang tahun dan menawarkan pengingat bermanfaat (mis. “Ingatkan untuk berangkat 30 mnt sebelum rapat?”).
+•Widget & Live Activities. Kartu “Tindakan berikutnya” cepat, hitung mundur tenggat, progres hari — semua offline, tanpa permintaan jaringan.
+•Rentetan & pencapaian. Motivasi tanpa “media sosial”: rentetan pembukaan dan penyelesaian, target mingguan per kategori, hadiah ringan.
+•Prioritas fleksibel. Mempertimbangkan kedekatan tenggat, kata kunci, dan kategori. Bagian “Hari ini” selalu menampilkan yang paling penting.
+•Pencarian & pengelompokan. Pencarian instan offline, filter menurut tanggal, kategori, dan prioritas, penghapusan duplikat otomatis untuk tugas serupa.
+Privasi & offline:
+•Semua pemrosesan dilakukan secara lokal di perangkat.
+•Tidak ada akun, pelacak, atau penyimpanan cloud.
+•Izin hanya diminta saat menggunakan fitur terkait.
+•Anda dapat mengekspor data Anda dan memindahkannya secara manual antar perangkat (cadangan lokal).
+Untuk perfeksionis:
+•Tipografi presisi, animasi halus, antarmuka ringkas.
+•Mendukung mode gelap, ukuran font dinamis, dan umpan balik haptik.
+•Pengaturan fleksibel untuk kategori, warna, suara, dan jendela “sunyi”.

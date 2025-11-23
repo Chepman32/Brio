@@ -26,6 +26,7 @@ import { analyzeDayVibe } from '../utils/dayVibeAnalysis';
 import { DayHeroSection } from './DayHeroSection';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { ResponsiveSizes } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
 
 const SWIPE_THRESHOLD = 50;
 
@@ -70,6 +71,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const scale = useSharedValue(1);
   const { formatTime, formatTimeRange, formatHourLabel } = useTimeFormat();
   const { width: screenWidth } = useWindowDimensions();
+  const { colors } = useTheme();
   const contentWidth = Math.min(screenWidth, ResponsiveSizes.contentMaxWidth);
   const monthCellSpacing = 8;
   const monthCellSize = Math.max(

@@ -1,0 +1,26 @@
+A Brio AI egy okos emlékeztető alkalmazás, amely teljesen offline működik, és alkalmazkodik a ritmusodhoz. Az eszközön futó MI megtanulja, mikor reagálsz valójában, és felajánlja a legjobb megjelenítési időket, diszkrét szundi opciókat és műveleti sablonokat. Nincsenek fiókok vagy felhő – az adataid csak nálad maradnak.
+Miért a Brio AI?
+•MI az eszközön. A tanulás és ajánlások helyben történnek: gyors javaslatok, nulla hálózati függőség, a magánélet megőrzése.
+•Időhöz igazítás. Az alkalmazás elemzi azokat a valós időpontokat, amikor megnyitod vagy elhalasztod az emlékeztetőket, és automatikusan a „saját” időablakaidhoz igazítja a jövőbeli ütemezést.
+•Gesztusok és gyorsaság. A legtöbb művelet húzással és hosszan nyomással történik: befejezés, halasztás, archiválás, gyors szerkesztés.
+•Átlátható adatvédelem. Nincsenek fiókok és szinkronizálás. Engedélyek csak szükség esetén kértek (értesítések, naptár, névjegyek, egészség – opcionális).
+Főbb funkciók:
+•Okos hozzáadás. Írd be: „Számlák befizetése pén 9:00, havonta” — a Brio AI offline felismeri a dátumot, időpontot és gyakoriságot, és létrehozza a megfelelő eseményt.
+•Alkalmazkodó ütemezés. A rendszer becsüli a „gyors megnyitás” valószínűségét különböző napokon és időpontokban, és javasolja a leghatékonyabb időablakokat. Ha rendszeresen halogatod a reggeli feladatot estig, a Brio AI finoman átállítja az időpontot.
+•Személyre szabott szundi. A szundi opciók igazodnak az átlagos reakcióidhoz (pl. „+40 perc” vagy „holnap 7:30”), hogy az emlékeztető akkor jöjjön, amikor valóban készen állsz.
+•Sablonok és láncok. Észleli az ismétlődő sorozatokat („Edzőterem” → „Proteinturmix”, „Becsomagolni a táskát holnapra”) és javasolja, hogy egy érintéssel hozd létre őket.
+•Day Vibe. Egy rövid napi címke (Busy / Balanced / Chill) a kategóriáidból és feladataid mennyiségéből alakul ki; hatással van a felület hangulatára és az időpontjavaslatokra.
+•Naptár- és névjegyajánlók. Az engedélyeddel az alkalmazás offline elemzi a helyi eseményeket és születésnapokat, és hasznos emlékeztetőket kínál (pl. „Emlékeztessünk, hogy indulj el 30 perccel a találkozó előtt?”).
+•Widgetek és Live Activities. Gyors “Következő lépés” kártyák, határidő visszaszámláló, napi előrehaladás – minden offline, hálózati kérések nélkül.
+•Sorozatok és eredmények. Motiváció „közösségi média” nélkül: megnyitási és befejezési sorozatok, heti célok kategóriánként, apró jutalmak.
+•Rugalmas priorizálás. Figyelembe veszi a határidő közelségét, a kulcsszavakat és a kategóriákat. A „Ma” szekció mindig a legfontosabb dolgokat mutatja.
+•Keresés és csoportosítás. Azonnali offline keresés, szűrés dátum, kategória és prioritás szerint, hasonló feladatok automatikus duplikációmentesítése.
+Adatvédelem és offline:
+•Minden számítás helyben, az eszközön történik.
+•Nincsenek fiókok, követők vagy felhőtárhely.
+•Engedélyeket csak az adott funkció használatakor kér.
+•Az adataidat exportálhatod, és kézzel átteheted az eszközök között (helyi biztonsági mentés).
+Maximalistáknak:
+•Precíz tipográfia, igényes animációk, letisztult felület.
+•Sötét mód, dinamikus betűméret és haptikus visszajelzés támogatása.
+•Rugalmas beállítások kategóriákhoz, színekhez, hangokhoz és „csendes időszakokhoz”.

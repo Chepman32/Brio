@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TaskCardProps } from '../types';
 import { useTimeFormat } from '../hooks/useTimeFormat';
+import { useTheme } from '../contexts/ThemeContext';
 
 const SWIPE_THRESHOLD = 100;
 
@@ -24,6 +25,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
   const { formatTime } = useTimeFormat();
+  const { colors } = useTheme();
 
   // Extract task ID to avoid accessing Realm object in worklet
   const taskId = task._id;
@@ -95,7 +97,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.View style={[styles.container, animatedStyle]}>
+      <Animated.View style={[styles.container, { backgroundColor: colors.surface, shadowColor: colors.shadow }, animatedStyle]}>
         <View
           style={[
             styles.priorityIndicator,
@@ -103,22 +105,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           ]}
         />
         <View style={styles.content}>
-          <Text style={styles.title} numberOfLines={2}>
+          <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
             {task.title}
           </Text>
           {task.notes && (
-            <Text style={styles.notes} numberOfLines={1}>
+            <Text style={[styles.notes, { color: colors.textSecondary }]} numberOfLines={1}>
               {task.notes}
             </Text>
           )}
           <View style={styles.footer}>
             {task.dueTime && (
-              <Text style={styles.time}>
+              <Text style={[styles.time, { color: colors.textTertiary }]}>
                 {task.dueTime ? formatTime(task.dueTime) : ''}
               </Text>
             )}
             {task.category && (
-              <Text style={styles.category}>{task.category}</Text>
+              <Text style={[styles.category, { color: colors.textSecondary, backgroundColor: colors.surfaceSecondary }]}>{task.category}</Text>
             )}
           </View>
         </View>
@@ -130,11 +132,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     marginHorizontal: 16,
     marginVertical: 8,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -151,12 +151,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 4,
   },
   notes: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 8,
   },
   footer: {
@@ -166,12 +164,9 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 12,
-    color: '#999',
   },
   category: {
     fontSize: 12,
-    color: '#666',
-    backgroundColor: '#F0F0F0',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,

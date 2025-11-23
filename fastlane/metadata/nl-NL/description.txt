@@ -1,0 +1,26 @@
+Brio AI is een app voor slimme herinneringen die volledig offline werkt en zich aanpast aan jouw ritme. De AI op het apparaat leert wanneer je daadwerkelijk reageert en biedt de beste weergavetijden, onopdringerlijke snooze-opties en actiesjablonen. Geen accounts of cloud — je gegevens blijven alleen bij jou.
+Waarom Brio AI?
+•AI op het apparaat. Training en aanbevelingen gebeuren lokaal: snelle suggesties, nul netwerkafhankelijkheid, privacy blijft beschermd.
+•Aanpassing aan tijd. De app analyseert de daadwerkelijke tijden waarop je herinneringen opent of uitstelt, en verschuift toekomstige schema’s automatisch naar jouw “eigen” tijdvakken.
+•Gebaren en snelheid. De meeste acties doe je met vegen en lang indrukken: voltooien, uitstellen, archiveren, snel bewerken.
+•Transparante privacy. Geen accounts en geen synchronisatie. Machtigingen worden alleen gevraagd wanneer nodig (meldingen, agenda, contacten, gezondheid – optioneel).
+Belangrijkste functies:
+•Slim toevoegen. Voer bijvoorbeeld “Rekening betalen vr 9:00, elke maand” in — Brio AI herkent offline de datum, tijd en frequentie en maakt de juiste gebeurtenis aan.
+•Adaptief schema. Het systeem schat de kans op “snel openen” op verschillende dagen en tijdstippen in en stelt de meest effectieve tijdslots voor. Als je regelmatig een taak van de ochtend naar de avond verschuift, past Brio AI de tijd zachtjes aan.
+•Persoonlijke Snooze. De snooze-opties passen zich aan jouw gebruikelijke reactie aan (bijv. “+40 min” of “morgen 7:30”), zodat de herinnering komt wanneer je er echt klaar voor bent.
+•Sjablonen en ketens. Herkent terugkerende combinaties (“Sportschool” → “Proteïneshake”, “Tas voor morgen inpakken”) en stelt voor om ze met één tik op te slaan als sjabloon.
+•Day Vibe. Een kort daglabel (Busy / Balanced / Chill) wordt gevormd uit je categorieën en takenlast; dit beïnvloedt de toon van de interface en de tijdsuggesties.
+•Agenda- en contactvoorstellen. Met jouw toestemming analyseert de app offline lokale afspraken en verjaardagen en biedt nuttige herinneringen (bijv. “Herinnering om 30 min voor de afspraak te vertrekken?”).
+•Widgets en Live Activities. Snelle kaarten “Volgende actie”, aftellen tot de deadline, voortgang van de dag — alles offline, zonder netwerkaanvragen.
+•Reeksen en prestaties. Motivatie zonder “social media”: reeksen van openingen en voltooiingen, wekelijkse doelen per categorie, kleine beloningen.
+•Flexibele prioritering. Houdt rekening met naderende deadlines, sleutelwoorden en categorieën. De sectie “Vandaag” toont altijd eerst het belangrijkste.
+•Zoeken en groeperen. Direct offline zoeken, filters op datum, categorie en prioriteit, automatische deduplicatie van vergelijkbare taken.
+Privacy & offline:
+•Alle berekeningen worden lokaal op het apparaat uitgevoerd.
+•Geen accounts, trackers of cloudopslag.
+•Machtigingen worden alleen gevraagd bij gebruik van de betreffende functie.
+•Je kunt je gegevens exporteren en handmatig overzetten tussen apparaten (lokale back-up).
+Voor perfectionisten:
+•Nauwkeurige typografie, verzorgde animaties, overzichtelijke interface.
+•Ondersteuning voor donkere modus, dynamische lettergrootte en haptische feedback.
+•Flexibele instellingen voor categorieën, kleuren, geluiden en “stille uren”.

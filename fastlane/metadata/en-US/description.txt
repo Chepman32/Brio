@@ -1,0 +1,26 @@
+Brio AI is smart reminders that work entirely offline and adapt to your rhythm. On your device, it learns when you actually respond and suggests the optimal display times, unobtrusive snoozes, and action templates. No accounts or cloud — your data stays only with you.
+Why Brio AI:
+•On‑device AI. Training and recommendations happen locally: quick suggestions, zero network dependency, preserving privacy.
+•Adapts to your timing. The app analyzes the actual times when you open or snooze reminders, and automatically shifts future schedules to your personal “prime time” windows.
+•Gestures and speed. Most actions are swipes and long presses: complete, postpone, archive, quick edit.
+•Transparent privacy. No accounts and no sync. Permissions are requested only when needed (notifications, calendar, contacts, health – optional).
+Key Features:
+•Smart adding. Enter “Pay utility bills on Fri 9:00, every month” — Brio AI will recognize the date, time, and frequency offline and create the correct event.
+•Adaptive schedule. The system estimates how likely you are to open quickly at different days and times, and suggests the most effective slots. If you regularly push a task from morning to evening, Brio AI will gently readjust the time.
+•Personal Snooze. Snooze options adapt to your typical response (e.g., “+40 min” or “tomorrow 7:30”) so that the reminder arrives when you’re truly ready to act.
+•Templates and chains. Detects recurring sequences (“Gym” → “Protein shake”, “Pack bag for tomorrow”) and suggests creating them with one tap.
+•Day Vibe. A short day tag (Busy / Balanced / Chill) is generated from your categories and task load; it influences the interface tone and time suggestions.
+•Calendar and contact suggestions. With your permission, the app analyzes local events and birthdays offline and offers useful reminders (e.g., “Remind to leave 30 min before the meeting?”).
+•Widgets and Live Activities. Quick “Next action” cards, a deadline countdown, daily progress — all offline, with no network requests.
+•Streaks and achievements. Motivation without “social media”: streaks for openings and completions, weekly goals by category, gentle rewards.
+•Flexible prioritization. Takes into account deadline proximity, keywords, and categories. The “Today” section always shows the most important things first.
+•Search and grouping. Instant offline search, filters by date, category and priority, automatic deduplication of similar tasks.
+Privacy and Offline:
+•All computations are performed locally on the device.
+•No accounts, trackers, or cloud storage.
+•Permissions are requested only when using a specific feature.
+•You can export your data and transfer it between devices manually (local backup).
+For perfectionists:
+•Precise typography, neat animations, concise interface.
+•Supports dark mode, dynamic font size, and haptic feedback.
+•Flexible settings for categories, colors, sounds, and “quiet hours” windows.

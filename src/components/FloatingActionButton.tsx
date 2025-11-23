@@ -8,6 +8,7 @@ import Animated, {
 import { Canvas, Circle, Group, Blur } from '@shopify/react-native-skia';
 import { FABProps } from '../types';
 import { ResponsiveSizes } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -18,6 +19,7 @@ export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
   const fabIconSize = ResponsiveSizes.fabIconSize;
   const scale = useSharedValue(1);
   const rippleScale = useSharedValue(0);
+  const { colors } = useTheme();
 
   const handlePressIn = () => {
     scale.value = withSpring(0.9);
@@ -77,7 +79,7 @@ export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
 
       {/* Main FAB */}
       <AnimatedPressable
-        style={[styles.fab, dynamicFabStyle, animatedStyle]}
+        style={[styles.fab, dynamicFabStyle, { backgroundColor: colors.primary, shadowColor: colors.shadow }, animatedStyle]}
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -91,10 +93,8 @@ export const FloatingActionButton: React.FC<FABProps> = ({ onPress }) => {
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
-    backgroundColor: '#6366F1',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

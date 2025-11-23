@@ -1,0 +1,26 @@
+Ang Brio AI ay isang matalinong app ng paalala na gumagana nang buo offline at umaangkop sa iyong ritmo. Ang AI sa device ay natututo kung kailan ka tunay na tumutugon at nagmumungkahi ng pinakamahusay na oras ng notification, hindi istorbo na snooze, at mga template ng aksyon. Walang account o cloud — mananatili lang sa iyo ang iyong data.
+Bakit Brio AI?
+•AI sa device. Lahat ng pag-aaral at rekomendasyon ay nangyayari nang lokal: mabilis na mungkahi, zero na pag-asa sa internet, napananatili ang privacy.
+•Pag-angkop sa oras. Sinusuri ng app ang aktwal na oras kung kailan mo binubuksan o ipinagpapaliban ang mga paalala, at awtomatikong ina-adjust ang iskedyul sa hinaharap sa iyong mga “paboritong oras”.
+•Mga galaw at bilis. Karamihan ng mga aksyon ay sa pag-swipe at long press: tapusin, ipagpaliban, i-archive, mabilis na pag-edit.
+•Transparent na privacy. Walang account at sync. Permiso ay hinihingi lang kapag kinakailangan (notifications, calendar, contacts, health – opsyonal).
+Pangunahing mga tampok:
+•Matalinong pagdaragdag. Halimbawa, i-type ang “Magbayad ng bills Biy 9:00, bawat buwan” — offline na kikilalanin ng Brio AI ang petsa, oras at kadalasan at lilikha ng tamang event.
+•Adaptive na iskedyul. Tinatantiya ng sistema ang posibilidad ng “mabilis na pagbukas” sa iba’t ibang araw at oras at inirerekomenda ang pinaka-epektibong oras. Kung karaniwang inililipat mo ang isang task mula umaga hanggang gabi, dahan-dahang ia-adjust ito ng Brio AI.
+•Personal na Snooze. Inaangkop ng mga opsyon sa snooze ang sarili sa karaniwang reaksyon mo (hal: “+40 min” o “bukas 7:30”) upang dumating ang paalala kapag tunay kang handa.
+•Mga template at kadena. Natutuklasan ang mga paulit-ulit na set (“Gym” → “Protein shake”, “Ihanda ang bag para bukas”) at nagmumungkahi na likhain ang mga ito sa isang tap.
+•Day Vibe. Isang maikling label ng araw (Busy / Balanced / Chill) ang nabubuo mula sa iyong mga kategorya at dami ng task; naaapektuhan nito ang tono ng interface at mga mungkahi sa oras.
+•Mga mungkahi mula sa calendar & contacts. Sa iyong pahintulot, sinusuri ng app nang offline ang mga lokal na event at kaarawan at nag-aalok ng kapaki-pakinabang na paalala (hal: “Paalalahanan na umalis 30 min bago ang meeting?”).
+•Mga widget & Live Activities. Mabilis na card para sa “Susunod na aksyon”, countdown sa deadline, progreso ng araw — lahat offline, walang mga network request.
+•Mga streak at achievement. Motibasyon nang walang “social media”: sunud-sunod na bukas at kumpletong mga paalala, lingguhang target kada kategorya, magagaan na gantimpala.
+•Flexible na pag-prioritize. Isinasaalang-alang ang nalalapit na deadline, mga keyword, at mga kategorya. Palaging ipinapakita ng seksyong “Today” ang pinakamahalagang mga bagay.
+•Paghahanap & pag-group. Instant na offline na paghahanap, mga filter ayon sa petsa, kategorya at prayoridad, awtomatikong pag-alis ng duplicate sa magkakahawig na tasks.
+Privacy & offline:
+•Lahat ng pagproseso ay isinasagawa nang lokal sa device.
+•Walang mga account, tracker, o cloud storage.
+•Humihingi lang ng permiso kapag ginagamit ang partikular na feature.
+•Maaari mong i-export ang data mo at manu-manong ilipat ito sa pagitan ng mga device (lokal na backup).
+Para sa mga perfectionist:
+•Precise na typography, malinis na animation, simple at maayos na interface.
+•Suporta para sa dark mode, dynamic font size, at haptic feedback.
+•Flexible na settings para sa mga category, kulay, tunog at mga oras ng “katahimikan”.

@@ -1,0 +1,26 @@
+Brio AI è un’app di promemoria intelligente che funziona interamente offline e si adatta al tuo ritmo. L’IA sul dispositivo apprende quando reagisci effettivamente e offre gli orari migliori per le notifiche, posticipi discreti e modelli di azioni. Niente account né cloud — i tuoi dati restano solo con te.
+Perché scegliere Brio AI:
+•IA sul dispositivo. L’apprendimento e i suggerimenti avvengono in locale: suggerimenti rapidi, zero dipendenza dalla rete, privacy preservata.
+•Adattamento agli orari. L’app analizza gli orari effettivi in cui apri o rimandi i promemoria e sposta automaticamente la programmazione futura sulle tue “finestre” orarie personali.
+•Gesti e velocità. La maggior parte delle azioni si esegue con swipe e pressione prolungata: completamento, rinvio, archiviazione, modifica rapida.
+•Privacy trasparente. Niente account né sincronizzazioni. Le autorizzazioni vengono richieste solo all’occorrenza (notifiche, calendario, contatti, salute – opzionali).
+Funzionalità chiave:
+•Aggiunta smart. Digita “Pagare le bollette ven 9:00, ogni mese” — Brio AI riconoscerà offline la data, l’ora e la ricorrenza e creerà l’evento corretto.
+•Programma adattivo. Il sistema valuta la probabilità di “apertura rapida” nei diversi giorni e orari e suggerisce le fasce orarie più efficaci. Se sposti regolarmente un’attività dalla mattina alla sera, Brio AI adeguerà delicatamente l’orario.
+•Snooze personalizzato. Le opzioni di posticipo si adattano alla tua reazione tipica (es: “+40 min” o “domani 7:30”) in modo che il promemoria arrivi quando sei davvero pronto ad agire.
+•Modelli e sequenze. Rileva sequenze ricorrenti (“Palestra” → “Frullato proteico”, “Preparare la borsa per domani”) e propone di crearle con un tocco.
+•Day Vibe. Una breve etichetta del giorno (Busy / Balanced / Chill) viene generata dalle tue categorie e dal carico di attività; influenza il tono dell’interfaccia e i suggerimenti di orario.
+•Suggerimenti da calendario e contatti. Con il tuo permesso, l’app analizza offline gli eventi locali e i compleanni e offre promemoria utili (es: “Ricordarti di uscire 30 min prima della riunione?”).
+•Widget e Live Activities. Schede rapide “Prossima azione”, conto alla rovescia per la scadenza, progresso della giornata — tutto offline, senza richieste di rete.
+•Serie e obiettivi. Motivazione senza “social”: serie di aperture e completamenti, obiettivi settimanali per categoria, piccole ricompense.
+•Prioritizzazione flessibile. Tiene conto della prossimità delle scadenze, delle parole chiave e delle categorie. La sezione “Oggi” mostra sempre le cose più importanti.
+•Ricerca e raggruppamento. Ricerca immediata offline, filtri per data, categoria e priorità, deduplicazione automatica delle attività simili.
+Privacy e offline:
+•Tutti i calcoli vengono eseguiti localmente sul dispositivo.
+•Niente account, traccianti o archiviazione cloud.
+•Le autorizzazioni vengono richieste solo durante l’uso della funzione specifica.
+•Puoi esportare i tuoi dati e trasferirli manualmente tra dispositivi (backup locale).
+Per i perfezionisti:
+•Tipografia accurata, animazioni curate, interfaccia essenziale.
+•Supporto tema scuro, dimensione carattere dinamica e feedback aptico.
+•Impostazioni flessibili per categorie, colori, suoni e finestre di “silenzio”.

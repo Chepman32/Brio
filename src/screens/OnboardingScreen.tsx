@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { OnboardingCarousel } from '../components/OnboardingCarousel';
 import { setOnboardingCompleted } from '../database/operations';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -10,13 +11,15 @@ interface OnboardingScreenProps {
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   onComplete,
 }) => {
+  const { colors } = useTheme();
+
   const handleComplete = () => {
     setOnboardingCompleted(true);
     onComplete();
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <OnboardingCarousel onComplete={handleComplete} />
     </View>
   );
@@ -25,6 +28,5 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
 });

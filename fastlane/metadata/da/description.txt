@@ -1,0 +1,26 @@
+Brio AI er smarte påmindelser, der fungerer helt offline og tilpasser sig dit rytme. AI’en på enheden lærer, hvornår du faktisk reagerer, og tilbyder de bedste visningstidspunkter, diskrete udsættelser og handlingsskabeloner. Ingen konti eller cloud – dine data forbliver hos dig.
+Hvorfor Brio AI?
+•AI på enheden. Træning og anbefalinger sker lokalt: hurtige forslag, nul netværksafhængighed, privatlivet bevares.
+•Tids-tilpasning. Appen analyserer de faktiske tidspunkter, hvor du åbner eller udsætter påmindelser, og flytter automatisk fremtidige planer til dine “egne tidsvinduer”.
+•Gestus & hurtighed. De fleste handlinger udføres med swipe og langt tryk: fuldfør, udsæt, arkivér, hurtig redigering.
+•Gennemsigtigt privatliv. Ingen konti og ingen synkronisering. Tilladelser anmodes kun om efter behov (notifikationer, kalender, kontakter, sundhed – valgfrit).
+Vigtigste funktioner:
+•Smart tilføjelse. Indtast fx “Betal regninger fre 9:00, hver måned” — Brio AI genkender offline dato, klokkeslæt og gentagelse og opretter den korrekte begivenhed.
+•Adaptiv tidsplan. Systemet vurderer sandsynligheden for “hurtig åbning” på forskellige dage og tidspunkter og foreslår de mest effektive tidsrum. Hvis du regelmæssigt trækker en opgave fra morgen til aften, vil Brio AI blidt justere tiden.
+•Personlig Snooze. Udsættelsesmulighederne tilpasses din typiske reaktion (fx “+40 min” eller “i morgen 7:30”), så påmindelsen kommer, når du virkelig er klar.
+•Skabeloner og kæder. Opdager gentagne kombinationer (“Træningscenter” → “Proteinshake”, “Pak taske til i morgen”) og foreslår at oprette dem med ét tryk.
+•Day Vibe. En kort dagslabel (Busy / Balanced / Chill) genereres ud fra dine kategorier og opgavemængde; påvirker tone i grænsefladen og tidsforslag.
+•Kalender- og kontaktforslag. Med din tilladelse analyserer appen offline lokale begivenheder og fødselsdage og tilbyder nyttige påmindelser (fx “Mind dig om at gå 30 min før mødet?”).
+•Widgets & Live Activities. Hurtige “Næste handling”-kort, nedtælling til deadline, dagens fremdrift — alt offline, uden netværksanmodninger.
+•Streaks og resultater. Motivation uden “sociale medier”: streaks af åbninger og færdiggørelser, ugentlige mål pr. kategori, lette belønninger.
+•Fleksibel prioritering. Tager hensyn til deadline-nærhed, nøgleord og kategorier. “I dag”-sektionen viser altid det vigtigste først.
+•Søgning & gruppering. Øjeblikkelig offline-søgning, filtre efter dato, kategori og prioritet, automatisk fjernelse af dubletter af lignende opgaver.
+Privatliv & offline:
+•Alle beregninger udføres lokalt på enheden.
+•Ingen konti, trackere eller cloud-lagring.
+•Tilladelser anmodes kun om ved brug af den pågældende funktion.
+•Du kan eksportere dine data og overføre dem manuelt mellem enheder (lokal backup).
+For perfektionister:
+•Præcis typografi, pæne animationer, strømlinet interface.
+•Understøtter mørk tilstand, dynamisk skriftstørrelse og haptisk feedback.
+•Fleksible indstillinger for kategorier, farver, lyde og “stille perioder”.

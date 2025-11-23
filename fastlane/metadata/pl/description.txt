@@ -1,0 +1,26 @@
+Brio AI to inteligentne przypomnienia, które działają całkowicie offline i dostosowują się do twojego rytmu. Sztuczna inteligencja na urządzeniu uczy się, kiedy faktycznie reagujesz, i oferuje najlepsze czasy wyświetlania, nienachalne drzemki oraz szablony akcji. Bez kont i chmury — twoje dane pozostają tylko u ciebie.
+Dlaczego Brio AI?
+•AI na urządzeniu. Uczenie i rekomendacje odbywają się lokalnie: szybkie sugestie, zero zależności od sieci, prywatność zachowana.
+•Dostosowanie czasowe. Aplikacja analizuje rzeczywiste godziny, o których otwierasz lub odkładasz przypomnienia, i automatycznie przesuwa przyszły harmonogram do twoich „własnych” okien czasowych.
+•Gesty i szybkość. Większość akcji wykonujesz przez przesunięcia i przytrzymania: zakończenie, odłożenie, archiwizacja, szybka edycja.
+•Przejrzysta prywatność. Brak kont i synchronizacji. Uprawnienia są żądane tylko w razie potrzeby (powiadomienia, kalendarz, kontakty, zdrowie – opcjonalnie).
+Kluczowe funkcje:
+•Inteligentne dodawanie. Wpisz „Opłać rachunki pt 9:00, co miesiąc” — Brio AI rozpozna offline datę, godzinę i częstotliwość i utworzy odpowiednie wydarzenie.
+•Adaptacyjny harmonogram. System ocenia prawdopodobieństwo „szybkiego otwarcia” o różnych porach dnia i tygodnia i proponuje najbardziej efektywne terminy. Jeśli regularnie przesuwasz zadanie z rana na wieczór, Brio AI delikatnie dostosuje czas.
+•Spersonalizowana drzemka (Snooze). Opcje odłożenia dostosowują się do twojej typowej reakcji (np. „+40 min” lub „jutro 7:30”), aby przypomnienie pojawiło się, gdy faktycznie będziesz gotów.
+•Szablony i ciągi. Wykrywa powtarzające się sekwencje („Siłownia” → „Shake proteinowy”, „Spakuj torbę na jutro”) i proponuje utworzenie ich jednym stuknięciem.
+•Day Vibe. Krótka etykieta dnia (Busy / Balanced / Chill) tworzona jest z twoich kategorii i liczby zadań; wpływa na ton interfejsu i propozycje czasu.
+•Sugestie kalendarza i kontaktów. Za twoim pozwoleniem aplikacja offline analizuje lokalne wydarzenia i urodziny i oferuje przydatne przypomnienia (np. „Przypomnieć o wyjściu 30 min przed spotkaniem?”).
+•Widżety i Live Activities. Szybkie karty „Następna akcja”, odliczanie do terminu, postęp dnia — wszystko offline, bez zapytań sieciowych.
+•Serie i osiągnięcia. Motywacja bez „social mediów”: serie otwarć i ukończeń, tygodniowe cele w kategoriach, drobne nagrody.
+•Elastyczna priorytetyzacja. Uwzględnia bliskość terminu, słowa kluczowe i kategorie. Sekcja „Dziś” zawsze pokazuje to, co najważniejsze.
+•Wyszukiwanie i grupowanie. Błyskawiczne wyszukiwanie offline, filtry według dat, kategorii i priorytetów, automatyczna deduplikacja podobnych zadań.
+Prywatność i offline:
+•Wszystkie obliczenia wykonywane są lokalnie na urządzeniu.
+•Brak kont, trackerów ani przechowywania w chmurze.
+•Uprawnienia wymagane są tylko przy korzystaniu z danej funkcji.
+•Możesz wyeksportować swoje dane i przenieść je ręcznie między urządzeniami (lokalna kopia zapasowa).
+Dla perfekcjonistów:
+•Precyzyjna typografia, dopracowane animacje, zwięzły interfejs.
+•Wsparcie trybu ciemnego, dynamicznego rozmiaru czcionki i informacji dotykowej (haptic feedback).
+•Elastyczne ustawienia kategorii, kolorów, dźwięków oraz okien „ciszy”.

@@ -1,0 +1,26 @@
+Brio AI este o aplicație de mementouri inteligente care funcționează complet offline și se adaptează ritmului tău. Inteligența artificială de pe dispozitiv învață când reacționezi cu adevărat și oferă cele mai bune ore de notificare, amânări discrete și șabloane de acțiuni. Fără conturi sau cloud — datele tale rămân doar la tine.
+De ce Brio AI:
+•IA pe dispozitiv. Învățarea și recomandările au loc local: sugestii rapide, dependență zero de rețea, confidențialitate păstrată.
+•Adaptare temporală. Aplicația analizează orele reale la care deschizi sau amâni mementouri și mută automat programul viitor în „ferestrele” tale orare.
+•Gestiuni și viteză. Majoritatea acțiunilor se realizează prin glisare și menținere: finalizare, amânare, arhivare, editare rapidă.
+•Confidențialitate transparentă. Fără conturi și sincronizări. Permisiunile sunt solicitate doar când e necesar (notificări, calendar, contacte, sănătate – opțional).
+Funcții cheie:
+•Adăugare inteligentă. Introdu „Plătește facturile vin 9:00, lunar” — Brio AI va recunoaște offline data, ora și recurența și va crea evenimentul corect.
+•Orar adaptiv. Sistemul evaluează probabilitatea de „deschidere rapidă” în zile și ore diferite și propune intervalele cele mai eficiente. Dacă întârzii regulat o sarcină de dimineață până seara, Brio AI va ajusta ușor ora.
+•Snooze personalizat. Opțiunile de amânare se adaptează la comportamentul tău obișnuit (ex: „+40 min” sau „mâine 7:30”) astfel încât mementoul să apară când ești cu adevărat pregătit.
+•Șabloane și secvențe. Observă secvențe recurente („Sală” → „Shake proteic”, „Pregătește geanta pentru mâine”) și propune crearea lor dintr-o singură atingere.
+•Day Vibe. Un scurt marcaj al zilei (Busy / Balanced / Chill) este generat din categoriile și volumul sarcinilor tale; influențează tonul interfeței și sugestiile de timp.
+•Sugestii din calendar și contacte. Cu permisiunea ta, aplicația analizează offline evenimentele locale și zilele de naștere și oferă mementouri utile (ex: „Să îți reamintim să pleci cu 30 min înainte de întâlnire?”).
+•Widgeturi și Live Activities. Carduri rapide „Următoarea acțiune”, numărătoare inversă până la termen, progresul zilei — totul offline, fără cereri de rețea.
+•Serii și realizări. Motivație fără „rețele sociale”: serii de deschideri și finalizări, obiective săptămânale pe categorii, recompense ușoare.
+•Prioritizare flexibilă. Ia în considerare apropierea termenului, cuvintele cheie și categoriile. Secțiunea „Astăzi” arată întotdeauna cele mai importante lucruri.
+•Căutare și grupare. Căutare instantanee offline, filtre pe dată, categorie și prioritate, eliminare automată a duplicatelor pentru sarcini similare.
+Confidențialitate & offline:
+•Toate calculele se efectuează local pe dispozitiv.
+•Fără conturi, trackere sau stocare cloud.
+•Permisiunile sunt cerute doar la folosirea funcției respective.
+•Îți poți exporta datele și transfera manual între dispozitive (backup local).
+Pentru perfecționiști:
+•Tipografie precisă, animații îngrijite, interfață aerisită.
+•Suport pentru modul întunecat, dimensiune dinamică a fontului și feedback haptic.
+•Setări flexibile pentru categorii, culori, sunete și ferestre „liniștite”.

@@ -2957,6 +2957,7 @@ __metadata:
     "@types/react-native-vector-icons": "npm:^6.4.18"
     "@types/react-test-renderer": "npm:^19.1.0"
     eslint: "npm:^8.19.0"
+    i18n-js: "npm:^4.5.1"
     jest: "npm:^29.6.3"
     prettier: "npm:2.8.8"
     react: "npm:19.1.1"
@@ -3434,6 +3435,13 @@ __metadata:
   bin:
     baseline-browser-mapping: dist/cli.js
   checksum: 10c0/93d5631ef1d1770c6166c760adb75e510a2f9ea9bccc1e2f3ec97c1e946ce71f9480e6314ad37e3ed933f2edc597cc9c7a0ec98d42691028e300bd62efd9cddd
+  languageName: node
+  linkType: hard
+
+"bignumber.js@npm:*":
+  version: 9.3.1
+  resolution: "bignumber.js@npm:9.3.1"
+  checksum: 10c0/61342ba5fe1c10887f0ecf5be02ff6709271481aff48631f86b4d37d55a99b87ce441cfd54df3d16d10ee07ceab7e272fc0be430c657ffafbbbf7b7d631efb75
   languageName: node
   linkType: hard
 
@@ -5420,6 +5428,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"i18n-js@npm:^4.5.1":
+  version: 4.5.1
+  resolution: "i18n-js@npm:4.5.1"
+  dependencies:
+    bignumber.js: "npm:*"
+    lodash: "npm:*"
+    make-plural: "npm:*"
+  checksum: 10c0/242d618679e5dd06bd3a5d66c17e07c9fd41141a78885e0a883ee633131da60deb3b3fa760f9071d873aeef2fbfb3186faeccae347eb1e81fba1f12b258ae038
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -6638,7 +6657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.21":
+"lodash@npm:*, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -6720,6 +6739,13 @@ __metadata:
     promise-retry: "npm:^2.0.1"
     ssri: "npm:^12.0.0"
   checksum: 10c0/3cc9b4e71bba88bcec53f5307f9c3096c6193a2357e825bf3a3a03c99896d2fa14abba8363a84199829dade639e85dc0eb07de77d247aa249d13ff80511adf2c
+  languageName: node
+  linkType: hard
+
+"make-plural@npm:*":
+  version: 7.4.0
+  resolution: "make-plural@npm:7.4.0"
+  checksum: 10c0/10f24e932865c88d4cdb14d4bb809ce8e615cae7d083c63ad008b3bcaf0d22941ca0bd76acd9cdd7ae4047563501104fff3c37ce8ad2bc5671facde1818fa57f
   languageName: node
   linkType: hard
 

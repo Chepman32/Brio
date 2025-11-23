@@ -1,0 +1,26 @@
+Brio AI er smarte påminnelser som fungerer helt offline og tilpasser seg ditt tempo. AI-en på enheten lærer når du faktisk reagerer, og tilbyr de beste visningstidspunktene, diskrete utsettelser og handlingsmaler. Ingen kontoer eller skylagring – dataene dine forblir hos deg.
+Hvorfor Brio AI?
+•AI på enheten. Trening og anbefalinger skjer lokalt: raske forslag, null nettavhengighet, personvernet ivaretas.
+•Tids-tilpasning. Appen analyserer de faktiske tidene du åpner eller utsetter påminnelser, og flytter automatisk fremtidige planer til dine “egne tidsvinduer”.
+•Gester og hurtighet. De fleste handlinger gjøres med sveip og langt trykk: fullfør, utsett, arkiver, hurtigrediger.
+•Åpent personvern. Ingen kontoer eller synkronisering. Tillatelser bes bare om når nødvendig (varsler, kalender, kontakter, Helse – valgfritt).
+Hovedfunksjoner:
+•Smart tillegg. Skriv for eksempel “Betal regninger fre 9:00, hver måned” — Brio AI gjenkjenner offline dato, klokkeslett og frekvens og oppretter riktig hendelse.
+•Adaptiv tidsplan. Systemet anslår sannsynligheten for “rask åpning” på ulike dager og tider og foreslår de mest effektive tidslukene. Hvis du regelmessig drar en oppgave fra morgen til kveld, vil Brio AI justere tiden forsiktig.
+•Personlig Snooze. Utsettelsesalternativene tilpasses din vanlige respons (f.eks. “+40 min” eller “i morgen 07:30”) slik at påminnelsen kommer når du virkelig er klar.
+•Maler og kjeder. Oppdager gjentagende kombinasjoner (“Treningssenter” → “Proteindrikk”, “Pakk sekk for i morgen”) og foreslår å opprette dem med ett trykk.
+•Day Vibe. En kort dagsmerkelapp (Busy / Balanced / Chill) genereres fra kategoriene dine og oppgavemengden; påvirker grensesnittets tone og tidsforslag.
+•Kalender- og kontaktforslag. Med din tillatelse analyserer appen offline lokale hendelser og bursdager og tilbyr nyttige påminnelser (f.eks. “Minne deg på å dra 30 min før møtet?”).
+•Widgeter og Live Activities. Raske kort “Neste handling”, nedtelling til frist, dagens fremgang — alt offline, uten nettverksforespørsler.
+•Serier og prestasjoner. Motivasjon uten “sosiale medier”: serier av åpninger og fullføringer, ukentlige mål per kategori, lette belønninger.
+•Fleksibel prioritering. Tar hensyn til deadline-nærhet, nøkkelord og kategorier. “I dag”-seksjonen viser alltid det viktigste først.
+•Søk og gruppering. Umiddelbart frakoblet søk, filtre etter dato, kategori og prioritet, automatisk duplikatfjerning av lignende oppgaver.
+Personvern & frakoblet:
+•Alle beregninger utføres lokalt på enheten.
+•Ingen kontoer, sporere eller skylagring.
+•Tillatelser bes kun om ved bruk av den aktuelle funksjonen.
+•Du kan eksportere dataene dine og overføre dem manuelt mellom enheter (lokal sikkerhetskopi).
+For perfeksjonister:
+•Presis typografi, pene animasjoner, minimalistisk grensesnitt.
+•Støtte for mørk modus, dynamisk skriftstørrelse og haptisk tilbakemelding.
+•Fleksible innstillinger for kategorier, farger, lyder og “stille perioder”.

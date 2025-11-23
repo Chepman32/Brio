@@ -8,6 +8,8 @@ import { getTasks, createTask } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 export const PlannerScreen: React.FC = () => {
   const [mode, setMode] = useState<'day' | 'week' | 'month'>('week');
@@ -17,6 +19,8 @@ export const PlannerScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { isTablet } = useResponsive();
   const contentContainerStyle = getContentContainerStyle();
+  const { colors } = useTheme();
+  const { t } = useLocalization();
 
   const loadTasks = React.useCallback(() => {
     try {
@@ -58,19 +62,21 @@ export const PlannerScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View
         style={[
           styles.header,
           {
             paddingTop: insets.top + 20,
             paddingHorizontal: isTablet ? 32 : 20,
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
           },
         ]}
       >
         <View style={contentContainerStyle}>
-          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28 }]}>
-            Planner
+          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28, color: colors.text }]}>
+            {t('planner.title')}
           </Text>
           <View style={styles.modeSelector}>
             {(['day', 'week', 'month'] as const).map(m => (
@@ -78,7 +84,8 @@ export const PlannerScreen: React.FC = () => {
                 key={m}
                 style={[
                   styles.modeButton,
-                  mode === m && styles.modeButtonActive,
+                  { backgroundColor: colors.surfaceSecondary },
+                  mode === m && { backgroundColor: colors.primary },
                   { paddingHorizontal: isTablet ? 20 : 16 },
                 ]}
                 onPress={() => setMode(m)}
@@ -86,11 +93,12 @@ export const PlannerScreen: React.FC = () => {
                 <Text
                   style={[
                     styles.modeButtonText,
+                    { color: colors.textSecondary },
                     mode === m && styles.modeButtonTextActive,
                     { fontSize: isTablet ? 16 : 14 },
                   ]}
                 >
-                  {m.charAt(0).toUpperCase() + m.slice(1)}
+                  {t(`planner.${m}`)}
                 </Text>
               </Pressable>
             ))}
@@ -124,17 +132,13 @@ export const PlannerScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#FFFFFF',
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   title: {
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 16,
   },
   modeSelector: {
@@ -145,15 +149,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
-    backgroundColor: '#F5F5F5',
-  },
-  modeButtonActive: {
-    backgroundColor: '#007AFF',
   },
   modeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#666',
   },
   modeButtonTextActive: {
     color: '#FFFFFF',

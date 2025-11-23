@@ -2,6 +2,8 @@ import React from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
 import { TaskCard } from './TaskCard';
 import { TaskListViewProps } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 export const TaskListView: React.FC<TaskListViewProps> = ({
   tasks,
@@ -10,6 +12,9 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
   onTaskPress,
   onReorder,
 }) => {
+  const { colors } = useTheme();
+  const { t } = useLocalization();
+
   const renderItem = ({ item }: { item: any }) => (
     <TaskCard
       task={item}
@@ -25,9 +30,9 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No tasks yet</Text>
-      <Text style={styles.emptySubtext}>
-        Tap the + button to create your first task
+      <Text style={[styles.emptyText, { color: colors.text }]}>{t('today.noTasks')}</Text>
+      <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
+        {t('planner.addNewTask')}
       </Text>
     </View>
   );
@@ -63,12 +68,10 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#000',
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#000',
     textAlign: 'center',
   },
 });

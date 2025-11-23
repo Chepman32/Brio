@@ -8,28 +8,36 @@ import {
   Switch,
   Alert,
   Modal,
+  FlatList,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   getSettings,
-  setTheme,
   setNotificationsEnabled,
   setDefaultReminderTime,
   setTimeFormat,
+  setSoundEnabled,
+  setHapticsEnabled,
 } from '../database/operations';
 import { closeRealm } from '../database/realm';
 import { RecurringPatternsView } from '../components/RecurringPatternsView';
 import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
+import { ThemeType, LocaleType } from '../database/schemas/Settings';
 
 export const SettingsScreen: React.FC = () => {
-  const [theme, setThemeState] = useState<'light' | 'dark'>('light');
+  const { colors, themeName, setTheme } = useTheme();
+  const { locale, setLocale, t, languageNames } = useLocalization();
   const [notificationsEnabled, setNotificationsEnabledState] = useState(true);
+  const [soundEnabled, setSoundEnabledState] = useState(true);
+  const [hapticsEnabled, setHapticsEnabledState] = useState(true);
   const [reminderTime, setReminderTime] = useState(15);
-  const [timeFormat, setTimeFormatState] = useState<'auto' | '12h' | '24h'>(
-    'auto',
-  );
+  const [timeFormat, setTimeFormatState] = useState<'auto' | '12h' | '24h'>('auto');
   const [showPatternsModal, setShowPatternsModal] = useState(false);
+  const [showThemeModal, setShowThemeModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const insets = useSafeAreaInsets();
   const { isTablet } = useResponsive();
   const contentContainerStyle = getContentContainerStyle();
@@ -37,8 +45,9 @@ export const SettingsScreen: React.FC = () => {
   const loadSettings = React.useCallback(() => {
     try {
       const settings = getSettings();
-      setThemeState(settings.theme);
       setNotificationsEnabledState(settings.notificationsEnabled);
+      setSoundEnabledState(settings.soundEnabled ?? true);
+      setHapticsEnabledState(settings.hapticsEnabled ?? true);
       setReminderTime(settings.defaultReminderTime);
       setTimeFormatState(settings.timeFormat || 'auto');
     } catch (error) {
@@ -50,15 +59,29 @@ export const SettingsScreen: React.FC = () => {
     loadSettings();
   }, [loadSettings]);
 
-  const handleThemeToggle = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+  const handleThemeChange = (newTheme: ThemeType) => {
     setTheme(newTheme);
-    setThemeState(newTheme);
+    setShowThemeModal(false);
+  };
+
+  const handleLanguageChange = (newLocale: LocaleType) => {
+    setLocale(newLocale);
+    setShowLanguageModal(false);
   };
 
   const handleNotificationsToggle = (value: boolean) => {
     setNotificationsEnabled(value);
     setNotificationsEnabledState(value);
+  };
+
+  const handleSoundToggle = (value: boolean) => {
+    setSoundEnabled(value);
+    setSoundEnabledState(value);
+  };
+
+  const handleHapticsToggle = (value: boolean) => {
+    setHapticsEnabled(value);
+    setHapticsEnabledState(value);
   };
 
   const handleReminderTimeChange = (minutes: number) => {
@@ -73,23 +96,20 @@ export const SettingsScreen: React.FC = () => {
 
   const handleResetData = () => {
     Alert.alert(
-      'Reset All Data',
-      'Are you sure you want to delete all tasks, achievements, and statistics? This action cannot be undone.',
+      t('settings.clearData'),
+      t('settings.clearDataConfirm'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Reset',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: () => {
             try {
               closeRealm();
-              Alert.alert(
-                'Success',
-                'All data has been reset. Please restart the app.',
-              );
+              Alert.alert(t('common.success'), 'All data has been reset. Please restart the app.');
             } catch (error) {
               console.error('Error resetting data:', error);
-              Alert.alert('Error', 'Failed to reset data');
+              Alert.alert(t('common.error'), 'Failed to reset data');
             }
           },
         },
@@ -97,11 +117,209 @@ export const SettingsScreen: React.FC = () => {
     );
   };
 
+  const themeOptions: { value: ThemeType; label: string }[] = [
+    { value: 'light', label: t('settings.themeLight') },
+    { value: 'dark', label: t('settings.themeDark') },
+    { value: 'solar', label: t('settings.themeSolar') },
+    { value: 'mono', label: t('settings.themeMono') },
+  ];
+
+  const getThemeLabel = (theme: ThemeType): string => {
+    return themeOptions.find(opt => opt.value === theme)?.label || theme;
+  };
+
+  const languageList = Object.entries(languageNames) as [LocaleType, string][];
+
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      backgroundColor: colors.surface,
+      paddingBottom: 20,
+      borderBottomLeftRadius: 24,
+      borderBottomRightRadius: 24,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
+      elevation: 2,
+    },
+    title: {
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.text,
+      marginBottom: 12,
+    },
+    settingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 8,
+    },
+    settingLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    settingDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+    settingValue: {
+      fontSize: 14,
+      color: colors.primary,
+      fontWeight: '500',
+    },
+    reminderOption: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 12,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    reminderOptionActive: {
+      borderColor: colors.primary,
+      backgroundColor: colors.primaryLight + '20',
+    },
+    reminderOptionText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    reminderOptionTextActive: {
+      color: colors.primary,
+    },
+    infoCard: {
+      backgroundColor: colors.primaryLight + '20',
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.primary,
+    },
+    infoCardTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.primary,
+      marginBottom: 8,
+    },
+    infoCardText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    dangerButton: {
+      backgroundColor: colors.errorLight,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: colors.error,
+    },
+    dangerButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.error,
+    },
+    aboutCard: {
+      backgroundColor: colors.surface,
+      padding: 20,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    aboutTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.primary,
+      marginBottom: 4,
+    },
+    aboutVersion: {
+      fontSize: 14,
+      color: colors.textTertiary,
+      marginBottom: 8,
+    },
+    aboutDescription: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    aboutFeatures: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 24,
+      textAlign: 'left',
+    },
+    chevron: {
+      fontSize: 24,
+      color: colors.textTertiary,
+      fontWeight: '300',
+    },
+    modalContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    modalCloseButton: {
+      padding: 8,
+    },
+    modalCloseText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    optionItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    optionText: {
+      fontSize: 16,
+      color: colors.text,
+    },
+    optionSelected: {
+      backgroundColor: colors.primaryLight + '20',
+    },
+    checkmark: {
+      fontSize: 20,
+      color: colors.primary,
+      fontWeight: 'bold',
+    },
+  });
+
   return (
-    <View style={styles.container}>
+    <View style={dynamicStyles.container}>
       <View
         style={[
-          styles.header,
+          dynamicStyles.header,
           {
             paddingTop: insets.top + 20,
             paddingHorizontal: isTablet ? 32 : 20,
@@ -109,8 +327,8 @@ export const SettingsScreen: React.FC = () => {
         ]}
       >
         <View style={contentContainerStyle}>
-          <Text style={[styles.title, { fontSize: isTablet ? 34 : 28 }]}>
-            Settings
+          <Text style={[dynamicStyles.title, { fontSize: isTablet ? 34 : 28 }]}>
+            {t('settings.title')}
           </Text>
         </View>
       </View>
@@ -122,43 +340,77 @@ export const SettingsScreen: React.FC = () => {
       >
         {/* Appearance Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('settings.appearance')}</Text>
 
-          <View style={styles.settingRow}>
+          {/* Theme Selector */}
+          <Pressable style={dynamicStyles.settingRow} onPress={() => setShowThemeModal(true)}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Dark Mode</Text>
-              <Text style={styles.settingDescription}>
-                Use dark theme throughout the app
+              <Text style={dynamicStyles.settingLabel}>{t('settings.theme')}</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {getThemeLabel(themeName)}
               </Text>
             </View>
+            <Text style={dynamicStyles.chevron}>›</Text>
+          </Pressable>
+
+          {/* Sound Toggle */}
+          <View style={dynamicStyles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={dynamicStyles.settingLabel}>{t('settings.sound')}</Text>
+            </View>
             <Switch
-              value={theme === 'dark'}
-              onValueChange={handleThemeToggle}
-              trackColor={{ false: '#E0E0E0', true: '#6366F1' }}
+              value={soundEnabled}
+              onValueChange={handleSoundToggle}
+              trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />
           </View>
 
-          <View style={styles.settingRow}>
+          {/* Haptics Toggle */}
+          <View style={dynamicStyles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Time Format</Text>
-              <Text style={styles.settingDescription}>
-                Choose how times are displayed
+              <Text style={dynamicStyles.settingLabel}>{t('settings.haptics')}</Text>
+            </View>
+            <Switch
+              value={hapticsEnabled}
+              onValueChange={handleHapticsToggle}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+
+          {/* Language Selector */}
+          <Pressable style={dynamicStyles.settingRow} onPress={() => setShowLanguageModal(true)}>
+            <View style={styles.settingInfo}>
+              <Text style={dynamicStyles.settingLabel}>{t('settings.language')}</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {languageNames[locale]}
+              </Text>
+            </View>
+            <Text style={dynamicStyles.chevron}>›</Text>
+          </Pressable>
+
+          {/* Time Format */}
+          <View style={dynamicStyles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={dynamicStyles.settingLabel}>{t('settings.timeFormat')}</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {t('settings.timeFormatAuto')} / {t('settings.timeFormat12h')} / {t('settings.timeFormat24h')}
               </Text>
             </View>
           </View>
 
           <View style={styles.reminderOptions}>
             {[
-              { value: 'auto', label: 'Auto' },
+              { value: 'auto', label: t('settings.timeFormatAuto') },
               { value: '12h', label: '12h' },
               { value: '24h', label: '24h' },
             ].map(option => (
               <Pressable
                 key={option.value}
                 style={[
-                  styles.reminderOption,
-                  timeFormat === option.value && styles.reminderOptionActive,
+                  dynamicStyles.reminderOption,
+                  timeFormat === option.value && dynamicStyles.reminderOptionActive,
                 ]}
                 onPress={() =>
                   handleTimeFormatChange(option.value as 'auto' | '12h' | '24h')
@@ -166,9 +418,8 @@ export const SettingsScreen: React.FC = () => {
               >
                 <Text
                   style={[
-                    styles.reminderOptionText,
-                    timeFormat === option.value &&
-                      styles.reminderOptionTextActive,
+                    dynamicStyles.reminderOptionText,
+                    timeFormat === option.value && dynamicStyles.reminderOptionTextActive,
                   ]}
                 >
                   {option.label}
@@ -180,29 +431,26 @@ export const SettingsScreen: React.FC = () => {
 
         {/* Notifications Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('settings.notifications')}</Text>
 
-          <View style={styles.settingRow}>
+          <View style={dynamicStyles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Enable Notifications</Text>
-              <Text style={styles.settingDescription}>
-                Receive reminders for your tasks
+              <Text style={dynamicStyles.settingLabel}>{t('settings.enableNotifications')}</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {t('settings.reminderTime')}
               </Text>
             </View>
             <Switch
               value={notificationsEnabled}
               onValueChange={handleNotificationsToggle}
-              trackColor={{ false: '#E0E0E0', true: '#6366F1' }}
+              trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />
           </View>
 
-          <View style={styles.settingRow}>
+          <View style={dynamicStyles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Default Reminder Time</Text>
-              <Text style={styles.settingDescription}>
-                Minutes before task due time
-              </Text>
+              <Text style={dynamicStyles.settingLabel}>{t('settings.reminderTime')}</Text>
             </View>
           </View>
 
@@ -211,15 +459,15 @@ export const SettingsScreen: React.FC = () => {
               <Pressable
                 key={minutes}
                 style={[
-                  styles.reminderOption,
-                  reminderTime === minutes && styles.reminderOptionActive,
+                  dynamicStyles.reminderOption,
+                  reminderTime === minutes && dynamicStyles.reminderOptionActive,
                 ]}
                 onPress={() => handleReminderTimeChange(minutes)}
               >
                 <Text
                   style={[
-                    styles.reminderOptionText,
-                    reminderTime === minutes && styles.reminderOptionTextActive,
+                    dynamicStyles.reminderOptionText,
+                    reminderTime === minutes && dynamicStyles.reminderOptionTextActive,
                   ]}
                 >
                   {minutes} min
@@ -231,64 +479,127 @@ export const SettingsScreen: React.FC = () => {
 
         {/* Smart Planning Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Smart Planning</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('settings.smartPlanning')}</Text>
 
           <Pressable
-            style={styles.settingRow}
+            style={dynamicStyles.settingRow}
             onPress={() => setShowPatternsModal(true)}
           >
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>
-                🔄 Recurring Task Patterns
-              </Text>
-              <Text style={styles.settingDescription}>
-                View and manage learned patterns
+              <Text style={dynamicStyles.settingLabel}>
+                {t('settings.autoSchedule')}
               </Text>
             </View>
-            <Text style={styles.chevron}>›</Text>
+            <Text style={dynamicStyles.chevron}>›</Text>
           </Pressable>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoCardTitle}>🤖 AI-Powered Suggestions</Text>
-            <Text style={styles.infoCardText}>
+          <View style={dynamicStyles.infoCard}>
+            <Text style={dynamicStyles.infoCardTitle}>AI-Powered Suggestions</Text>
+            <Text style={dynamicStyles.infoCardText}>
               Brio learns from your task creation patterns and suggests tasks
-              you typically add at specific times. For example, if you add "Go
-              gym" every Monday at 17:00, Brio will remind you to add it if you
-              forget!
+              you typically add at specific times.
             </Text>
           </View>
         </View>
 
         {/* Data Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('settings.data')}</Text>
 
-          <Pressable style={styles.dangerButton} onPress={handleResetData}>
-            <Text style={styles.dangerButtonText}>Reset All Data</Text>
+          <Pressable style={dynamicStyles.dangerButton} onPress={handleResetData}>
+            <Text style={dynamicStyles.dangerButtonText}>{t('settings.clearData')}</Text>
           </Pressable>
         </View>
 
         {/* About Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={dynamicStyles.sectionTitle}>{t('settings.about')}</Text>
 
-          <View style={styles.aboutCard}>
-            <Text style={styles.aboutTitle}>Brio</Text>
-            <Text style={styles.aboutVersion}>Version 1.0.0</Text>
-            <Text style={styles.aboutDescription}>
+          <View style={dynamicStyles.aboutCard}>
+            <Text style={dynamicStyles.aboutTitle}>Brio</Text>
+            <Text style={dynamicStyles.aboutVersion}>{t('settings.version')} 1.0.0</Text>
+            <Text style={dynamicStyles.aboutDescription}>
               Smart Offline Reminder & Planning App
-            </Text>
-            <Text style={styles.aboutFeatures}>
-              ✨ Gesture-driven interface{'\n'}
-              🤖 AI-powered scheduling{'\n'}
-              🏆 Achievement system{'\n'}
-              📱 100% offline functionality
             </Text>
           </View>
         </View>
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
+
+      {/* Theme Selection Modal */}
+      <Modal
+        visible={showThemeModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <View style={[dynamicStyles.modalContainer, { paddingTop: insets.top }]}>
+          <View style={dynamicStyles.modalHeader}>
+            <Text style={dynamicStyles.modalTitle}>{t('settings.theme')}</Text>
+            <Pressable
+              style={dynamicStyles.modalCloseButton}
+              onPress={() => setShowThemeModal(false)}
+            >
+              <Text style={dynamicStyles.modalCloseText}>{t('common.done')}</Text>
+            </Pressable>
+          </View>
+          <FlatList
+            data={themeOptions}
+            keyExtractor={item => item.value}
+            renderItem={({ item }) => (
+              <Pressable
+                style={[
+                  dynamicStyles.optionItem,
+                  themeName === item.value && dynamicStyles.optionSelected,
+                ]}
+                onPress={() => handleThemeChange(item.value)}
+              >
+                <Text style={dynamicStyles.optionText}>{item.label}</Text>
+                {themeName === item.value && (
+                  <Text style={dynamicStyles.checkmark}>✓</Text>
+                )}
+              </Pressable>
+            )}
+          />
+        </View>
+      </Modal>
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={showLanguageModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <View style={[dynamicStyles.modalContainer, { paddingTop: insets.top }]}>
+          <View style={dynamicStyles.modalHeader}>
+            <Text style={dynamicStyles.modalTitle}>{t('settings.language')}</Text>
+            <Pressable
+              style={dynamicStyles.modalCloseButton}
+              onPress={() => setShowLanguageModal(false)}
+            >
+              <Text style={dynamicStyles.modalCloseText}>{t('common.done')}</Text>
+            </Pressable>
+          </View>
+          <FlatList
+            data={languageList}
+            keyExtractor={item => item[0]}
+            renderItem={({ item }) => (
+              <Pressable
+                style={[
+                  dynamicStyles.optionItem,
+                  locale === item[0] && dynamicStyles.optionSelected,
+                ]}
+                onPress={() => handleLanguageChange(item[0])}
+              >
+                <Text style={dynamicStyles.optionText}>{item[1]}</Text>
+                {locale === item[0] && (
+                  <Text style={dynamicStyles.checkmark}>✓</Text>
+                )}
+              </Pressable>
+            )}
+          />
+        </View>
+      </Modal>
 
       {/* Recurring Patterns Modal */}
       <Modal
@@ -303,25 +614,6 @@ export const SettingsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  header: {
-    backgroundColor: '#FFFFFF',
-    paddingBottom: 20,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  title: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
   content: {
     flex: 1,
   },
@@ -329,125 +621,14 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingHorizontal: 0,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
   settingInfo: {
     flex: 1,
     marginRight: 16,
-  },
-  settingLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  settingDescription: {
-    fontSize: 14,
-    color: '#666',
   },
   reminderOptions: {
     flexDirection: 'row',
     gap: 8,
     marginTop: 8,
-  },
-  reminderOption: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#E0E0E0',
-  },
-  reminderOptionActive: {
-    borderColor: '#6366F1',
-    backgroundColor: '#F0F4FF',
-  },
-  reminderOptionText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  reminderOptionTextActive: {
-    color: '#6366F1',
-  },
-  infoCard: {
-    backgroundColor: '#F0F4FF',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#6366F1',
-  },
-  infoCardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6366F1',
-    marginBottom: 8,
-  },
-  infoCardText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  dangerButton: {
-    backgroundColor: '#FFE5E5',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FF4444',
-  },
-  dangerButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FF4444',
-  },
-  aboutCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  aboutTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#6366F1',
-    marginBottom: 4,
-  },
-  aboutVersion: {
-    fontSize: 14,
-    color: '#999',
-    marginBottom: 8,
-  },
-  aboutDescription: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  aboutFeatures: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 24,
-    textAlign: 'left',
-  },
-  chevron: {
-    fontSize: 24,
-    color: '#999',
-    fontWeight: '300',
   },
   bottomSpacer: {
     height: 40,

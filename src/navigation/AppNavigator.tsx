@@ -8,22 +8,26 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { MainTabParamList } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { ResponsiveSizes } from '../utils/responsiveDimensions';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const AppNavigator: React.FC = () => {
   const { isTablet } = useResponsive();
+  const { colors } = useTheme();
+  const { t } = useLocalization();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.tabBarInactive,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.tabBar,
           borderTopWidth: 0.5,
-          borderTopColor: '#E5E5EA',
+          borderTopColor: colors.border,
           paddingBottom: isTablet ? 24 : 20,
           paddingTop: isTablet ? 12 : 8,
           height: ResponsiveSizes.tabBarHeight,
@@ -42,7 +46,7 @@ export const AppNavigator: React.FC = () => {
         name="Today"
         component={TodayScreen}
         options={{
-          tabBarLabel: 'Today',
+          tabBarLabel: t('tabs.today'),
           tabBarIcon: ({ color, size }) => (
             <Icon name="today-outline" size={size} color={color} />
           ),
@@ -52,7 +56,7 @@ export const AppNavigator: React.FC = () => {
         name="Planner"
         component={PlannerScreen}
         options={{
-          tabBarLabel: 'Plan',
+          tabBarLabel: t('tabs.planner'),
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar-outline" size={size} color={color} />
           ),
@@ -62,7 +66,7 @@ export const AppNavigator: React.FC = () => {
         name="Achievements"
         component={AchievementsScreen}
         options={{
-          tabBarLabel: 'Achievements',
+          tabBarLabel: t('tabs.achievements'),
           tabBarIcon: ({ color, size }) => (
             <Icon name="trophy-outline" size={size} color={color} />
           ),
@@ -72,7 +76,7 @@ export const AppNavigator: React.FC = () => {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarLabel: 'Settings',
+          tabBarLabel: t('tabs.settings'),
           tabBarIcon: ({ color, size }) => (
             <Icon name="settings-outline" size={size} color={color} />
           ),

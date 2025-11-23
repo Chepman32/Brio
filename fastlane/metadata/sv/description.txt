@@ -1,0 +1,26 @@
+Brio AI är smarta påminnelser som fungerar helt offline och anpassar sig efter din rytm. AI:n på enheten lär sig när du faktiskt reagerar och erbjuder de bästa visningstiderna, diskreta snooze-alternativ och åtgärdsmallar. Inga konton eller moln – dina data stannar hos dig.
+Varför Brio AI?
+•AI på enheten. Träning och rekommendationer sker lokalt: snabba förslag, noll nätverksberoende, privatlivet förblir skyddat.
+•Tidsanpassning. Appen analyserar de faktiska tidpunkter du öppnar eller skjuter upp påminnelser och justerar automatiskt framtida schema till dina “egna” tidsfönster.
+•Gester & snabbhet. De flesta åtgärder görs med svep och långa tryck: slutför, senarelägg, arkivera, snabbredigera.
+•Transparent sekretess. Inga konton och ingen synkronisering. Behörigheter begärs bara vid behov (notiser, kalender, kontakter, Hälsa – valfritt).
+Huvudfunktioner:
+•Smart tillägg. Skriv t.ex. “Betala räkningar fre 9:00, varje månad” — Brio AI känner offline av datum, tid och frekvens och skapar rätt händelse.
+•Adaptivt schema. Systemet uppskattar sannolikheten för “snabb öppning” vid olika dagar och tider och föreslår de effektivaste tidsluckorna. Om du regelbundet skjuter upp en uppgift från morgon till kväll, justerar Brio AI tiden mjukt.
+•Personlig snooze. Snooze-alternativen anpassas efter din typiska reaktion (t.ex. “+40 min” eller “imorgon 7:30”), så att påminnelsen kommer när du verkligen är redo.
+•Mallar och kedjor. Upptäcker återkommande kombinationer (“Gymmet” → “Proteindryck”, “Packa väskan till imorgon”) och föreslår att skapa dem med ett tryck.
+•Day Vibe. En kort dagsetikett (Busy / Balanced / Chill) skapas utifrån dina kategorier och arbetsmängd; påverkar gränssnittets ton och tidsförslag.
+•Förslag från kalender & kontakter. Med ditt tillstånd analyserar appen offline lokala händelser och födelsedagar och ger användbara påminnelser (t.ex. “Påminna om att gå 30 min före mötet?”).
+•Widgetar & Live Activities. Snabba kort “Nästa åtgärd”, nedräkning till deadline, dagens framsteg — allt offline, utan nätverksförfrågningar.
+•Serier & prestationer. Motivation utan “sociala medier”: serier av öppningar och slutföranden, vecko-mål per kategori, små belöningar.
+•Flexibel prioritering. Tar hänsyn till hur nära deadlines är, nyckelord och kategorier. “Idag”-avsnittet visar alltid det viktigaste först.
+•Sök & gruppering. Omedelbar offline-sökning, filter per datum, kategori och prioritet, automatisk duplicatborttagning av liknande uppgifter.
+Sekretess & offline:
+•All bearbetning sker lokalt på enheten.
+•Inga konton, spårare eller molnlagring.
+•Behörigheter begärs endast vid användning av respektive funktion.
+•Du kan exportera dina data och överföra dem manuellt mellan enheter (lokal säkerhetskopia).
+För perfektionister:
+•Precis typografi, snygga animationer, avskalat gränssnitt.
+•Stöd för mörkt läge, dynamisk textstorlek och haptisk feedback.
+•Flexibla inställningar för kategorier, färger, ljud och “stilla perioder”.

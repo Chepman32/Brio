@@ -1,0 +1,26 @@
+Brio AI, tamamen çevrimdışı çalışan ve sizin temponuza uyum sağlayan akıllı bir hatırlatma uygulamasıdır. Cihazınızdaki yapay zekâ, gerçekten tepki verdiğiniz zamanları öğrenerek en iyi hatırlatma zamanlarını, rahatsız etmeyen erteleme seçeneklerini ve eylem şablonlarını sunar. Hesap veya bulut yok — verileriniz sadece sizde kalır.
+Neden Brio AI?
+•Cihaz içi yapay zekâ. Eğitim ve öneriler yerel olarak gerçekleşir: hızlı öneriler, sıfır ağ bağımlılığı, gizlilik koruması.
+•Zamana uyum. Uygulama, hatırlatıcıları açtığınız veya ertelediğiniz gerçek zamanları analiz eder ve gelecekteki programı otomatik olarak “kendi zaman aralıklarınıza” kaydırır.
+•Jestler ve hız. Çoğu işlem kaydırma ve uzun basma ile yapılır: tamamlama, erteleme, arşivleme, hızlı düzenleme.
+•Şeffaf gizlilik. Hesap veya senkronizasyon yok. İzinler yalnızca gerektiğinde istenir (bildirimler, takvim, kişiler, sağlık – isteğe bağlı).
+Ana özellikler:
+•Akıllı ekleme. Örneğin “Faturaları öde Cum 9:00, her ay” yazın — Brio AI tarih, saat ve tekrar sıklığını çevrimdışı algılar ve doğru etkinliği oluşturur.
+•Uyarlanabilir program. Sistem farklı gün ve saatlerde “hızlı açma” olasılığını değerlendirir ve en etkili zaman dilimlerini önerir. Eğer düzenli olarak bir görevi sabahtan akşama erteliyorsanız, Brio AI zamanı nazikçe yeniden ayarlar.
+•Kişisel Snooze. Erteleme seçenekleri tipik tepkinize göre uyarlanır (örn. “+40 dk” veya “yarın 7:30”) böylece hatırlatıcı gerçekten hazır olduğunuzda gelir.
+•Şablonlar ve zincirler. Tekrarlayan kombinasyonları fark eder (“Spor salonu” → “Protein shake”, “Yarın için çanta hazırla”) ve bunları tek dokunuşla oluşturmanızı önerir.
+•Day Vibe. Kategorileriniz ve görev hacminize göre kısa bir gün etiketi (Busy / Balanced / Chill) oluşturulur; arayüz tonunu ve zaman önerilerini etkiler.
+•Takvim ve kişi önerileri. İzninizle, uygulama yerel etkinlikleri ve doğum günlerini çevrimdışı analiz eder ve faydalı hatırlatmalar sunar (örn: “Toplantıdan 30 dk önce çıkmanız için hatırlatalım mı?”).
+•Widget’lar ve Live Activities. Hızlı “Sonraki eylem” kartları, son tarihe geri sayım, günün ilerlemesi — hepsi çevrimdışı, ağ isteği olmadan.
+•Seriler ve başarılar. “Sosyal medya” olmadan motivasyon: açma ve tamamlama serileri, kategori bazlı haftalık hedefler, hafif ödüller.
+•Esnek önceliklendirme. Son tarihin yakınlığını, anahtar kelimeleri ve kategorileri dikkate alır. “Bugün” bölümü her zaman en önemli olanı gösterir.
+•Arama ve gruplama. Anında çevrimdışı arama, tarihe, kategoriye ve önceliğe göre filtreler, benzer görevlerin otomatik tekrar kaldırılması.
+Gizlilik & çevrimdışı:
+•Tüm işlemler cihazda yerel olarak yapılır.
+•Hesap, izleyici veya bulut depolama yoktur.
+•İzinler yalnızca ilgili özelliği kullanırken istenir.
+•Verilerinizi dışa aktarabilir ve cihazlar arasında elle aktarabilirsiniz (yerel yedekleme).
+Mükemmeliyetçiler için:
+•Hassas tipografi, özenli animasyonlar, sade arayüz.
+•Karanlık mod, dinamik yazı boyutu ve dokunsal geri bildirim desteği.
+•Kategoriler, renkler, sesler ve “sessizlik süreleri” için esnek ayarlar.

@@ -28,8 +28,8 @@ export const initializeRealm = async (): Promise<Realm> => {
       Occurrence,
       TimeCluster,
     ],
-    schemaVersion: 4,
-    migration: (oldRealm, newRealm) => {
+    schemaVersion: 5,
+    onMigration: (oldRealm: Realm, newRealm: Realm) => {
       // Migration for schema version 2: add timeFormat field
       if (oldRealm.schemaVersion < 2) {
         const oldSettings = oldRealm.objects('Settings');
@@ -45,6 +45,19 @@ export const initializeRealm = async (): Promise<Realm> => {
 
       // Migration for schema version 4: add PatternModel schema
       // No data migration needed, PatternModel will be created as tasks are added
+
+      // Migration for schema version 5: add soundEnabled, hapticsEnabled, locale to Settings
+      if (oldRealm.schemaVersion < 5) {
+        const newSettings = newRealm.objects('Settings');
+
+        for (let i = 0; i < newSettings.length; i++) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const setting = newSettings[i] as any;
+          setting.soundEnabled = true;
+          setting.hapticsEnabled = true;
+          setting.locale = 'en';
+        }
+      }
     },
   };
 

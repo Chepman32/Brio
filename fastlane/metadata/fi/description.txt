@@ -1,0 +1,26 @@
+Brio AI on älykäs muistutussovellus, joka toimii täysin offline-tilassa ja mukautuu rytmiisi. Laitteessa toimiva tekoäly oppii, milloin reagoit oikeasti, ja tarjoaa parhaat näyttöajat, huomaamattomat torkkuvaihtoehdot ja toimintamallit. Ei tilejä tai pilveä – tietosi pysyvät vain sinulla.
+Miksi Brio AI?
+•Tekoäly laitteessa. Opetus ja suositukset tapahtuvat paikallisesti: nopeat ehdotukset, nolla verkkoriippuvuus, yksityisyys säilyy.
+•Ajanhallinnan mukautus. Sovellus analysoi todelliset ajat, jolloin avaat tai lykkäät muistutuksia, ja siirtää automaattisesti tulevaa aikataulua “omia aikajaksojasi” vastaavaksi.
+•Eleet ja nopeus. Suurin osa toimista hoituu pyyhkäisemällä ja pitkällä painalluksella: merkitse valmiiksi, siirrä, arkistoi, nopea muokkaus.
+•Läpinäkyvä yksityisyys. Ei tilejä eikä synkronointia. Luvat pyydetään vain tarvittaessa (ilmoitukset, kalenteri, yhteystiedot, terveys – valinnainen).
+Keskeiset ominaisuudet:
+•Älykäs lisäys. Kirjoita esimerkiksi “Maksa laskut pe 9:00, joka kuukausi” — Brio AI tunnistaa offline-tilassa päivämäärän, kellonajan ja toistuvuuden ja luo oikean tapahtuman.
+•Mukautuva aikataulu. Järjestelmä arvioi “nopean avaamisen” todennäköisyyden eri päivinä ja aikoina ja ehdottaa tehokkaimpia aikaikkunoita. Jos siirrät tehtävää säännöllisesti aamusta iltaan, Brio AI säätää aikaa lempeästi.
+•Personoitu torkku. Torkkuvaihtoehdot mukautuvat tyypilliseen reagointiisi (esim. “+40 min” tai “huomenna 7.30”), jotta muistutus tulee, kun olet todella valmis.
+•Mallit ja ketjut. Havaitsee toistuvat yhdistelmät (“Kuntosali” → “Proteiinipirtelö”, “Pakkaa laukku huomiseksi”) ja ehdottaa niiden luomista yhdellä napautuksella.
+•Day Vibe. Lyhyt päivän tunniste (Busy / Balanced / Chill) muodostetaan kategorioistasi ja tehtävämäärästä; vaikuttaa käyttöliittymän tunnelmaan ja aikasuosituksiin.
+•Kalenteri- ja yhteystarjoukset. Luvallasi sovellus analysoi offline-tilassa paikalliset tapahtumat ja syntymäpäivät ja tarjoaa hyödyllisiä muistutuksia (esim. “Muistutetaanko lähtemään 30 min ennen tapaamista?”).
+•Widgetit ja Live Activities. Nopeat “Seuraava toimenpide” -kortit, määräajan laskuri, päivän edistyminen — kaikki offline, ilman verkkopyyntöjä.
+•Jaksot ja saavutukset. Motivaatio ilman “sosiaalista mediaa”: avaus- ja suoritusjaksot, viikoittaiset tavoitteet kategorioittain, kevyet palkinnot.
+•Joustava priorisointi. Huomioi määräajan lähestymisen, avainsanat ja kategoriat. “Tänään”-osio näyttää aina tärkeimmät asiat ensin.
+•Haku ja ryhmittely. Välitön offline-haku, suodattimet päivämäärän, kategorian ja prioriteetin mukaan, samanlaisten tehtävien automaattinen poisto kaksoiskappaleina.
+Yksityisyys & offline:
+•Kaikki laskenta tapahtuu paikallisesti laitteessa.
+•Ei tilejä, seurantaohjelmia tai pilvitallennusta.
+•Luvat pyydetään vain käytettäessä kyseistä ominaisuutta.
+•Voit viedä tietosi ja siirtää ne manuaalisesti laitteiden välillä (paikallinen varmuuskopio).
+Perfektionisteille:
+•Tarkka typografia, siistit animaatiot, pelkistetty käyttöliittymä.
+•Tuki tummalle tilalle, dynaamiselle fonttikoolle ja kosketuspalautteelle.
+•Joustavat asetukset kategorioille, väreille, äänille ja “hiljaisille jaksoille”.

@@ -1,0 +1,26 @@
+Brio AI es una aplicación de recordatorios inteligentes que funciona completamente sin conexión y se adapta a tu ritmo. La IA en el dispositivo aprende cuándo reaccionas realmente y ofrece el mejor momento para mostrarlos, aplazamientos sutiles y plantillas de acciones. Sin cuentas ni nube: tus datos se quedan solo contigo.
+Por qué elegir Brio AI:
+•IA en el dispositivo. El entrenamiento y las recomendaciones ocurren localmente: sugerencias rápidas, cero dependencia de la red, privacidad preservada.
+•Adaptación horaria. La aplicación analiza las horas reales en que abres o pospones recordatorios y desplaza automáticamente la programación futura a tus “franjas” personales.
+•Gestos y rapidez. La mayoría de las acciones se realizan con deslizamientos y pulsaciones prolongadas: completar, posponer, archivar, edición rápida.
+•Privacidad transparente. Sin cuentas ni sincronizaciones. Los permisos solo se solicitan cuando es necesario (notificaciones, calendario, contactos, salud – opcionales).
+Funciones clave:
+•Añadido inteligente. Escribe “Pagar facturas vie 9:00, cada mes” — Brio AI reconocerá sin conexión la fecha, hora y periodicidad, y creará el evento correctamente.
+•Horario adaptativo. El sistema estima la probabilidad de “apertura rápida” según el día y la hora, y propone los intervalos más eficaces. Si sueles trasladar una tarea de la mañana a la noche, Brio AI reajustará suavemente la hora.
+•Snooze personal. Las opciones de posposición se adaptan a tu comportamiento típico (ej. “+40 min” o “mañana 7:30”) para que el recordatorio llegue cuando realmente estés listo.
+•Plantillas y cadenas. Detecta secuencias repetitivas (“Gimnasio” → “Batido de proteínas”, “Preparar mochila para mañana”) y propone crearlas con un toque.
+•Day Vibe. Una breve etiqueta del día (Busy / Balanced / Chill) se genera a partir de tus categorías y volumen de tareas; influye en el tono de la interfaz y en las sugerencias de horarios.
+•Sugerencias de calendario y contactos. Con tu permiso, la app analiza sin conexión los eventos locales y cumpleaños y ofrece recordatorios útiles (ej. “¿Recordar salir 30 min antes de la reunión?”).
+•Widgets y Live Activities. Tarjetas rápidas de “Próxima acción”, cuenta regresiva hasta la fecha límite, progreso del día — todo sin conexión, sin peticiones de red.
+•Rachas y logros. Motivación sin “redes sociales”: rachas de aperturas y finalizaciones, objetivos semanales por categoría, recompensas ligeras.
+•Priorización flexible. Tiene en cuenta la cercanía de la fecha límite, las palabras clave y las categorías. La sección “Hoy” siempre muestra lo más importante primero.
+•Búsqueda y agrupación. Búsqueda instantánea sin conexión, filtros por fecha, categoría y prioridad, eliminación automática de duplicados en tareas similares.
+Privacidad y sin conexión:
+•Todos los cálculos se realizan localmente en el dispositivo.
+•Sin cuentas, rastreadores ni almacenamiento en la nube.
+•Los permisos se solicitan solo al utilizar la función específica.
+•Puedes exportar tus datos y transferirlos manualmente entre dispositivos (copia de seguridad local).
+Para perfeccionistas:
+•Tipografía precisa, animaciones cuidadas, interfaz minimalista.
+•Soporta modo oscuro, tamaño de fuente dinámico y respuesta háptica.
+•Ajustes flexibles de categorías, colores, sonidos y periodos “silenciosos”.

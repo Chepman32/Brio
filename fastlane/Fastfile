@@ -1,0 +1,21 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Upload Brio AI metadata to App Store Connect"
+  lane :upload_metadata do
+    api_key = app_store_connect_api_key(
+      key_id: "TVX56KGPFH",                          # твой Key ID
+      issuer_id: "3cb46eb5-0082-43b4-bfb5-f29138dbff5f", # твой Issuer ID
+      keyfile: "./fastlane/AuthKey_TVX56KGPFH.p8",
+      in_house: false
+    )
+
+    deliver(
+      api_key: api_key,
+      app_identifier: "com.yourcompany.brioai",  # тот же bundle id, что в Appfile
+      skip_screenshots: true,
+      skip_binary_upload: true,
+      force: true
+    )
+  end
+end

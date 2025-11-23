@@ -1,0 +1,26 @@
+Brio AI là ứng dụng nhắc nhở thông minh hoạt động hoàn toàn ngoại tuyến và thích ứng với nhịp sống của bạn. AI trên thiết bị học hỏi khi nào bạn thực sự phản hồi để đề xuất thời gian nhắc tối ưu, hoãn nhắc nhẹ nhàng và các mẫu hành động. Không có tài khoản hay lưu trữ đám mây – dữ liệu của bạn chỉ lưu trữ tại chỗ cho bạn.
+Tại sao chọn Brio AI:
+•AI trên thiết bị. Quá trình học và đề xuất diễn ra tại chỗ: gợi ý nhanh, không phụ thuộc mạng, quyền riêng tư được bảo vệ.
+•Thích ứng thời gian. Ứng dụng phân tích thời điểm thực tế bạn mở hoặc hoãn nhắc nhở và tự động điều chỉnh lịch tương lai vào các “khung giờ” phù hợp với bạn.
+•Cử chỉ & tốc độ. Hầu hết thao tác qua vuốt và nhấn giữ: hoàn thành, hoãn, lưu trữ, chỉnh sửa nhanh.
+•Quyền riêng tư minh bạch. Không tài khoản, không đồng bộ. Quyền chỉ được yêu cầu khi cần thiết (thông báo, lịch, danh bạ, sức khỏe – tùy chọn).
+Tính năng chính:
+•Thêm thông minh. Nhập “Thanh toán hóa đơn thứ 6 9:00, mỗi tháng” — Brio AI sẽ nhận dạng ngoại tuyến ngày, giờ và tần suất và tạo sự kiện chính xác.
+•Lịch trình thích ứng. Hệ thống ước tính khả năng “mở nhanh” vào các ngày và giờ khác nhau, đồng thời đề xuất các khung giờ hiệu quả nhất. Nếu bạn thường đẩy một việc từ sáng đến tối, Brio AI sẽ điều chỉnh nhẹ thời gian.
+•Snooze cá nhân. Các tùy chọn hoãn nhắc được điều chỉnh theo phản ứng thường lệ của bạn (ví dụ: “+40 phút” hoặc “mai 7:30”) để nhắc nhở đến khi bạn thực sự sẵn sàng.
+•Mẫu và chuỗi. Phát hiện các chuỗi lặp lại (“Tập gym” → “Protein shake”, “Sắp xếp túi cho ngày mai”) và đề xuất tạo chúng chỉ với một lần chạm.
+•Day Vibe. Một nhãn ngắn cho ngày (Busy / Balanced / Chill) được tạo từ danh mục và khối lượng công việc của bạn; ảnh hưởng đến tông giao diện và đề xuất thời gian.
+•Gợi ý lịch & danh bạ. Với sự cho phép của bạn, ứng dụng phân tích ngoại tuyến các sự kiện và sinh nhật trên thiết bị và đưa ra nhắc nhở hữu ích (vd: “Nhắc bạn rời đi 30 phút trước cuộc họp?”).
+•Widget & Live Activities. Thẻ “Hành động tiếp theo” nhanh, đếm ngược đến hạn chót, tiến độ trong ngày — tất cả ngoại tuyến, không yêu cầu kết nối mạng.
+•Chuỗi & thành tích. Tạo động lực không cần “mạng xã hội”: chuỗi mở và hoàn thành nhiệm vụ, mục tiêu hàng tuần theo danh mục, phần thưởng nhỏ.
+•Ưu tiên linh hoạt. Tính đến mức độ gần của hạn chót, từ khóa và danh mục. Mục “Hôm nay” luôn hiển thị những điều quan trọng nhất trước tiên.
+•Tìm kiếm & nhóm. Tìm kiếm tức thì ngoại tuyến, bộ lọc theo ngày, danh mục và mức độ ưu tiên, tự động loại bỏ trùng lặp các nhiệm vụ tương tự.
+Quyền riêng tư & ngoại tuyến:
+•Mọi xử lý đều được thực hiện cục bộ trên thiết bị.
+•Không tài khoản, không trình theo dõi, không lưu trữ đám mây.
+•Chỉ yêu cầu quyền khi sử dụng tính năng cụ thể.
+•Bạn có thể xuất dữ liệu của mình và chuyển thủ công giữa các thiết bị (sao lưu cục bộ).
+Dành cho người cầu toàn:
+•Kiểu chữ chính xác, hoạt ảnh mượt mà, giao diện gọn gàng.
+•Hỗ trợ chế độ tối, cỡ chữ động và phản hồi xúc giác.
+•Cài đặt linh hoạt cho danh mục, màu sắc, âm thanh và khoảng thời gian “yên tĩnh”.

@@ -1,0 +1,26 @@
+Brio AI jsou chytré připomínky, které fungují zcela offline a přizpůsobí se vašemu rytmu. AI v zařízení se naučí, kdy skutečně reagujete, a nabídne nejlepší časy zobrazení, nenápadné odložení a akční šablony. Žádné účty ani cloud – vaše data zůstávají jen u vás.
+Proč zvolit Brio AI?
+•AI v zařízení. Učení a doporučení probíhají lokálně: rychlé návrhy, nulová závislost na síti, zachování soukromí.
+•Přizpůsobení času. Aplikace analyzuje skutečné časy, kdy otevřete nebo odložíte připomínky, a automaticky posune budoucí plán do vašich „vlastních“ časových oken.
+•Gesta a rychlost. Většina akcí se provádí přejetím a dlouhým stiskem: dokončit, odložit, archivovat, rychlá editace.
+•Transparentní soukromí. Žádné účty a synchronizace. Oprávnění jsou vyžadována jen v případě potřeby (oznámení, kalendář, kontakty, zdraví – volitelně).
+Klíčové funkce:
+•Chytré přidání. Zadejte např. „Zaplatit účty pá 9:00, každý měsíc“ — Brio AI offline rozpozná datum, čas i frekvenci a vytvoří odpovídající událost.
+•Adaptivní rozvrh. Systém vyhodnotí pravděpodobnost „rychlého otevření“ v různé dny a hodiny a navrhne nejefektivnější termíny. Pokud úkol pravidelně přesouváte z rána na večer, Brio AI jemně upraví čas.
+•Personalizované Snooze. Možnosti odložení se přizpůsobí vaší obvyklé reakci (např. „+40 min“ nebo „zítra 7:30“), aby se připomínka objevila, když jste skutečně připraveni.
+•Šablony a řetězce. Zaznamená opakující se sekvence („Posilovna“ → „Proteinový shake“, „Zabalit tašku na zítra“) a navrhne jejich vytvoření jedním klepnutím.
+•Day Vibe. Krátký denní štítek (Busy / Balanced / Chill) je vytvořen z vašich kategorií a objemu úkolů; ovlivňuje tón rozhraní a návrhy časů.
+•Tipy z kalendáře a kontaktů. S vaším svolením aplikace offline analyzuje místní události a narozeniny a nabízí užitečné připomínky (např. „Připomenout odejít 30 min před schůzkou?“).
+•Widgety a Live Activities. Rychlé karty „Další akce“, odpočet do termínu, postup dne — vše offline, bez síťových požadavků.
+•Série a úspěchy. Motivace bez „sociálních sítí“: série otevření a dokončení, týdenní cíle podle kategorií, drobné odměny.
+•Flexibilní upřednostnění. Bere v úvahu blížící se termíny, klíčová slova i kategorie. Sekce „Dnes“ vždy zobrazuje to nejdůležitější.
+•Vyhledávání a seskupení. Okamžité offline vyhledávání, filtry podle data, kategorie a priority, automatické odstranění duplikátů podobných úkolů.
+Soukromí a offline:
+•Veškeré výpočty probíhají lokálně na zařízení.
+•Žádné účty, trackery ani cloudové úložiště.
+•Oprávnění se vyžadují pouze při použití konkrétní funkce.
+•Svá data můžete exportovat a ručně přenést mezi zařízeními (lokální záloha).
+Pro perfekcionisty:
+•Precizní typografie, uhlazené animace, střídmé rozhraní.
+•Podpora tmavého režimu, dynamické velikosti písma a haptické odezvy.
+•Flexibilní nastavení kategorií, barev, zvuků a intervalů „ticha“.

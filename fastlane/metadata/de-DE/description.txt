@@ -1,0 +1,26 @@
+Brio AI bietet intelligente Erinnerungen, die komplett offline funktionieren und sich deinem Rhythmus anpassen. Die KI auf deinem Gerät lernt, wann du tatsächlich reagierst, und schlägt die besten Anzeigezeiten, unaufdringliche Schlummer-Optionen und Aktionsvorlagen vor. Keine Accounts und keine Cloud – deine Daten bleiben bei dir.
+Warum Brio AI?
+•KI auf dem Gerät. Training und Empfehlungen erfolgen lokal: schnelle Vorschläge, null Netzwerkabhängigkeit, Privatsphäre bleibt geschützt.
+•Anpassung an deine Zeitfenster. Die App analysiert die tatsächlichen Zeiten, zu denen du Erinnerungen öffnest oder auf später verschiebst, und passt zukünftige Zeitpläne automatisch an deine „persönlichen Zeitfenster“ an.
+•Gesten & Geschwindigkeit. Die meisten Aktionen erfolgen per Wischen oder Halten: erledigen, verschieben, archivieren, schnelles Bearbeiten.
+•Transparenter Datenschutz. Keine Accounts und keine Synchronisierung. Berechtigungen werden nur im Bedarfsfall angefordert (Benachrichtigungen, Kalender, Kontakte, Gesundheit – alles optional).
+Hauptfunktionen:
+•Intelligentes Hinzufügen. Gib z. B. „Stromrechnung Fr 9:00, jeden Monat“ ein — Brio AI erkennt offline Datum, Uhrzeit und Wiederholungsrate und erstellt das entsprechende Ereignis.
+•Adaptiver Zeitplan. Das System schätzt die Wahrscheinlichkeit eines „schnellen Öffnens“ zu verschiedenen Tagen und Uhrzeiten ein und schlägt die effizientesten Zeitfenster vor. Wenn du eine Aufgabe regelmäßig vom Morgen auf den Abend verschiebst, passt Brio AI die Zeit sanft an.
+•Persönliches Snooze. Die Schlummeroptionen passen sich deinem üblichen Verhalten an (z. B. „+40 Min“ oder „morgen 7:30“), damit die Erinnerung genau dann kommt, wenn du wirklich bereit bist.
+•Vorlagen und Ketten. Erkennt wiederkehrende Abläufe („Fitnessstudio“ → „Proteinshake“, „Tasche für morgen packen“) und schlägt vor, sie mit einem Tipp als Vorlage zu speichern.
+•Day Vibe. Ein kurzer Tagesindikator (Busy / Balanced / Chill) wird aus deinen Kategorien und der Aufgabenlast gebildet; beeinflusst die Stimmung der Oberfläche und die Zeitempfehlungen.
+•Kalender- und Kontakt-Tipps. Mit deiner Erlaubnis analysiert die App offline lokale Termine und Geburtstage und schlägt nützliche Erinnerungen vor (z. B. „Erinnern, 30 Min vor dem Meeting loszufahren?“).
+•Widgets und Live Activities. Schnelle Karten „Nächste Aktion“, Countdown bis zur Deadline, Tagesfortschritt – alles offline, ohne Netzwerkanfragen.
+•Serien und Erfolge. Motivation ohne „Social Media“: Serien beim Öffnen und Erledigen, wöchentliche Ziele pro Kategorie, leichte Belohnungen.
+•Flexible Priorisierung. Berücksichtigt das Näherrücken von Fälligkeiten, Schlüsselwörter und Kategorien. Der Bereich „Heute“ zeigt immer zuerst das Wichtigste.
+•Suche und Gruppierung. Sofortige Offline-Suche, Filter nach Datum, Kategorie und Priorität, automatische Erkennung und Entfernung doppelter Aufgaben.
+Datenschutz und Offline:
+•Alle Berechnungen erfolgen lokal auf dem Gerät.
+•Keine Accounts, Tracker oder Cloud-Speicherung.
+•Berechtigungen werden nur bei Nutzung der jeweiligen Funktion angefragt.
+•Deine Daten kannst du exportieren und manuell zwischen Geräten übertragen (lokales Backup).
+Für Perfektionisten:
+•Präzise Typografie, saubere Animationen, schlankes Interface.
+•Unterstützung von Dunkelmodus, dynamischer Schriftgröße und haptischem Feedback.
+•Flexible Einstellungen für Kategorien, Farben, Sounds und „Ruhezeiten“.
