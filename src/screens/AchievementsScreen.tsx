@@ -9,6 +9,17 @@ import { getContentContainerStyle, ResponsiveSizes } from '../utils/responsiveDi
 
 // Import achievement images
 const achievementImages = {
+  // Specific streak images
+  '3-day-streak': require('../assets/goals/3-day-streak.png'),
+  '7-day-streak': require('../assets/goals/7-day-streak.png'),
+  '14-day-streak': require('../assets/goals/14-day-streak.png'),
+  '30-day-streak': require('../assets/goals/30-day-streak.png'),
+  '100-day-streak': require('../assets/goals/100-day-streak.png'),
+  // Specific milestone images
+  'complete-10-tasks': require('../assets/goals/Complete-your-first-10-tasks.png'),
+  'complete-50-tasks': require('../assets/goals/Complete-50-tasks.png'),
+  'complete-100-tasks': require('../assets/goals/Complete-first-100-tasks.png'),
+  // Generic images (for backwards compatibility and remaining achievements)
   fire: require('../assets/goals/fire.png'),
   'check-circle': require('../assets/goals/done.png'),
   trophy: require('../assets/goals/champion.png'),
@@ -65,6 +76,24 @@ export const AchievementsScreen: React.FC = () => {
   const achievementStats = AchievementService.getAchievementStats();
 
   const getImageForAchievement = (achievement: AchievementType): ImageSourcePropType => {
+    // Map by achievement name for specific images (handles existing DB records)
+    const nameToImage: Record<string, keyof typeof achievementImages> = {
+      '3-Day Streak': '3-day-streak',
+      '7-Day Streak': '7-day-streak',
+      '14-Day Streak': '14-day-streak',
+      '30-Day Streak': '30-day-streak',
+      '100-Day Streak': '100-day-streak',
+      'First Steps': 'complete-10-tasks',
+      'Getting Started': 'complete-50-tasks',
+      'Productive': 'complete-100-tasks',
+    };
+
+    const imageKey = nameToImage[achievement.name];
+    if (imageKey) {
+      return achievementImages[imageKey];
+    }
+
+    // Fallback to iconName for other achievements
     const iconName = achievement.iconName as keyof typeof achievementImages;
     return achievementImages[iconName] || achievementImages.default;
   };
