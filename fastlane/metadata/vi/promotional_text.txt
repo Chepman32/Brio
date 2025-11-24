@@ -1,1 +1,1 @@
-Brio AI — nhắc nhở ngoại tuyến với AI trên thiết bị. Học hỏi thói quen của bạn và đề xuất thời điểm tốt nhất. Cử chỉ, tiện ích và Live Activities. Quyền riêng tư được bật mặc định.
+Brio AI — nhắc việc ngoại tuyến với AI trên thiết bị. Học thói quen của bạn và gợi ý thời điểm phù hợp. Cử chỉ, tiện ích, Live Activities. Quyền riêng tư được ưu tiên.

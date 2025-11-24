@@ -1,1 +1,1 @@
-Brio AI — cihaz içi yapay zekâ ile çalışan çevrimdışı hatırlatmalar. Alışkanlıklarınızı öğrenir ve en uygun zamanı önerir. Jestler, widget’lar ve Live Activities. Gizlilik varsayılan olarak sağlanır.
+Brio AI — cihaz içi yapay zekâ ile çevrimdışı hatırlatmalar. Alışkanlıklarınızı öğrenir, en uygun zamanı önerir. Jestler, widget'lar, Live Activities. Gizlilik.

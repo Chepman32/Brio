@@ -1,1 +1,1 @@
-Brio AI — offline emlékeztetők eszközön futó MI-vel. Megtanulja szokásaidat, és javasolja a legjobb időpontot. Gesztusok, widgetek és Live Activities. Adatvédelem alapértelmezetten.
+Brio AI – offline emlékeztetők készüléken futó MI-vel. Megtanulja a szokásaidat és jobb időpontot ajánl. Gesztusok, widgetek, Live Activities. Adatvédelem alapból.
