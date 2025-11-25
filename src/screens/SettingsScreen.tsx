@@ -106,10 +106,10 @@ export const SettingsScreen: React.FC = () => {
           onPress: () => {
             try {
               closeRealm();
-              Alert.alert(t('common.success'), 'All data has been reset. Please restart the app.');
+              Alert.alert(t('common.success'), t('settings.clearDataSuccess'));
             } catch (error) {
               console.error('Error resetting data:', error);
-              Alert.alert(t('common.error'), 'Failed to reset data');
+              Alert.alert(t('common.error'), t('settings.clearDataError'));
             }
           },
         },
@@ -403,8 +403,8 @@ export const SettingsScreen: React.FC = () => {
           <View style={styles.reminderOptions}>
             {[
               { value: 'auto', label: t('settings.timeFormatAuto') },
-              { value: '12h', label: '12h' },
-              { value: '24h', label: '24h' },
+              { value: '12h', label: t('settings.timeFormat12h') },
+              { value: '24h', label: t('settings.timeFormat24h') },
             ].map(option => (
               <Pressable
                 key={option.value}
@@ -470,7 +470,7 @@ export const SettingsScreen: React.FC = () => {
                     reminderTime === minutes && dynamicStyles.reminderOptionTextActive,
                   ]}
                 >
-                  {minutes} min
+                  {t('settings.minutesShort', { count: minutes })}
                 </Text>
               </Pressable>
             ))}
@@ -494,10 +494,9 @@ export const SettingsScreen: React.FC = () => {
           </Pressable>
 
           <View style={dynamicStyles.infoCard}>
-            <Text style={dynamicStyles.infoCardTitle}>AI-Powered Suggestions</Text>
+            <Text style={dynamicStyles.infoCardTitle}>{t('settings.aiPoweredSuggestions')}</Text>
             <Text style={dynamicStyles.infoCardText}>
-              Brio learns from your task creation patterns and suggests tasks
-              you typically add at specific times.
+              {t('settings.aiPoweredDescription')}
             </Text>
           </View>
         </View>
@@ -519,7 +518,7 @@ export const SettingsScreen: React.FC = () => {
             <Text style={dynamicStyles.aboutTitle}>Brio</Text>
             <Text style={dynamicStyles.aboutVersion}>{t('settings.version')} 1.0.0</Text>
             <Text style={dynamicStyles.aboutDescription}>
-              Smart Offline Reminder & Planning App
+              {t('settings.appDescription')}
             </Text>
           </View>
         </View>

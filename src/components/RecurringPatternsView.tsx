@@ -17,6 +17,8 @@ import { PatternModel } from '../database/schemas/PatternModel';
 import { PatternStats } from '../types/recurring-suggestion.types';
 import { getDayName } from '../utils/textNormalization';
 import { binToTimeString } from '../utils/dateHelpers.recurring';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 interface RecurringPatternsViewProps {
   onClose?: () => void;
@@ -25,6 +27,8 @@ interface RecurringPatternsViewProps {
 export const RecurringPatternsView: React.FC<RecurringPatternsViewProps> = ({
   onClose,
 }) => {
+  const { colors } = useTheme();
+  const { t } = useLocalization();
   const [patterns, setPatterns] = useState<PatternModel[]>([]);
   const [stats, setStats] = useState<PatternStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,12 +66,12 @@ export const RecurringPatternsView: React.FC<RecurringPatternsViewProps> = ({
 
   const handleDelete = async (patternKey: string, displayTitle: string) => {
     Alert.alert(
-      'Delete Pattern',
-      `Are you sure you want to delete the pattern for "${displayTitle}"?`,
+      t('patterns.deletePattern'),
+      t('patterns.deletePatternConfirm', { title: displayTitle }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -85,63 +89,175 @@ export const RecurringPatternsView: React.FC<RecurringPatternsViewProps> = ({
   const getCadenceBadgeColor = (cadence: string): string => {
     switch (cadence) {
       case 'weekly':
-        return '#4CAF50';
+        return colors.success;
       case 'biweekly':
-        return '#2196F3';
+        return colors.primary;
       case 'monthly':
-        return '#9C27B0';
+        return colors.secondary;
       default:
-        return '#757575';
+        return colors.textSecondary;
+    }
+  };
+
+  const getCadenceLabel = (cadence: string): string => {
+    switch (cadence) {
+      case 'weekly':
+        return t('patterns.weekly').toUpperCase();
+      case 'biweekly':
+        return t('patterns.biweekly');
+      case 'monthly':
+        return t('patterns.monthly');
+      default:
+        return t('patterns.irregular');
     }
   };
 
   const getLearnedSlot = (pattern: PatternModel): string => {
     const slot = RecurringSuggestionService.learnedCreationSlot(pattern);
-    if (!slot) return 'Learning...';
+    if (!slot) return t('patterns.learning');
 
     const dayName = getDayName(slot.dow);
     const timeStr = binToTimeString(slot.bin);
     const confidence = Math.round(slot.confidence * 100);
 
-    return `${dayName} at ${timeStr} (${confidence}% confidence)`;
+    return t('patterns.confidence', { day: dayName, time: timeStr, percent: confidence });
   };
+
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    closeButtonText: {
+      fontSize: 24,
+      color: colors.textSecondary,
+    },
+    loadingText: {
+      textAlign: 'center',
+      marginTop: 40,
+      fontSize: 16,
+      color: colors.textSecondary,
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      padding: 16,
+      backgroundColor: colors.surface,
+      marginBottom: 8,
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.primary,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginTop: 4,
+    },
+    emptyStateText: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 24,
+    },
+    patternCard: {
+      backgroundColor: colors.surface,
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 16,
+      borderRadius: 12,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    patternTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      flex: 1,
+    },
+    patternDetail: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    patternWarning: {
+      fontSize: 14,
+      color: colors.warning,
+      marginTop: 8,
+    },
+    actionButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+      backgroundColor: colors.primary,
+    },
+    actionButtonText: {
+      color: colors.textInverse,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    deleteButton: {
+      backgroundColor: colors.errorLight,
+    },
+    deleteButtonText: {
+      color: colors.error,
+    },
+  });
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading patterns...</Text>
+      <View style={dynamicStyles.container}>
+        <Text style={dynamicStyles.loadingText}>{t('patterns.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Recurring Patterns</Text>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.title}>{t('patterns.title')}</Text>
         {onClose && (
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text style={dynamicStyles.closeButtonText}>✕</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {stats && (
-        <View style={styles.statsContainer}>
+        <View style={dynamicStyles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats.totalPatterns}</Text>
-            <Text style={styles.statLabel}>Total</Text>
+            <Text style={dynamicStyles.statValue}>{stats.totalPatterns}</Text>
+            <Text style={dynamicStyles.statLabel}>{t('patterns.total')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats.activePatterns}</Text>
-            <Text style={styles.statLabel}>Active</Text>
+            <Text style={dynamicStyles.statValue}>{stats.activePatterns}</Text>
+            <Text style={dynamicStyles.statLabel}>{t('patterns.active')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats.weeklyPatterns}</Text>
-            <Text style={styles.statLabel}>Weekly</Text>
+            <Text style={dynamicStyles.statValue}>{stats.weeklyPatterns}</Text>
+            <Text style={dynamicStyles.statLabel}>{t('patterns.weekly')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats.pausedPatterns}</Text>
-            <Text style={styles.statLabel}>Paused</Text>
+            <Text style={dynamicStyles.statValue}>{stats.pausedPatterns}</Text>
+            <Text style={dynamicStyles.statLabel}>{t('patterns.paused')}</Text>
           </View>
         </View>
       )}
@@ -149,16 +265,15 @@ export const RecurringPatternsView: React.FC<RecurringPatternsViewProps> = ({
       <ScrollView style={styles.patternsList}>
         {patterns.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>
-              No patterns learned yet. Keep adding tasks and patterns will be
-              detected automatically!
+            <Text style={dynamicStyles.emptyStateText}>
+              {t('patterns.noPatterns')}
             </Text>
           </View>
         ) : (
           patterns.map(pattern => (
-            <View key={pattern.key} style={styles.patternCard}>
+            <View key={pattern.key} style={dynamicStyles.patternCard}>
               <View style={styles.patternHeader}>
-                <Text style={styles.patternTitle}>{pattern.displayTitle}</Text>
+                <Text style={dynamicStyles.patternTitle}>{pattern.displayTitle}</Text>
                 <View
                   style={[
                     styles.cadenceBadge,
@@ -166,44 +281,44 @@ export const RecurringPatternsView: React.FC<RecurringPatternsViewProps> = ({
                   ]}
                 >
                   <Text style={styles.cadenceBadgeText}>
-                    {pattern.cadence.toUpperCase()}
+                    {getCadenceLabel(pattern.cadence)}
                   </Text>
                 </View>
               </View>
 
-              <Text style={styles.patternDetail}>
+              <Text style={dynamicStyles.patternDetail}>
                 📅 {getLearnedSlot(pattern)}
               </Text>
 
-              <Text style={styles.patternDetail}>
-                📊 {pattern.occurrences.length} occurrences
+              <Text style={dynamicStyles.patternDetail}>
+                📊 {t('patterns.occurrences', { count: pattern.occurrences.length })}
               </Text>
 
               {pattern.ignoredCount > 0 && (
-                <Text style={styles.patternWarning}>
-                  ⚠️ Ignored {pattern.ignoredCount} time(s)
+                <Text style={dynamicStyles.patternWarning}>
+                  ⚠️ {t('patterns.ignoredTimes', { count: pattern.ignoredCount })}
                 </Text>
               )}
 
               <View style={styles.patternActions}>
                 {pattern.ignoredCount >= 3 && (
                   <TouchableOpacity
-                    style={styles.actionButton}
+                    style={dynamicStyles.actionButton}
                     onPress={() => handleUnpause(pattern.key)}
                   >
-                    <Text style={styles.actionButtonText}>Unpause</Text>
+                    <Text style={dynamicStyles.actionButtonText}>{t('patterns.unpause')}</Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
-                  style={[styles.actionButton, styles.deleteButton]}
+                  style={[dynamicStyles.actionButton, dynamicStyles.deleteButton]}
                   onPress={() =>
                     handleDelete(pattern.key, pattern.displayTitle)
                   }
                 >
                   <Text
-                    style={[styles.actionButtonText, styles.deleteButtonText]}
+                    style={[dynamicStyles.actionButtonText, dynamicStyles.deleteButtonText]}
                   >
-                    Delete
+                    {t('common.delete')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -216,56 +331,11 @@ export const RecurringPatternsView: React.FC<RecurringPatternsViewProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
   closeButton: {
     padding: 8,
   },
-  closeButtonText: {
-    fontSize: 24,
-    color: '#666',
-  },
-  loadingText: {
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: 16,
-    color: '#666',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 8,
-  },
   statItem: {
     alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2196F3',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
   },
   patternsList: {
     flex: 1,
@@ -274,35 +344,11 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
   },
-  emptyStateText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  patternCard: {
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
   patternHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
-  },
-  patternTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    flex: 1,
   },
   cadenceBadge: {
     paddingHorizontal: 8,
@@ -314,36 +360,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
-  patternDetail: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  patternWarning: {
-    fontSize: 14,
-    color: '#FF9800',
-    marginTop: 8,
-  },
   patternActions: {
     flexDirection: 'row',
     marginTop: 12,
     gap: 8,
-  },
-  actionButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#2196F3',
-  },
-  actionButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  deleteButton: {
-    backgroundColor: '#FFEBEE',
-  },
-  deleteButtonText: {
-    color: '#F44336',
   },
 });

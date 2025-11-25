@@ -32,7 +32,7 @@ export const TodayScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { isTablet } = useResponsive();
   const { colors } = useTheme();
-  const { t } = useLocalization();
+  const { t, locale } = useLocalization();
 
   const loadTasks = React.useCallback(() => {
     try {
@@ -182,11 +182,19 @@ export const TodayScreen: React.FC = () => {
 
   const formatDate = () => {
     const today = new Date();
-    return today.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      return new Intl.DateTimeFormat(locale, {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      }).format(today);
+    } catch {
+      return today.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
   };
 
   const contentContainerStyle = getContentContainerStyle();

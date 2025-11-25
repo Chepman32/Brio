@@ -8,6 +8,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle, ResponsiveSizes } from '../utils/responsiveDimensions';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
+import { translateAchievementName, translateAchievementDescription } from '../utils/achievementTranslation';
 
 // Import achievement images
 const achievementImages = {
@@ -78,6 +79,12 @@ export const AchievementsScreen: React.FC = () => {
       : achievements.filter(a => a.type === selectedType);
 
   const achievementStats = AchievementService.getAchievementStats();
+  const filterLabels = {
+    all: t('common.all'),
+    streak: t('achievements.streak'),
+    milestone: t('achievements.milestone'),
+    special: t('achievements.special'),
+  };
 
   const getImageForAchievement = (achievement: AchievementType): ImageSourcePropType => {
     // Map by achievement name for specific images (handles existing DB records)
@@ -133,7 +140,7 @@ export const AchievementsScreen: React.FC = () => {
                 {stats.currentStreak}
               </Text>
               <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
-                Current Streak
+                {t('achievements.currentStreak')}
               </Text>
             </View>
             <View style={styles.statCard}>
@@ -142,7 +149,7 @@ export const AchievementsScreen: React.FC = () => {
                 {stats.longestStreak}
               </Text>
               <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
-                Longest Streak
+                {t('achievements.longestStreak')}
               </Text>
             </View>
             <View style={styles.statCard}>
@@ -151,7 +158,7 @@ export const AchievementsScreen: React.FC = () => {
                 {stats.totalTasksCompleted}
               </Text>
               <Text style={[styles.statLabel, { fontSize: isTablet ? 14 : 12 }]}>
-                Tasks Done
+                {t('achievements.tasksDone')}
               </Text>
             </View>
           </View>
@@ -167,7 +174,10 @@ export const AchievementsScreen: React.FC = () => {
               />
             </View>
             <Text style={styles.progressText}>
-              {achievementStats.unlocked} / {achievementStats.total} Unlocked
+              {t('achievements.unlockedProgress', {
+                unlocked: achievementStats.unlocked,
+                total: achievementStats.total,
+              })}
             </Text>
           </View>
 
@@ -190,7 +200,7 @@ export const AchievementsScreen: React.FC = () => {
                     { fontSize: isTablet ? 14 : 12 },
                   ]}
                 >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {filterLabels[type]}
                 </Text>
               </Pressable>
             ))}
@@ -227,7 +237,7 @@ export const AchievementsScreen: React.FC = () => {
                   !achievement.unlocked && styles.achievementNameLocked,
                 ]}
               >
-                {achievement.name}
+                {translateAchievementName(achievement.name, t)}
               </Text>
               <Text
                 style={[
@@ -235,7 +245,7 @@ export const AchievementsScreen: React.FC = () => {
                   !achievement.unlocked && styles.achievementDescriptionLocked,
                 ]}
               >
-                {achievement.description}
+                {translateAchievementDescription(achievement.name, t) || achievement.description}
               </Text>
 
               {/* Progress Bar for Locked Achievements */}
@@ -262,7 +272,7 @@ export const AchievementsScreen: React.FC = () => {
               {/* Unlocked Badge */}
               {achievement.unlocked && (
                 <View style={styles.unlockedBadge}>
-                  <Text style={styles.unlockedBadgeText}>Unlocked!</Text>
+                  <Text style={styles.unlockedBadgeText}>{t('achievements.unlockedBadge')}</Text>
                 </View>
               )}
             </View>

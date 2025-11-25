@@ -1,0 +1,22 @@
+devices([
+  "iPhone 15 Pro Max",         # 6.7\" class accepted by App Store Connect
+  "iPhone SE (3rd generation)" # 4.7\" size still accepted for upload
+])
+
+languages([
+  "en-US",
+  "ru"
+])
+
+scheme("BrioUITests")
+configuration("Release")
+workspace("./ios/Brio.xcworkspace")
+output_directory("./fastlane/screenshots")
+clear_previous_screenshots(true)
+override_status_bar(true)
+
+# Arguments to pass to the app on launch. See https://docs.fastlane.tools/actions/snapshot/#launch-arguments
+launch_arguments(["-ui_testing"])
+
+# For more information about all available options run
+# fastlane action snapshot

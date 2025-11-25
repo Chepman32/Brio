@@ -11,6 +11,8 @@ import Animated, {
 import { TaskCardProps } from '../types';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
+import { translateCategory } from '../utils/categories';
 
 const SWIPE_THRESHOLD = 100;
 
@@ -26,6 +28,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const scale = useSharedValue(1);
   const { formatTime } = useTimeFormat();
   const { colors } = useTheme();
+  const { t } = useLocalization();
 
   // Extract task ID to avoid accessing Realm object in worklet
   const taskId = task._id;
@@ -120,7 +123,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               </Text>
             )}
             {task.category && (
-              <Text style={[styles.category, { color: colors.textSecondary, backgroundColor: colors.surfaceSecondary }]}>{task.category}</Text>
+              <Text style={[styles.category, { color: colors.textSecondary, backgroundColor: colors.surfaceSecondary }]}>
+                {translateCategory(task.category, t)}
+              </Text>
             )}
           </View>
         </View>

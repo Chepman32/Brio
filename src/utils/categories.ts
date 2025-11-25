@@ -52,3 +52,19 @@ export const PREDEFINED_CATEGORIES = [
 ] as const;
 
 export type PredefinedCategory = (typeof PREDEFINED_CATEGORIES)[number];
+
+/**
+ * Helper function to translate category name
+ * @param category The category key (English name)
+ * @param t Translation function from useLocalization
+ * @returns Translated category name
+ */
+export const translateCategory = (
+  category: string,
+  t: (key: string) => string,
+): string => {
+  const categoryKey = `categories.${category}`;
+  const translated = t(categoryKey);
+  // If translation not found, return original category name
+  return translated === categoryKey ? category : translated;
+};

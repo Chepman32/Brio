@@ -3,7 +3,7 @@ default_platform(:ios)
 platform :ios do
   desc "Upload Brio AI metadata to App Store Connect"
   lane :upload_metadata do
-  api_key = app_store_connect_api_key(
+    api_key = app_store_connect_api_key(
       key_id: "TVX56KGPFH",                             # твой Key ID
       issuer_id: "3cb46eb5-0082-43b4-bfb5-f29138dbff5f",# твой Issuer ID
       key_filepath: "./fastlane/AuthKey_TVX56KGPFH.p8", # путь к .p8
@@ -11,14 +11,38 @@ platform :ios do
     )
 
     deliver(
-  api_key: api_key,
-  app_identifier: "com.antonchepur.brio", # у тебя уже так стоит, оставь
-  submit_for_review: false,
-  skip_screenshots: true,
-  skip_binary_upload: true,
-  force: true,
-  ignore_language_directory_validation: true,
-  run_precheck_before_submit: false
-)
+      api_key: api_key,
+      app_identifier: "com.antonchepur.brio", # у тебя уже так стоит, оставь
+      submit_for_review: false,
+      skip_screenshots: true,
+      skip_binary_upload: true,
+      force: true,
+      ignore_language_directory_validation: true,
+      run_precheck_before_submit: false
+    )
+  end
+
+  desc "Capture localized screenshots and upload to App Store Connect"
+  lane :screenshots do
+    api_key = app_store_connect_api_key(
+      key_id: "TVX56KGPFH",
+      issuer_id: "3cb46eb5-0082-43b4-bfb5-f29138dbff5f",
+      key_filepath: "./fastlane/AuthKey_TVX56KGPFH.p8",
+      in_house: false
+    )
+
+    snapshot
+
+    deliver(
+      api_key: api_key,
+      app_identifier: "com.antonchepur.brio",
+      submit_for_review: false,
+      skip_metadata: true,
+      skip_binary_upload: true,
+      overwrite_screenshots: true,
+      force: true,
+      ignore_language_directory_validation: true,
+      run_precheck_before_submit: false
+    )
   end
 end

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -33,35 +33,35 @@ interface OnboardingSlide {
   backgroundColor: string;
 }
 
-const slides: OnboardingSlide[] = [
+const buildSlides = (t: (key: string, options?: object) => string): OnboardingSlide[] => [
   {
     id: 1,
-    title: 'Offline & Private',
-    subtitle: 'Use the app offline,\nyour data stays private.',
+    title: t('onboarding.offlineTitle'),
+    subtitle: t('onboarding.offlineSubtitle'),
     icon: 'lock-closed',
     iconColor: '#3B82F6',
     backgroundColor: '#F0F9FF',
   },
   {
     id: 2,
-    title: 'Gesture-first',
-    subtitle: 'Swipe to complete or snooze',
+    title: t('onboarding.gestureTitle'),
+    subtitle: t('onboarding.gestureSubtitle'),
     icon: 'hand-left',
     iconColor: '#F59E0B',
     backgroundColor: '#FFFBEB',
   },
   {
     id: 3,
-    title: 'Organize your day',
-    subtitle: 'Plan your schedule\nand get more done',
+    title: t('onboarding.organizeTitle'),
+    subtitle: t('onboarding.organizeSubtitle'),
     icon: 'calendar',
     iconColor: '#6366F1',
     backgroundColor: '#EEF2FF',
   },
   {
     id: 4,
-    title: 'Smart reminders',
-    subtitle: 'AI learning\nthat adapts to you',
+    title: t('onboarding.smartTitle'),
+    subtitle: t('onboarding.smartSubtitle'),
     icon: 'notifications',
     iconColor: '#8B5CF6',
     backgroundColor: '#F5F3FF',
@@ -83,6 +83,7 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
   const { isTablet } = useResponsive();
   const { colors } = useTheme();
   const { t } = useLocalization();
+  const slides = useMemo(() => buildSlides(t), [t]);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -309,22 +310,23 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
 // Demo components for specific slides
 const GestureDemo: React.FC = () => {
   const { colors } = useTheme();
+  const { t } = useLocalization();
   return (
     <View style={styles.demoContainer}>
       <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={[styles.taskCircle, { borderColor: colors.border }]} />
-        <Text style={[styles.taskText, { color: colors.text }]}>Meeting</Text>
+        <Text style={[styles.taskText, { color: colors.text }]}>{t('onboarding.meetingTask')}</Text>
       </View>
       <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={[styles.taskCircle, { borderColor: colors.border }]} />
-        <Text style={[styles.taskText, { color: colors.text }]}>Call Anna</Text>
+        <Text style={[styles.taskText, { color: colors.text }]}>{t('onboarding.callTask')}</Text>
         <View style={[styles.snoozeButton, { backgroundColor: colors.primary }]}>
-          <Text style={styles.snoozeText}>Snooze</Text>
+          <Text style={styles.snoozeText}>{t('common.snooze')}</Text>
         </View>
       </View>
       <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={[styles.taskCircle, { borderColor: colors.border }]} />
-        <Text style={[styles.taskText, { color: colors.text }]}>Groceries</Text>
+        <Text style={[styles.taskText, { color: colors.text }]}>{t('onboarding.groceriesTask')}</Text>
       </View>
       <View style={styles.swipeHint}>
         <Icon name="arrow-back" size={32} color={colors.border} />
@@ -357,12 +359,17 @@ const CalendarDemo: React.FC = () => {
 
 const SmartRemindersDemo: React.FC = () => {
   const { colors } = useTheme();
+  const { t } = useLocalization();
+  const weekDayKeys: Array<'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'> = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  const weekDays = weekDayKeys.map(key => t(`calendar.weekdays.${key}`));
+  const busyDay = t('calendar.weekdays.wed');
+
   return (
     <View style={styles.smartContainer}>
       <View style={[styles.dayCard, { backgroundColor: colors.surfaceSecondary }]}>
-        <Text style={styles.dayCardTitle}>Busy Wednesday</Text>
+        <Text style={styles.dayCardTitle}>{t('onboarding.busyDay', { day: busyDay })}</Text>
         <View style={styles.weekDays}>
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
+          {weekDays.map((day, i) => (
             <Text
               key={day}
               style={[styles.weekDay, { color: colors.textSecondary }, i === 2 && [styles.weekDayActive, { backgroundColor: colors.primary }]]}
@@ -374,13 +381,13 @@ const SmartRemindersDemo: React.FC = () => {
         <View style={styles.timeSlot}>
           <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>12:00</Text>
           <View style={[styles.eventBlock, { backgroundColor: '#BBF7D0' }]}>
-            <Text style={[styles.eventText, { color: colors.text }]}>12:00 Meeting</Text>
+            <Text style={[styles.eventText, { color: colors.text }]}>{t('onboarding.meetingAt', { time: '12:00' })}</Text>
           </View>
         </View>
         <View style={styles.timeSlot}>
           <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>15:00</Text>
           <View style={[styles.eventBlock, { backgroundColor: '#FED7AA' }]}>
-            <Text style={[styles.eventText, { color: colors.text }]}>15:00 Call</Text>
+            <Text style={[styles.eventText, { color: colors.text }]}>{t('onboarding.callAt', { time: '15:00' })}</Text>
           </View>
         </View>
       </View>

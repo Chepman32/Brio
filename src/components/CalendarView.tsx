@@ -27,6 +27,7 @@ import { DayHeroSection } from './DayHeroSection';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { ResponsiveSizes } from '../utils/responsiveDimensions';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLocalization } from '../contexts/LocalizationContext';
 
 const SWIPE_THRESHOLD = 50;
 
@@ -72,6 +73,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const { formatTime, formatTimeRange, formatHourLabel } = useTimeFormat();
   const { width: screenWidth } = useWindowDimensions();
   const { colors } = useTheme();
+  const { locale, t } = useLocalization();
   const contentWidth = Math.min(screenWidth, ResponsiveSizes.contentMaxWidth);
   const monthCellSpacing = 8;
   const monthCellSize = Math.max(
@@ -208,15 +210,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const weekNum = getWeekNumber(startDate);
     const startDay = startDate.getDate();
     const endDay = endDate.getDate();
-    const month = startDate.toLocaleDateString('en-US', { month: 'long' });
+    const month = startDate.toLocaleDateString(locale, { month: 'long' });
+    const weekLabel = t('calendar.week');
 
     // If week spans two months
     if (startDate.getMonth() !== endDate.getMonth()) {
-      const endMonth = endDate.toLocaleDateString('en-US', { month: 'long' });
-      return `${month} ${startDay} - ${endMonth} ${endDay} (week ${weekNum})`;
+      const endMonth = endDate.toLocaleDateString(locale, { month: 'long' });
+      return `${month} ${startDay} - ${endMonth} ${endDay} (${weekLabel} ${weekNum})`;
     }
 
-    return `${month} ${startDay} - ${endDay} (week ${weekNum})`;
+    return `${month} ${startDay} - ${endDay} (${weekLabel} ${weekNum})`;
   };
 
   const renderDayView = () => {
@@ -373,7 +376,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             const isToday = isSameDay(date, now);
             const isSelected = isSameDay(date, selectedDate);
             const weekday = date
-              .toLocaleDateString('en-US', { weekday: 'short' })
+              .toLocaleDateString(locale, { weekday: 'short' })
               .toUpperCase();
             const dayNumber = date.toLocaleDateString('en-GB', {
               day: '2-digit',
@@ -415,20 +418,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               ]}
             >
               {hours.map(hour => {
-                const formatted =
-                  hour === 0
-                    ? '12 AM'
-                    : hour < 12
-                    ? `${hour} AM`
-                    : hour === 12
-                    ? '12 PM'
-                    : `${hour - 12} PM`;
                 return (
                   <Text
                     key={hour}
                     style={[styles.weekTimeLabel, { height: hourHeight }]}
                   >
-                    {formatted}
+                    {formatHourLabel(hour)}
                   </Text>
                 );
               })}

@@ -11,6 +11,7 @@ import { TaskDetailModalProps } from '../types';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
+import { translateCategory } from '../utils/categories';
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   visible,
@@ -21,20 +22,28 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 }) => {
   const { formatTime } = useTimeFormat();
   const { colors } = useTheme();
-  const { t } = useLocalization();
+  const { t, locale } = useLocalization();
 
   if (!task) return null;
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      return date.toLocaleDateString(locale, {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
   };
 
   const formatTimeLocal = (date?: Date) => {
-    if (!date) return 'No time set';
+    if (!date) return t('task.noTimeSet');
     return formatTime(date);
   };
 
@@ -46,6 +55,18 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         return '#FFA500';
       case 'low':
         return '#4CAF50';
+    }
+  };
+
+  const getPriorityLabel = () => {
+    switch (task.priority) {
+      case 'high':
+        return t('task.priorityHigh');
+      case 'medium':
+        return t('task.priorityMedium');
+      case 'low':
+      default:
+        return t('task.priorityLow');
     }
   };
 
@@ -79,7 +100,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 ]}
               >
                 <Text style={styles.priorityText}>
-                  {task.priority.toUpperCase()}
+                  {getPriorityLabel().toUpperCase()}
                 </Text>
               </View>
             </View>
@@ -104,12 +125,14 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             {task.category && (
               <View style={styles.section}>
                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.category')}</Text>
-                <Text style={[styles.value, { color: colors.text }]}>{task.category}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>
+                  {translateCategory(task.category, t)}
+                </Text>
               </View>
             )}
 
             <View style={styles.section}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Created</Text>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.created')}</Text>
               <Text style={[styles.value, { color: colors.text }]}>{formatDate(task.createdAt)}</Text>
             </View>
           </ScrollView>

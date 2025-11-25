@@ -18,7 +18,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { TaskCreationModalProps, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
-import { PREDEFINED_CATEGORIES } from '../utils/categories';
+import { PREDEFINED_CATEGORIES, translateCategory } from '../utils/categories';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
@@ -32,12 +32,13 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
 }) => {
   const { formatTime, is24Hour } = useTimeFormat();
   const { colors } = useTheme();
-  const { t } = useLocalization();
+  const { t, locale } = useLocalization();
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
   const [dueTime, setDueTime] = useState<Date | undefined>(undefined);
   const [category, setCategory] = useState('');
+  const [categoryDisplay, setCategoryDisplay] = useState('');
   const [priority, setPriority] = useState<
     'low' | 'medium' | 'high' | undefined
   >(undefined);
@@ -58,6 +59,29 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const dateFieldRef = useRef<View>(null);
   const timeFieldRef = useRef<View>(null);
 
+  const getPriorityLabel = (value: 'low' | 'medium' | 'high') => {
+    switch (value) {
+      case 'high':
+        return t('task.priorityHigh');
+      case 'medium':
+        return t('task.priorityMedium');
+      case 'low':
+      default:
+        return t('task.priorityLow');
+    }
+  };
+
+  const formatDateWithLocale = React.useCallback(
+    (date: Date, options?: Intl.DateTimeFormatOptions) => {
+      try {
+        return date.toLocaleDateString(locale, options);
+      } catch {
+        return date.toLocaleDateString('en-US', options);
+      }
+    },
+    [locale],
+  );
+
   useEffect(() => {
     if (visible) {
       translateY.value = withSpring(0, {
@@ -73,7 +97,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         setNotes(editTask.notes || '');
         setDueDate(editTask.dueDate);
         setDueTime(editTask.dueTime);
-        setCategory(editTask.category || '');
+        const cat = editTask.category || '';
+        setCategory(cat);
+        setCategoryDisplay(cat ? translateCategory(cat, t) : '');
         setPriority(editTask.priority);
       } else {
         // Prefill with the selected date (fallback to today)
@@ -92,6 +118,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setDueDate(new Date());
       setDueTime(undefined);
       setCategory('');
+      setCategoryDisplay('');
       setPriority(undefined);
       setShowSmartSuggestions(false);
       setSmartSuggestion(null);
@@ -100,14 +127,17 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setShowDatePicker(false);
       setShowTimePicker(false);
     }
-  }, [visible, editTask, defaultDate, translateY]);
+  }, [visible, editTask, defaultDate, translateY, t]);
 
   // Filter categories based on input
   useEffect(() => {
-    if (category.trim()) {
-      const filtered = PREDEFINED_CATEGORIES.filter(cat =>
-        cat.toLowerCase().includes(category.toLowerCase()),
-      );
+    if (categoryDisplay.trim()) {
+      const searchTerm = categoryDisplay.toLowerCase();
+      const filtered = PREDEFINED_CATEGORIES.filter(cat => {
+        const translatedCat = translateCategory(cat, t).toLowerCase();
+        const englishCat = cat.toLowerCase();
+        return translatedCat.includes(searchTerm) || englishCat.includes(searchTerm);
+      });
       setFilteredCategories(filtered);
     } else if (showCategoryPicker) {
       // Show all categories when input is empty but picker is open
@@ -115,13 +145,13 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     } else {
       setFilteredCategories([]);
     }
-  }, [category, showCategoryPicker]);
+  }, [categoryDisplay, showCategoryPicker, t]);
 
   // Define generateSmartSuggestion before useEffect
   const generateSmartSuggestion = React.useCallback(() => {
     try {
       const taskInput: TaskInput = {
-        title: title.trim() || 'New Task',
+        title: title.trim() || t('task.newTaskPlaceholder'),
         notes: notes.trim() || undefined,
         dueDate,
         dueTime,
@@ -275,8 +305,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.category')}</Text>
                 <TextInput
                   style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surfaceSecondary }]}
-                  value={category}
-                  onChangeText={setCategory}
+                  value={categoryDisplay}
+                  onChangeText={(text) => {
+                    setCategoryDisplay(text);
+                    setCategory(text); // Keep category in sync for custom categories
+                  }}
                   placeholder={t('task.category')}
                   placeholderTextColor={colors.textTertiary}
                   onFocus={() => {
@@ -297,11 +330,14 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                           key={index}
                           style={styles.categoryItem}
                           onPress={() => {
-                            setCategory(cat);
+                            setCategory(cat); // Store English key
+                            setCategoryDisplay(translateCategory(cat, t)); // Display translated
                             setShowCategoryPicker(false);
                           }}
                         >
-                          <Text style={styles.categoryItemText}>{cat}</Text>
+                          <Text style={styles.categoryItemText}>
+                            {translateCategory(cat, t)}
+                          </Text>
                         </Pressable>
                       ))}
                     </ScrollView>
@@ -310,7 +346,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.label}>Priority</Text>
+                <Text style={styles.label}>{t('task.priority')}</Text>
                 <View style={styles.priorityContainer}>
                   {(['low', 'medium', 'high'] as const).map(p => (
                     <Pressable
@@ -338,7 +374,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                           priority === p && styles.priorityTextActive,
                         ]}
                       >
-                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                        {getPriorityLabel(p)}
                       </Text>
                     </Pressable>
                   ))}
@@ -352,11 +388,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   onPress={() => setShowDatePicker(!showDatePicker)}
                 >
                   <View style={styles.accordionHeaderContent}>
-                    <Text style={styles.label}>Due Date</Text>
+                    <Text style={styles.label}>{t('task.dueDate')}</Text>
                     <View style={styles.accordionValueRow}>
                       <Icon name="calendar-outline" size={18} color="#666" />
                       <Text style={styles.accordionValue}>
-                        {dueDate.toLocaleDateString('en-US', {
+                        {formatDateWithLocale(dueDate, {
                           weekday: 'short',
                           month: 'short',
                           day: 'numeric',
@@ -414,11 +450,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   }}
                 >
                   <View style={styles.accordionHeaderContent}>
-                    <Text style={styles.label}>Due Time (Optional)</Text>
+                    <Text style={styles.label}>{t('task.dueTimeOptional')}</Text>
                     <View style={styles.accordionValueRow}>
                       <Icon name="time-outline" size={18} color="#666" />
                       <Text style={styles.accordionValue}>
-                        {dueTime ? formatTime(dueTime) : 'Set time'}
+                        {dueTime ? formatTime(dueTime) : t('task.setTime')}
                       </Text>
                     </View>
                   </View>
@@ -471,12 +507,14 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                     <View style={styles.suggestionTitleRow}>
                       <Icon name="bulb-outline" size={20} color="#6366F1" />
                       <Text style={styles.suggestionTitle}>
-                        Smart Suggestion
+                        {t('task.smartSuggestion')}
                       </Text>
                     </View>
                     <View style={styles.confidenceBadge}>
                       <Text style={styles.confidenceText}>
-                        {Math.round(smartSuggestion.confidence * 100)}% match
+                        {t('task.smartSuggestionMatch', {
+                          percent: Math.round(smartSuggestion.confidence * 100),
+                        })}
                       </Text>
                     </View>
                   </View>
@@ -484,19 +522,21 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                     {smartSuggestion.reason}
                   </Text>
                   <Text style={styles.suggestionTime}>
-                    {smartSuggestion.suggestedTime.toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                    })}{' '}
-                    at {formatTime(smartSuggestion.suggestedTime)}
+                    {t('task.smartSuggestionTime', {
+                      date: formatDateWithLocale(smartSuggestion.suggestedTime, {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      }),
+                      time: formatTime(smartSuggestion.suggestedTime),
+                    })}
                   </Text>
                   <Pressable
                     style={styles.applySuggestionButton}
                     onPress={applySuggestion}
                   >
                     <Text style={styles.applySuggestionText}>
-                      Apply Suggestion
+                      {t('task.applySuggestion')}
                     </Text>
                   </Pressable>
                 </View>
