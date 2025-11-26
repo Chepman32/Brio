@@ -204,6 +204,10 @@ export default {
     saveError: 'Nabigong i-save ang data',
     deleteError: 'Nabigong burahin',
   },
+  dayVibes: {
+    freeDay: 'Libreng araw',
+    ordinaryDay: 'Ordinaryong araw',
+  },
   focusWindows: {
     analyzing: 'Sinusuri ang mga pattern...',
     empty: 'Kulang pa ang data. Patuloy na gumamit ng app upang matuklasan ang iyong optimal na focus times!',

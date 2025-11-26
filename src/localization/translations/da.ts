@@ -204,6 +204,10 @@ export default {
     saveError: 'Kunne ikke gemme data',
     deleteError: 'Kunne ikke slette',
   },
+  dayVibes: {
+    freeDay: 'Fri dag',
+    ordinaryDay: 'Almindelig dag',
+  },
   focusWindows: {
     analyzing: 'Analyserer mønstre...',
     empty: 'Ikke nok data endnu. Fortsæt med at bruge appen for at opdage dine optimale fokustider!',

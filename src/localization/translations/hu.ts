@@ -204,6 +204,10 @@ export default {
     saveError: 'Nem sikerült menteni az adatokat',
     deleteError: 'Nem sikerült törölni',
   },
+  dayVibes: {
+    freeDay: 'Szabad nap',
+    ordinaryDay: 'Közönséges nap',
+  },
   focusWindows: {
     analyzing: 'Minták elemzése...',
     empty: 'Még nincs elég adat. Folytassa az alkalmazás használatát az optimális fókuszidők felfedezéséhez!',

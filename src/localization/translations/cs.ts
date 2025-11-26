@@ -204,6 +204,10 @@ export default {
     saveError: 'Nepodařilo se uložit data',
     deleteError: 'Nepodařilo se smazat',
   },
+  dayVibes: {
+    freeDay: 'Volný den',
+    ordinaryDay: 'Běžný den',
+  },
   focusWindows: {
     analyzing: 'Analyzuji vzorce...',
     empty: 'Zatím není dostatek dat. Pokračujte v používání aplikace a objevte své optimální časy soustředění!',

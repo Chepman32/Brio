@@ -219,6 +219,10 @@ export default {
       low: '낮음',
     },
   },
+  dayVibes: {
+    freeDay: '자유로운 날',
+    ordinaryDay: '평범한 날',
+  },
   time: {
     minutes: '%{count}분',
     hours: '%{count}시간',

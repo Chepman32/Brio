@@ -240,6 +240,10 @@ export default {
     saveError: 'Не удалось сохранить данные',
     deleteError: 'Не удалось удалить',
   },
+  dayVibes: {
+    freeDay: 'Свободный день',
+    ordinaryDay: 'Обычный день',
+  },
   time: {
     minutes: '{{count}} мин',
     hours: '{{count}} ч',

@@ -197,6 +197,10 @@ export default {
     saveError: 'Daten konnten nicht gespeichert werden',
     deleteError: 'Löschen fehlgeschlagen',
   },
+  dayVibes: {
+    freeDay: 'Freier Tag',
+    ordinaryDay: 'Gewöhnlicher Tag',
+  },
   time: {
     minutes: '%{count} Min',
     hours: '%{count} Std',

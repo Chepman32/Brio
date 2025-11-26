@@ -238,6 +238,10 @@ export default {
     saveError: 'Impossibile salvare i dati',
     deleteError: 'Impossibile eliminare',
   },
+  dayVibes: {
+    freeDay: 'Giorno libero',
+    ordinaryDay: 'Giorno ordinario',
+  },
   time: {
     minutes: '%{count} min',
     hours: '%{count} h',

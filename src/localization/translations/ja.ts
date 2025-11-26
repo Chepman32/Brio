@@ -219,6 +219,10 @@ export default {
       low: '低い',
     },
   },
+  dayVibes: {
+    freeDay: 'フリーデー',
+    ordinaryDay: '通常日',
+  },
   time: {
     minutes: '%{count}分',
     hours: '%{count}時間',

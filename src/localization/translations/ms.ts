@@ -204,6 +204,10 @@ export default {
     saveError: 'Gagal menyimpan data',
     deleteError: 'Gagal memadam',
   },
+  dayVibes: {
+    freeDay: 'Hari bebas',
+    ordinaryDay: 'Hari biasa',
+  },
   focusWindows: {
     analyzing: 'Menganalisis corak...',
     empty: 'Belum cukup data. Teruskan menggunakan aplikasi untuk menemui masa fokus optimum anda!',

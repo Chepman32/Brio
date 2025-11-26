@@ -204,6 +204,10 @@ export default {
     saveError: 'Nu s-au putut salva datele',
     deleteError: 'Nu s-a putut șterge',
   },
+  dayVibes: {
+    freeDay: 'Zi liberă',
+    ordinaryDay: 'Zi obișnuită',
+  },
   focusWindows: {
     analyzing: 'Analizează modelele...',
     empty: 'Încă nu sunt suficiente date. Continuă să folosești aplicația pentru a-ți descoperi timpii optimi de concentrare!',

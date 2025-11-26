@@ -238,6 +238,10 @@ export default {
     saveError: 'فشل في حفظ البيانات',
     deleteError: 'فشل في الحذف',
   },
+  dayVibes: {
+    freeDay: 'يوم حر',
+    ordinaryDay: 'يوم عادي',
+  },
   time: {
     minutes: '%{count} دقيقة',
     hours: '%{count} ساعة',

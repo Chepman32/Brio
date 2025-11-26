@@ -238,6 +238,10 @@ export default {
     saveError: 'Veri kaydedilemedi',
     deleteError: 'Silinemedi',
   },
+  dayVibes: {
+    freeDay: 'Boş gün',
+    ordinaryDay: 'Sıradan gün',
+  },
   time: {
     minutes: '%{count} dk',
     hours: '%{count} sa',

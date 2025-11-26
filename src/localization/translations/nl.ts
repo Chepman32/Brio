@@ -238,6 +238,10 @@ export default {
     saveError: 'Kan gegevens niet opslaan',
     deleteError: 'Kan niet verwijderen',
   },
+  dayVibes: {
+    freeDay: 'Vrije dag',
+    ordinaryDay: 'Gewone dag',
+  },
   time: {
     minutes: '%{count} min',
     hours: '%{count} uur',

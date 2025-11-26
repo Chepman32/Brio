@@ -197,6 +197,10 @@ export default {
     saveError: 'Échec de l\'enregistrement des données',
     deleteError: 'Échec de la suppression',
   },
+  dayVibes: {
+    freeDay: 'Jour libre',
+    ordinaryDay: 'Jour ordinaire',
+  },
   time: {
     minutes: '%{count} min',
     hours: '%{count} h',

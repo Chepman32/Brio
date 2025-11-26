@@ -204,6 +204,10 @@ export default {
     saveError: 'נכשל בשמירת נתונים',
     deleteError: 'נכשל במחיקה',
   },
+  dayVibes: {
+    freeDay: 'יום חופשי',
+    ordinaryDay: 'יום רגיל',
+  },
   focusWindows: {
     analyzing: 'מנתח דפוסים...',
     empty: 'אין עדיין מספיק נתונים. המשך להשתמש באפליקציה כדי לגלות את זמני המיקוד האופטימליים שלך!',

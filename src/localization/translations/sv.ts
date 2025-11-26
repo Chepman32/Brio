@@ -204,6 +204,10 @@ export default {
     saveError: 'Kunde inte spara data',
     deleteError: 'Kunde inte ta bort',
   },
+  dayVibes: {
+    freeDay: 'Fri dag',
+    ordinaryDay: 'Vanlig dag',
+  },
   focusWindows: {
     analyzing: 'Analyserar mönster...',
     empty: 'Inte tillräckligt med data ännu. Fortsätt använda appen för att upptäcka dina optimala fokustider!',

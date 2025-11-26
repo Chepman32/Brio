@@ -219,6 +219,10 @@ export default {
       low: '较低',
     },
   },
+  dayVibes: {
+    freeDay: '空闲日',
+    ordinaryDay: '普通日',
+  },
   time: {
     minutes: '%{count} 分钟',
     hours: '%{count} 小时',

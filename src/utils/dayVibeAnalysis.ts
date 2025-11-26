@@ -452,6 +452,7 @@ const DAY_VIBES: Record<number, Record<string, string>> = {
 export const analyzeDayVibe = (
   tasks: TaskType[],
   date: Date = new Date(),
+  t?: (key: string) => string,
 ): DayVibeResult => {
   const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
   const dayBaseColor = DAY_COLORS[dayOfWeek];
@@ -459,7 +460,7 @@ export const analyzeDayVibe = (
   // No tasks - free day
   if (tasks.length === 0) {
     return {
-      vibe: 'Свободный день',
+      vibe: t ? t('dayVibes.freeDay') : 'Free day',
       gradientColors: [dayBaseColor, '#FFFFFF'],
     };
   }
@@ -483,7 +484,7 @@ export const analyzeDayVibe = (
 
   // Get day-specific vibe for the dominant category
   const dayVibes = DAY_VIBES[dayOfWeek];
-  const vibe = dayVibes[dominantCategory] || 'обычный день';
+  const vibe = dayVibes[dominantCategory] || (t ? t('dayVibes.ordinaryDay') : 'Ordinary day');
 
   // Get category color
   const categoryColor = CATEGORY_COLORS[dominantCategory] || '#6366F1';

@@ -204,6 +204,10 @@ export default {
     saveError: 'Nie udało się zapisać danych',
     deleteError: 'Nie udało się usunąć',
   },
+  dayVibes: {
+    freeDay: 'Wolny dzień',
+    ordinaryDay: 'Zwykły dzień',
+  },
   focusWindows: {
     analyzing: 'Analizowanie wzorców...',
     empty: 'Za mało danych. Kontynuuj korzystanie z aplikacji, aby odkryć najlepsze czasy skupienia!',

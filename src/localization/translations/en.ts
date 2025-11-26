@@ -243,6 +243,12 @@ export default {
     },
   },
 
+  // Day Vibes
+  dayVibes: {
+    freeDay: 'Free day',
+    ordinaryDay: 'Ordinary day',
+  },
+
   // Task
   task: {
     title: 'Title',

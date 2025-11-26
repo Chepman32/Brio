@@ -204,6 +204,10 @@ export default {
     saveError: 'Tietojen tallennus epäonnistui',
     deleteError: 'Poisto epäonnistui',
   },
+  dayVibes: {
+    freeDay: 'Vapaa päivä',
+    ordinaryDay: 'Tavallinen päivä',
+  },
   focusWindows: {
     analyzing: 'Analysoidaan malleja...',
     empty: 'Ei vielä tarpeeksi dataa. Jatka sovelluksen käyttöä löytääksesi optimaaliset keskittymisaikasi!',

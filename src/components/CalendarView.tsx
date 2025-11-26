@@ -17,11 +17,7 @@ import Animated, {
 import { CalendarViewProps } from '../types';
 import { isSameDay } from '../utils/dateHelpers';
 import { getCategoryColor } from '../utils/categoryColors';
-import {
-  formatDayHeader as formatDayHeaderLocalized,
-  formatMonthYear,
-  getWeekdays,
-} from '../utils/localization';
+import { getWeekdays } from '../utils/localization';
 import { analyzeDayVibe } from '../utils/dayVibeAnalysis';
 import { DayHeroSection } from './DayHeroSection';
 import { useTimeFormat } from '../hooks/useTimeFormat';
@@ -228,12 +224,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const dayTasks = getTasksForDate(currentDate);
 
     // Get day name and vibe
-    const dayName = currentDate.toLocaleDateString('ru-RU', {
+    const dayName = currentDate.toLocaleDateString(locale, {
       weekday: 'long',
     });
     const capitalizedDayName =
       dayName.charAt(0).toUpperCase() + dayName.slice(1);
-    const { vibe, gradientColors } = analyzeDayVibe(dayTasks, currentDate);
+    const { vibe, gradientColors } = analyzeDayVibe(dayTasks, currentDate, t);
 
     // Calculate current time indicator position
     const now = new Date();
@@ -245,7 +241,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return (
       <View style={styles.dayView}>
         <Text style={styles.compactHeader}>
-          {formatDayHeaderLocalized(currentDate)}
+          {formatDayHeader(currentDate)}
         </Text>
         <DayHeroSection
           dayName={capitalizedDayName}
@@ -378,7 +374,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             const weekday = date
               .toLocaleDateString(locale, { weekday: 'short' })
               .toUpperCase();
-            const dayNumber = date.toLocaleDateString('en-GB', {
+            const dayNumber = date.toLocaleDateString(locale, {
               day: '2-digit',
               month: '2-digit',
             });
@@ -584,7 +580,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             const isCurrentMonth = date.getMonth() === month;
             const isEndOfWeek = (index + 1) % 7 === 0;
 
-            const dateLabel = `${date.toLocaleDateString('ru-RU', {
+            const dateLabel = `${date.toLocaleDateString(locale, {
               month: 'long',
               day: 'numeric',
             })}${dayTasks.length > 0 ? `, ${dayTasks.length} tasks` : ''}`;
@@ -636,6 +632,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </View>
       </View>
     );
+  };
+
+  const formatDayHeader = (date: Date): string => {
+    const weekday = date.toLocaleDateString(locale, { weekday: 'long' });
+    const day = date.getDate();
+    const month = date.toLocaleDateString(locale, { month: 'long' });
+    const weekdayCapitalized = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+
+    return `${t('planner.day')}: ${weekdayCapitalized}, ${day} ${month}`;
+  };
+
+  const formatMonthYear = (date: Date): string => {
+    return date.toLocaleDateString(locale, {
+      month: 'long',
+      year: 'numeric',
+    });
   };
 
   return (

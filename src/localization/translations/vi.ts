@@ -204,6 +204,10 @@ export default {
     saveError: 'Không thể lưu dữ liệu',
     deleteError: 'Không thể xóa',
   },
+  dayVibes: {
+    freeDay: 'Ngày rảnh rỗi',
+    ordinaryDay: 'Ngày thường',
+  },
   focusWindows: {
     analyzing: 'Đang phân tích các mẫu của bạn...',
     empty: 'Chưa đủ dữ liệu. Tiếp tục sử dụng ứng dụng để khám phá thời gian tốt nhất của bạn!',
