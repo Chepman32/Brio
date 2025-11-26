@@ -59,7 +59,12 @@ export const updateStreak = (): void => {
 
   realm.write(() => {
     if (daysDiff === 0) {
-      // Same day, no change
+      // Same day - if this is the first ever completion, set streak to 1
+      if (stats.currentStreak === 0) {
+        stats.currentStreak = 1;
+        stats.longestStreak = 1;
+      }
+      // Otherwise no change (same day, already counted)
       return;
     } else if (daysDiff === 1) {
       // Consecutive day, increment streak
@@ -68,7 +73,7 @@ export const updateStreak = (): void => {
         stats.longestStreak = stats.currentStreak;
       }
     } else {
-      // Streak broken, reset
+      // Streak broken, reset to 1 (starting fresh)
       stats.currentStreak = 1;
     }
     stats.lastActiveDate = new Date();

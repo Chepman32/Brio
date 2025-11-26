@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TaskListView } from '../components/TaskListView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
@@ -85,8 +85,21 @@ export const TodayScreen: React.FC = () => {
         // Check for newly unlocked achievements
         const newAchievements = AchievementService.checkAchievements();
         if (newAchievements.length > 0) {
-          // TODO: Show confetti animation
-          console.log('New achievements unlocked:', newAchievements);
+          // Show achievement unlock notification
+          const achievementNames = newAchievements
+            .map(a => a.name)
+            .join(', ');
+          const message =
+            newAchievements.length === 1
+              ? `You unlocked: ${achievementNames}!`
+              : `You unlocked ${newAchievements.length} achievements: ${achievementNames}!`;
+
+          Alert.alert(
+            '🎉 Achievement Unlocked!',
+            message,
+            [{ text: 'Awesome!', style: 'default' }],
+            { cancelable: true },
+          );
         }
       }
       loadTasks();
