@@ -1,3 +1,5 @@
+require "fileutils"
+
 default_platform(:ios)
 
 platform :ios do
@@ -43,6 +45,92 @@ platform :ios do
       force: true,
       ignore_language_directory_validation: true,
       run_precheck_before_submit: false
+    )
+  end
+
+  desc "Upload translated screenshots from src/assets/translated_images (all locales except en-US)"
+  lane :upload_translated_screenshots do
+    api_key = app_store_connect_api_key(
+      key_id: "TVX56KGPFH",
+      issuer_id: "3cb46eb5-0082-43b4-bfb5-f29138dbff5f",
+      key_filepath: "./fastlane/AuthKey_TVX56KGPFH.p8",
+      in_house: false
+    )
+
+    translated_dir = File.expand_path("../src/assets/translated_images", __dir__)
+    screenshots_root = File.expand_path("screenshots", __dir__)
+    device_name = "iPhone 15 Pro"
+
+    locale_map = {
+      "Arabic" => "ar-SA",
+      "Chinese_Simplified" => "zh-Hans",
+      "Czech" => "cs",
+      "Danish" => "da",
+      "Dutch" => "nl-NL",
+      "Finnish" => "fi",
+      "French" => "fr-FR",
+      "German" => "de-DE",
+      "Greek" => "el",
+      "Hebrew" => "he",
+      "Hindi" => "hi",
+      "Hungarian" => "hu",
+      "Indonesian" => "id",
+      "Italian" => "it",
+      "Japanese" => "ja",
+      "Korean" => "ko",
+      "Malay" => "ms",
+      "Norwegian" => "no",
+      "Polish" => "pl",
+      "Portuguese_Brazilian" => "pt-BR",
+      "Romanian" => "ro",
+      "Russian" => "ru",
+      "Spanish" => "es-ES",
+      "Swedish" => "sv",
+      "Thai" => "th",
+      "Turkish" => "tr",
+      "Ukrainian" => "uk",
+      "Vietnamese" => "vi"
+    }
+
+    missing_assets = locale_map.keys.reject do |name|
+      File.exist?(File.join(translated_dir, "#{name}.png"))
+    end
+    UI.user_error!("Missing translated screenshots for: #{missing_assets.join(', ')}") unless missing_assets.empty?
+
+    allowed_locales = locale_map.values.uniq
+
+    FileUtils.mkdir_p(screenshots_root)
+
+    Dir.glob(File.join(screenshots_root, "*")).each do |locale_dir|
+      next unless File.directory?(locale_dir)
+      next if allowed_locales.include?(File.basename(locale_dir))
+      FileUtils.rm_rf(locale_dir)
+    end
+
+    locale_map.each do |source_name, locale|
+      locale_dir = File.join(screenshots_root, locale)
+      FileUtils.mkdir_p(locale_dir)
+      Dir.glob(File.join(locale_dir, "*")).each { |file| FileUtils.rm_rf(file) }
+
+      source_path = File.join(translated_dir, "#{source_name}.png")
+      destination_path = File.join(locale_dir, "#{device_name}-01.png")
+      FileUtils.cp(source_path, destination_path)
+    end
+
+    UI.important("Filipino is not an official App Store Connect locale; skipping that asset.") if File.exist?(File.join(translated_dir, "Filipino.png"))
+
+    deliver(
+      api_key: api_key,
+      app_identifier: "com.antonchepur.brio",
+      submit_for_review: false,
+      skip_metadata: true,
+      skip_binary_upload: true,
+      overwrite_screenshots: true,
+      force: true,
+      ignore_language_directory_validation: true,
+      run_precheck_before_submit: false,
+      screenshots_path: screenshots_root,
+      languages: allowed_locales
     )
   end
 end

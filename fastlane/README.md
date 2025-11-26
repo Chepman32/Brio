@@ -31,6 +31,14 @@ Upload Brio AI metadata to App Store Connect
 
 Capture localized screenshots and upload to App Store Connect
 
+### ios upload_translated_screenshots
+
+```sh
+[bundle exec] fastlane ios upload_translated_screenshots
+```
+
+Upload translated screenshots from src/assets/translated_images (all locales except en-US)
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
