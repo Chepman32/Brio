@@ -174,4 +174,4 @@ MIT
 Built with ❤️ using React Native
 
 
-TODO: add a setting for 12/24 hour time format
+TODO: add various achievement icons
