@@ -29,7 +29,7 @@ import { ThemeType, LocaleType } from '../database/schemas/Settings';
 
 export const SettingsScreen: React.FC = () => {
   const { colors, themeName, setTheme } = useTheme();
-  const { locale, setLocale, t, languageNames } = useLocalization();
+  const { locale, setLocale, t, languageNames, languageFlags } = useLocalization();
   const [notificationsEnabled, setNotificationsEnabledState] = useState(true);
   const [soundEnabled, setSoundEnabledState] = useState(true);
   const [hapticsEnabled, setHapticsEnabledState] = useState(true);
@@ -384,7 +384,7 @@ export const SettingsScreen: React.FC = () => {
             <View style={styles.settingInfo}>
               <Text style={dynamicStyles.settingLabel}>{t('settings.language')}</Text>
               <Text style={dynamicStyles.settingDescription}>
-                {languageNames[locale]}
+                {languageFlags[locale]} {languageNames[locale]}
               </Text>
             </View>
             <Text style={dynamicStyles.chevron}>›</Text>
@@ -590,7 +590,9 @@ export const SettingsScreen: React.FC = () => {
                 ]}
                 onPress={() => handleLanguageChange(item[0])}
               >
-                <Text style={dynamicStyles.optionText}>{item[1]}</Text>
+                <Text style={dynamicStyles.optionText}>
+                  {languageFlags[item[0]]} {item[1]}
+                </Text>
                 {locale === item[0] && (
                   <Text style={dynamicStyles.checkmark}>✓</Text>
                 )}

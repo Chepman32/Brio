@@ -81,6 +81,39 @@ export const t = (key: string, options?: object): string => {
   return i18n.t(key, options);
 };
 
+export const languageFlags: Record<LocaleType, string> = {
+  en: '🇬🇧',
+  zh: '🇨🇳',
+  ja: '🇯🇵',
+  ko: '🇰🇷',
+  de: '🇩🇪',
+  fr: '🇫🇷',
+  es: '🇪🇸',
+  'pt-BR': '🇧🇷',
+  ar: '🇸🇦',
+  ru: '🇷🇺',
+  it: '🇮🇹',
+  nl: '🇳🇱',
+  tr: '🇹🇷',
+  th: '🇹🇭',
+  vi: '🇻🇳',
+  id: '🇮🇩',
+  pl: '🇵🇱',
+  uk: '🇺🇦',
+  hi: '🇮🇳',
+  he: '🇮🇱',
+  sv: '🇸🇪',
+  no: '🇳🇴',
+  da: '🇩🇰',
+  fi: '🇫🇮',
+  cs: '🇨🇿',
+  hu: '🇭🇺',
+  ro: '🇷🇴',
+  el: '🇬🇷',
+  ms: '🇲🇾',
+  fil: '🇵🇭',
+};
+
 export const languageNames: Record<LocaleType, string> = {
   en: 'English',
   zh: '中文',
