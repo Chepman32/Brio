@@ -271,11 +271,21 @@ export const SettingsScreen: React.FC = () => {
       flex: 1,
       backgroundColor: colors.background,
     },
+    modalSwipeIndicator: {
+      width: 40,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.border,
+      alignSelf: 'center',
+      marginTop: 8,
+      marginBottom: 4,
+    },
     modalHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
@@ -535,8 +545,10 @@ export const SettingsScreen: React.FC = () => {
         visible={showThemeModal}
         animationType="slide"
         presentationStyle="pageSheet"
+        onRequestClose={() => setShowThemeModal(false)}
       >
         <View style={[dynamicStyles.modalContainer, { paddingTop: insets.top }]}>
+          <View style={dynamicStyles.modalSwipeIndicator} />
           <View style={dynamicStyles.modalHeader}>
             <Text style={dynamicStyles.modalTitle}>{t('settings.theme')}</Text>
             <Pressable
@@ -572,8 +584,10 @@ export const SettingsScreen: React.FC = () => {
         visible={showLanguageModal}
         animationType="slide"
         presentationStyle="pageSheet"
+        onRequestClose={() => setShowLanguageModal(false)}
       >
         <View style={[dynamicStyles.modalContainer, { paddingTop: insets.top }]}>
+          <View style={dynamicStyles.modalSwipeIndicator} />
           <View style={dynamicStyles.modalHeader}>
             <Text style={dynamicStyles.modalTitle}>{t('settings.language')}</Text>
             <Pressable
@@ -614,8 +628,12 @@ export const SettingsScreen: React.FC = () => {
         visible={showPatternsModal}
         animationType="slide"
         presentationStyle="pageSheet"
+        onRequestClose={() => setShowPatternsModal(false)}
       >
-        <RecurringPatternsView onClose={() => setShowPatternsModal(false)} />
+        <View style={[dynamicStyles.modalContainer, { paddingTop: insets.top }]}>
+          <View style={dynamicStyles.modalSwipeIndicator} />
+          <RecurringPatternsView onClose={() => setShowPatternsModal(false)} />
+        </View>
       </Modal>
     </View>
   );
