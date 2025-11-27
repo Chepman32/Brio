@@ -9,6 +9,7 @@ import {
   Alert,
   Modal,
   FlatList,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -383,9 +384,12 @@ export const SettingsScreen: React.FC = () => {
           <Pressable style={dynamicStyles.settingRow} onPress={() => setShowLanguageModal(true)}>
             <View style={styles.settingInfo}>
               <Text style={dynamicStyles.settingLabel}>{t('settings.language')}</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                {languageFlags[locale]} {languageNames[locale]}
-              </Text>
+              <View style={styles.languageRow}>
+                <Image source={languageFlags[locale]} style={styles.flagIcon} />
+                <Text style={dynamicStyles.settingDescription}>
+                  {languageNames[locale]}
+                </Text>
+              </View>
             </View>
             <Text style={dynamicStyles.chevron}>›</Text>
           </Pressable>
@@ -590,9 +594,12 @@ export const SettingsScreen: React.FC = () => {
                 ]}
                 onPress={() => handleLanguageChange(item[0])}
               >
-                <Text style={dynamicStyles.optionText}>
-                  {languageFlags[item[0]]} {item[1]}
-                </Text>
+                <View style={styles.languageRow}>
+                  <Image source={languageFlags[item[0]]} style={styles.flagIcon} />
+                  <Text style={dynamicStyles.optionText}>
+                    {item[1]}
+                  </Text>
+                </View>
                 {locale === item[0] && (
                   <Text style={dynamicStyles.checkmark}>✓</Text>
                 )}
@@ -633,5 +640,15 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 40,
+  },
+  flagIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

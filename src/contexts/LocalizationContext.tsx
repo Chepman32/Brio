@@ -9,7 +9,7 @@ interface LocalizationContextType {
   setLocale: (locale: LocaleType) => void;
   t: (key: string, options?: object) => string;
   languageNames: Record<LocaleType, string>;
-  languageFlags: Record<LocaleType, string>;
+  languageFlags: Record<LocaleType, any>;
 }
 
 const LocalizationContext = createContext<LocalizationContextType | undefined>(undefined);
