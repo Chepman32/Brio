@@ -72,7 +72,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   };
 
   const formatDateWithLocale = React.useCallback(
-    (date: Date, options?: Intl.DateTimeFormatOptions) => {
+    (date?: Date, options?: Intl.DateTimeFormatOptions) => {
+      if (!date) {
+        return '';
+      }
       try {
         return date.toLocaleDateString(locale, options);
       } catch {
@@ -95,7 +98,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       if (editTask) {
         setTitle(editTask.title);
         setNotes(editTask.notes || '');
-        setDueDate(editTask.dueDate);
+        setDueDate(editTask.dueDate || new Date());
         setDueTime(editTask.dueTime);
         const cat = editTask.category || '';
         setCategory(cat);

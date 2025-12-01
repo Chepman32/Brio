@@ -23,12 +23,13 @@ import {
   RTStatsStorage,
   RTCategory,
 } from '../types/notification-rt.types';
+import { ContextAwarenessService, ContextVector } from './ContextAwarenessService';
 
 // Algorithm constants
 const BIN_SIZE_MINUTES = 30; // 30-minute time bins
 const BINS_PER_DAY = 48; // 24 hours * 2
 const HALF_LIFE_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
-const IGNORE_CUTOFF_MS = 120 * 60 * 1000; // 120 minutes
+
 const RT_REF_MS = 10 * 60 * 1000; // 10 minutes reference
 const EXPLORATION_EPSILON = 0.1; // 10% exploration
 const MIN_SAMPLES_FOR_CONFIDENCE = 5;
@@ -149,13 +150,17 @@ class NotificationRTServiceClass {
 
       const ctx: CandidateCtx = {
         slot,
-        nowMs: futureMs,
+        priority01,
+        nowMs,
         dueMs,
         estDurationMs,
-        priority01,
       };
+      
+      // Get context for *now* (approximation for near future slots)
+      // For far future slots, we can't really know the context, so we assume neutral
+      const context = i < 2 ? await ContextAwarenessService.getCurrentContext() : undefined;
 
-      const score = this.slotScore(ctx);
+      const score = this.slotScore(ctx, context);
       candidates.push({ key: slotKey, score, slot });
     }
 
@@ -474,7 +479,7 @@ class NotificationRTServiceClass {
   /**
    * Score a candidate slot for notification delivery
    */
-  private slotScore(ctx: CandidateCtx): number {
+  private slotScore(ctx: CandidateCtx, context?: ContextVector): number {
     const s = ctx.slot;
     const p5 = this.pOpen5m(s);
     const p30 = this.pOpen30m(s);
@@ -502,7 +507,32 @@ class NotificationRTServiceClass {
     const attention = W_OPEN5 * p5 + W_OPEN30 * p30 + W_RT * rtFactor;
 
     // Final score
-    return ctx.priority01 * attention * deadlineFactor * (1 - fatigue * 0.6);
+    let score = ctx.priority01 * attention * deadlineFactor * (1 - fatigue * 0.6);
+
+    // Magic Context Adjustments
+    if (context) {
+        if (context.isDeepWorkPossible) {
+             // If deep work is possible, penalize low priority, boost high priority
+             if (ctx.priority01 < 0.7) score *= 0.2; // Suppress distractions
+             else score *= 1.5; // Ensure important things get through
+        }
+        
+        if (context.isCommuting) {
+            // During commute, maybe prefer quick things? 
+            // Or maybe suppress everything if driving? 
+            // Let's assume we suppress complex tasks
+            if (ctx.estDurationMs && ctx.estDurationMs > 15 * 60 * 1000) {
+                score *= 0.5;
+            }
+        }
+        
+        if (context.batteryLevel < 0.15 && !context.isCharging) {
+            // Low battery: reduce frequency
+            score *= 0.8;
+        }
+    }
+
+    return score;
   }
 
   /**

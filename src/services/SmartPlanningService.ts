@@ -7,6 +7,7 @@ import {
   updateStreak,
 } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
+import { ContextAwarenessService } from './ContextAwarenessService';
 
 /**
  * Smart Planning Service
@@ -60,13 +61,22 @@ class SmartPlanningServiceClass {
   }
 
   /**
-   * Suggest optimal time for a task based on learned patterns
+   * Suggest optimal time for a task based on learned patterns and current context
    */
-  suggestTaskTime(task: TaskInput): Date {
+  async suggestTaskTime(task: TaskInput): Promise<Date> {
     try {
-      const dailyPattern = getDailyCompletionPattern();
+
       const weeklyPattern = getWeeklyCompletionPattern();
       const stats = getStats();
+      const context = await ContextAwarenessService.getCurrentContext();
+
+      // Magic Context Checks
+      if (context.isDeepWorkPossible && task.priority === 'high') {
+         // If deep work is possible and high priority, suggest NOW (or very soon)
+         const now = new Date();
+         now.setMinutes(now.getMinutes() + 15); // Give 15 min buffer
+         return now;
+      }
 
       // If not enough data, use smart defaults
       if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
@@ -147,7 +157,7 @@ class SmartPlanningServiceClass {
   /**
    * Predict task completion probability for a given time
    */
-  predictCompletionProbability(date: Date): number {
+  async predictCompletionProbability(date: Date): Promise<number> {
     try {
       const hour = date.getHours();
       const day = date.getDay();
@@ -155,6 +165,7 @@ class SmartPlanningServiceClass {
       const dailyPattern = getDailyCompletionPattern();
       const weeklyPattern = getWeeklyCompletionPattern();
       const stats = getStats();
+      const context = await ContextAwarenessService.getCurrentContext();
 
       if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
         return 0.5; // Neutral probability
@@ -172,8 +183,18 @@ class SmartPlanningServiceClass {
       const dayScore =
         maxDayCompletions > 0 ? dayCompletions / maxDayCompletions : 0.5;
 
+      // Context Multipliers
+      let contextMultiplier = 1.0;
+      
+      // If predicting for NOW (or close to now)
+      if (Math.abs(date.getTime() - Date.now()) < 30 * 60 * 1000) {
+          if (context.isDeepWorkPossible) contextMultiplier *= 1.2;
+          if (context.batteryLevel < 0.15 && !context.isCharging) contextMultiplier *= 0.7;
+          if (context.isCommuting) contextMultiplier *= 0.5;
+      }
+
       // Weighted combination
-      const probability = hourScore * 0.6 + dayScore * 0.4;
+      const probability = (hourScore * 0.6 + dayScore * 0.4) * contextMultiplier;
 
       return Math.max(0.1, Math.min(0.9, probability));
     } catch (error) {
@@ -185,20 +206,20 @@ class SmartPlanningServiceClass {
   /**
    * Get smart suggestions for task scheduling
    */
-  getSmartSuggestions(task: TaskInput): {
+  async getSmartSuggestions(task: TaskInput): Promise<{
     suggestedTime: Date;
     confidence: number;
     reason: string;
     alternatives: Array<{ time: Date; confidence: number; reason: string }>;
-  } {
-    const suggestedTime = this.suggestTaskTime(task);
-    const confidence = this.predictCompletionProbability(suggestedTime);
+  }> {
+    const suggestedTime = await this.suggestTaskTime(task);
+    const confidence = await this.predictCompletionProbability(suggestedTime);
 
     // Generate reason based on patterns
     const reason = this.generateSuggestionReason(suggestedTime, task);
 
     // Generate alternative suggestions
-    const alternatives = this.generateAlternatives(task, suggestedTime);
+    const alternatives = await this.generateAlternatives(task, suggestedTime);
 
     return {
       suggestedTime,
@@ -214,7 +235,7 @@ class SmartPlanningServiceClass {
     [hour: string]: number;
   }): Array<{ hour: number; count: number }> {
     const hours = Object.entries(dailyPattern)
-      .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+      .map(([hour, count]) => ({ hour: parseInt(hour, 10), count }))
       .sort((a, b) => b.count - a.count);
 
     return hours.slice(0, 3); // Top 3 peak hours
@@ -224,7 +245,7 @@ class SmartPlanningServiceClass {
     [day: string]: number;
   }): Array<{ day: number; count: number }> {
     const days = Object.entries(weeklyPattern)
-      .map(([day, count]) => ({ day: parseInt(day), count }))
+      .map(([day, count]) => ({ day: parseInt(day, 10), count }))
       .sort((a, b) => b.count - a.count);
 
     return days.slice(0, 3); // Top 3 productive days
@@ -325,10 +346,10 @@ class SmartPlanningServiceClass {
     return `You're most productive in the ${timeOfDay} based on your completion history`;
   }
 
-  private generateAlternatives(
+  private async generateAlternatives(
     task: TaskInput,
     primarySuggestion: Date,
-  ): Array<{ time: Date; confidence: number; reason: string }> {
+  ): Promise<Array<{ time: Date; confidence: number; reason: string }>> {
     const alternatives: Array<{
       time: Date;
       confidence: number;
@@ -341,7 +362,7 @@ class SmartPlanningServiceClass {
     if (earlier > new Date()) {
       alternatives.push({
         time: earlier,
-        confidence: this.predictCompletionProbability(earlier),
+        confidence: await this.predictCompletionProbability(earlier),
         reason: 'Earlier time slot',
       });
     }
@@ -351,7 +372,7 @@ class SmartPlanningServiceClass {
     later.setHours(later.getHours() + 3);
     alternatives.push({
       time: later,
-      confidence: this.predictCompletionProbability(later),
+      confidence: await this.predictCompletionProbability(later),
       reason: 'Later time slot',
     });
 
@@ -360,7 +381,7 @@ class SmartPlanningServiceClass {
     nextDay.setDate(nextDay.getDate() + 1);
     alternatives.push({
       time: nextDay,
-      confidence: this.predictCompletionProbability(nextDay),
+      confidence: await this.predictCompletionProbability(nextDay),
       reason: 'Next day',
     });
 

@@ -79,7 +79,7 @@ class AICoordinatorServiceClass {
       category: parsedIntent.category,
       priority: PriorityService.getPriorityLabel(priorityScore),
     };
-    const suggestedTime = SmartPlanningService.suggestTaskTime(taskInput);
+    const suggestedTime = await SmartPlanningService.suggestTaskTime(taskInput);
 
     // Check for duplicates
     const duplicates = SearchAndDedupeService.findDuplicates([
@@ -129,12 +129,19 @@ class AICoordinatorServiceClass {
 
     // Get recurring reminders
     const patterns = PatternDetectionService.loadRecurringPatterns();
-    const recurringReminders = patterns
-      .filter(p => PatternDetectionService.shouldSuggestRecurring(p))
-      .map(p => ({
-        pattern: p,
-        suggestion: `Обычно вы создаёте "${p.key.split('::')[0]}" в это время`,
-      }));
+    const recurringReminders: Array<{
+      pattern: any;
+      suggestion: string;
+    }> = [];
+
+    for (const p of patterns) {
+      if (await PatternDetectionService.shouldSuggestRecurring(p)) {
+        recurringReminders.push({
+          pattern: p,
+          suggestion: `Обычно вы создаёте "${p.key.split('::')[0]}" в это время`,
+        });
+      }
+    }
 
     // Get chain suggestions from recently completed
     const recentlyCompleted = tasks
@@ -253,7 +260,7 @@ class AICoordinatorServiceClass {
     // Detect patterns
     const completedTasks = tasks.filter(t => t.completed);
     PatternDetectionService.detectChains(completedTasks);
-    PatternDetectionService.detectRecurringCreation(tasks);
+    await PatternDetectionService.detectRecurringCreation(tasks);
 
     // Rebuild search index
     SearchAndDedupeService.buildIndex(tasks);
@@ -330,24 +337,21 @@ class AICoordinatorServiceClass {
   /**
    * Get optimal notification time for task
    */
-  getOptimalNotificationTime(task: TaskType): Date {
+  /**
+   * Get optimal notification time for task
+   */
+  async getOptimalNotificationTime(task: TaskType): Promise<Date> {
     const category = task.category || 'Personal';
-    const now = new Date();
 
-    // Get best slot in next 48 hours
-    const slots = NotificationRTService.selectTopSlots(category, 48);
+    // Get optimal slot from RT service
+    const recommendation = await NotificationRTService.getOptimalSlot(
+      category,
+      task.priority || 'medium',
+      task.dueDate ? new Date(task.dueDate).getTime() : undefined,
+    );
 
-    if (slots.length > 0) {
-      const bestSlot = slots[0];
-      const targetDate = new Date(now);
-      targetDate.setDate(targetDate.getDate() + Math.floor(bestSlot.dow / 7));
-      targetDate.setHours(
-        Math.floor(bestSlot.bin / 2),
-        (bestSlot.bin % 2) * 30,
-        0,
-        0,
-      );
-      return targetDate;
+    if (recommendation) {
+      return recommendation.estimatedOpenTime;
     }
 
     // Fallback to smart planning
@@ -357,7 +361,7 @@ class AICoordinatorServiceClass {
       category: task.category,
       priority: task.priority,
     };
-    return SmartPlanningService.suggestTaskTime(taskInput);
+    return await SmartPlanningService.suggestTaskTime(taskInput);
   }
 
   // Helper methods

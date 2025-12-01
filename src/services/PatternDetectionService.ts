@@ -15,6 +15,7 @@ import {
   calculateTitleSimilarity,
 } from '../utils/textNormalization';
 import { MMKV } from 'react-native-mmkv';
+import { ContextAwarenessService } from './ContextAwarenessService';
 
 const storage = new MMKV({ id: 'pattern-detection' });
 
@@ -96,9 +97,9 @@ class PatternDetectionServiceClass {
 
   /**
    * Detect recurring creation patterns
-   * Finds tasks that are usually created at specific day/time
+   * Finds tasks that are usually created at specific day/time/context
    */
-  detectRecurringCreation(tasks: TaskType[]): RecurringCreationPattern[] {
+  async detectRecurringCreation(tasks: TaskType[]): Promise<RecurringCreationPattern[]> {
     const patterns: Map<string, RecurringCreationPattern> = new Map();
 
     // Group by normalized title
@@ -133,6 +134,7 @@ class PatternDetectionServiceClass {
 
       const dominantDow = parseInt(
         Object.entries(dowCounts).sort((a, b) => b[1] - a[1])[0][0],
+        10,
       );
 
       // Find dominant time bin for that day
@@ -149,6 +151,7 @@ class PatternDetectionServiceClass {
 
       const dominantBin = parseInt(
         Object.entries(binCounts).sort((a, b) => b[1] - a[1])[0][0],
+        10,
       );
 
       // Detect rhythm (weekly, biweekly, monthly)
@@ -181,10 +184,11 @@ class PatternDetectionServiceClass {
   /**
    * Check if a pattern should trigger a suggestion
    */
-  shouldSuggestRecurring(pattern: RecurringCreationPattern): boolean {
+  async shouldSuggestRecurring(pattern: RecurringCreationPattern): Promise<boolean> {
     const now = new Date();
     const currentDow = now.getDay();
     const currentBin = this.getTimeBin(now);
+    const context = await ContextAwarenessService.getCurrentContext();
 
     // Check if we're in the target day and time window
     if (currentDow !== pattern.targetDow) return false;
@@ -192,6 +196,17 @@ class PatternDetectionServiceClass {
     // Check if we're within ±2 bins of dominant bin
     const binDiff = Math.abs(currentBin - pattern.dominantBin);
     if (binDiff > 2) return false;
+
+    // Context checks (Magic Layer)
+    if (context.isDeepWorkPossible && pattern.key.includes('Work')) {
+        // Boost work related patterns during deep work
+        return true;
+    }
+
+    if (context.isCommuting && !pattern.key.includes('Errand')) {
+        // Suppress non-errand patterns during commute
+        return false;
+    }
 
     // Check if already created recently
     if (pattern.lastCreated) {
@@ -359,7 +374,9 @@ class PatternDetectionServiceClass {
   private generateId(key: string): string {
     let hash = 0;
     for (let i = 0; i < key.length; i++) {
+      // eslint-disable-next-line no-bitwise
       hash = (hash << 5) - hash + key.charCodeAt(i);
+      // eslint-disable-next-line no-bitwise
       hash = hash & hash;
     }
     return Math.abs(hash).toString(36);
