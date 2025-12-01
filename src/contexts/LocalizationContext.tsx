@@ -2,7 +2,13 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { NativeModules, Platform } from 'react-native';
 import { LocaleType } from '../database/schemas/Settings';
 import { getSettings, setLocale as setLocaleDb } from '../database/operations';
-import { setI18nLocale, t as translate, languageNames, languageFlags } from '../localization/i18n';
+import {
+  setI18nLocale,
+  t as translate,
+  languageNames,
+  languageFlags,
+  languageSortNames,
+} from '../localization/i18n';
 
 interface LocalizationContextType {
   locale: LocaleType;
@@ -10,6 +16,7 @@ interface LocalizationContextType {
   t: (key: string, options?: object) => string;
   languageNames: Record<LocaleType, string>;
   languageFlags: Record<LocaleType, any>;
+  languageSortNames: Record<LocaleType, string>;
 }
 
 const LocalizationContext = createContext<LocalizationContextType | undefined>(undefined);
@@ -96,6 +103,7 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({
     t,
     languageNames,
     languageFlags,
+    languageSortNames,
   };
 
   return (

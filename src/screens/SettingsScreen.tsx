@@ -30,7 +30,7 @@ import { ThemeType, LocaleType } from '../database/schemas/Settings';
 
 export const SettingsScreen: React.FC = () => {
   const { colors, themeName, setTheme } = useTheme();
-  const { locale, setLocale, t, languageNames, languageFlags } = useLocalization();
+  const { locale, setLocale, t, languageNames, languageFlags, languageSortNames } = useLocalization();
   const [notificationsEnabled, setNotificationsEnabledState] = useState(true);
   const [soundEnabled, setSoundEnabledState] = useState(true);
   const [hapticsEnabled, setHapticsEnabledState] = useState(true);
@@ -129,7 +129,19 @@ export const SettingsScreen: React.FC = () => {
     return themeOptions.find(opt => opt.value === theme)?.label || theme;
   };
 
-  const languageList = Object.entries(languageNames) as [LocaleType, string][];
+  const languageList = React.useMemo(
+    () =>
+      (Object.keys(languageNames) as LocaleType[])
+        .map(localeKey => ({
+          locale: localeKey,
+          label: languageNames[localeKey],
+          sortKey: languageSortNames[localeKey] || languageNames[localeKey],
+        }))
+        .sort((a, b) =>
+          a.sortKey.localeCompare(b.sortKey, 'en', { sensitivity: 'base' }),
+        ),
+    [languageNames, languageSortNames],
+  );
 
   const dynamicStyles = StyleSheet.create({
     container: {
@@ -599,22 +611,22 @@ export const SettingsScreen: React.FC = () => {
           </View>
           <FlatList
             data={languageList}
-            keyExtractor={item => item[0]}
+            keyExtractor={item => item.locale}
             renderItem={({ item }) => (
               <Pressable
                 style={[
                   dynamicStyles.optionItem,
-                  locale === item[0] && dynamicStyles.optionSelected,
+                  locale === item.locale && dynamicStyles.optionSelected,
                 ]}
-                onPress={() => handleLanguageChange(item[0])}
+                onPress={() => handleLanguageChange(item.locale)}
               >
                 <View style={styles.languageRow}>
-                  <Image source={languageFlags[item[0]]} style={styles.flagIcon} />
+                  <Image source={languageFlags[item.locale]} style={styles.flagIcon} />
                   <Text style={dynamicStyles.optionText}>
-                    {item[1]}
+                    {item.label}
                   </Text>
                 </View>
-                {locale === item[0] && (
+                {locale === item.locale && (
                   <Text style={dynamicStyles.checkmark}>✓</Text>
                 )}
               </Pressable>

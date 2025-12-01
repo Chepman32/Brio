@@ -147,4 +147,37 @@ export const languageNames: Record<LocaleType, string> = {
   fil: 'Filipino',
 };
 
+export const languageSortNames: Record<LocaleType, string> = {
+  en: 'English',
+  zh: 'Chinese',
+  ja: 'Japanese',
+  ko: 'Korean',
+  de: 'German',
+  fr: 'French',
+  es: 'Spanish',
+  'pt-BR': 'Portuguese (Brazil)',
+  ar: 'Arabic',
+  ru: 'Russian',
+  it: 'Italian',
+  nl: 'Dutch',
+  tr: 'Turkish',
+  th: 'Thai',
+  vi: 'Vietnamese',
+  id: 'Indonesian',
+  pl: 'Polish',
+  uk: 'Ukrainian',
+  hi: 'Hindi',
+  he: 'Hebrew',
+  sv: 'Swedish',
+  no: 'Norwegian',
+  da: 'Danish',
+  fi: 'Finnish',
+  cs: 'Czech',
+  hu: 'Hungarian',
+  ro: 'Romanian',
+  el: 'Greek',
+  ms: 'Malay',
+  fil: 'Filipino',
+};
+
 export default i18n;
