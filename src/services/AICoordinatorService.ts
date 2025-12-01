@@ -348,6 +348,10 @@ class AICoordinatorServiceClass {
       category,
       task.priority || 'medium',
       task.dueDate ? new Date(task.dueDate).getTime() : undefined,
+      undefined,
+      {
+        reminderText: `${task.title} ${task.notes || ''}`,
+      },
     );
 
     if (recommendation) {

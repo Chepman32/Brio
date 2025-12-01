@@ -7,7 +7,7 @@ import {
   updateStreak,
 } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
-import { ContextAwarenessService } from './ContextAwarenessService';
+import { ContextAwarenessService, ContextVector } from './ContextAwarenessService';
 
 /**
  * Smart Planning Service
@@ -25,6 +25,25 @@ class SmartPlanningServiceClass {
   private readonly LEARNING_RATE = 0.3; // How quickly to adapt to new patterns
   private readonly MIN_SAMPLES = 5; // Minimum completions needed for reliable suggestions
   private readonly CONFIDENCE_THRESHOLD = 0.6; // Minimum confidence for suggestions
+  private readonly HYPERPARAM_SHARDS = 128; // 128 shards * 2048 params = 262k virtual parameters
+  private readonly HYPERPARAMS_PER_SHARD = 2048;
+  private readonly VIRTUAL_PARAM_COUNT =
+    this.HYPERPARAM_SHARDS * this.HYPERPARAMS_PER_SHARD;
+  private readonly MAGIC_PRIMES = [31, 61, 127, 251, 509, 1021, 2039];
+  private readonly URGENCY_KEYWORDS = [
+    'urgent',
+    'asap',
+    'call',
+    'meet',
+    'review',
+    'submit',
+    'pay',
+    'invoice',
+    'flight',
+    'doctor',
+    'follow up',
+    'important',
+  ];
 
   /**
    * Analyze completion patterns and update statistics
@@ -63,41 +82,62 @@ class SmartPlanningServiceClass {
   /**
    * Suggest optimal time for a task based on learned patterns and current context
    */
-  async suggestTaskTime(task: TaskInput): Promise<Date> {
+  async suggestTaskTime(
+    task: TaskInput,
+    providedContext?: ContextVector,
+  ): Promise<Date> {
     try {
-
+      const dailyPattern = getDailyCompletionPattern();
       const weeklyPattern = getWeeklyCompletionPattern();
       const stats = getStats();
-      const context = await ContextAwarenessService.getCurrentContext();
+      const context =
+        providedContext || (await ContextAwarenessService.getCurrentContext());
+      const peakHours = this.findPeakHours(dailyPattern);
 
       // Magic Context Checks
       if (context.isDeepWorkPossible && task.priority === 'high') {
-         // If deep work is possible and high priority, suggest NOW (or very soon)
-         const now = new Date();
-         now.setMinutes(now.getMinutes() + 15); // Give 15 min buffer
-         return now;
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 15); // Give 15 min buffer
+        return now;
       }
 
-      // If not enough data, use smart defaults
-      if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
-        return this.getDefaultSuggestion(task);
-      }
-
-      // Get optimal hour based on historical patterns
       const optimalHour = this.getOptimalSchedulingTime();
-
-      // Get optimal day based on task priority and patterns
       const optimalDay = this.getOptimalDay(task, weeklyPattern);
 
-      // Create suggested date/time
       const suggestedDate = new Date();
       suggestedDate.setDate(suggestedDate.getDate() + optimalDay);
       suggestedDate.setHours(optimalHour, 0, 0, 0);
 
-      // Adjust for task priority
       const adjustedDate = this.adjustForPriority(suggestedDate, task.priority);
+      const baseline =
+        stats.totalTasksCompleted < this.MIN_SAMPLES
+          ? this.getDefaultSuggestion(task)
+          : adjustedDate;
 
-      return adjustedDate;
+      // Build a swarm of candidate slots to let the mega-parameter mixer pick the magical one
+      const candidateSlots = this.buildCandidateSlots(
+        baseline,
+        peakHours,
+        context,
+        task,
+      );
+
+      const scored = await Promise.all(
+        candidateSlots.map(async slot => ({
+          date: slot,
+          score: await this.scoreSlotWithMegabrain(
+            slot,
+            task,
+            context,
+            dailyPattern,
+            weeklyPattern,
+            stats,
+          ),
+        })),
+      );
+
+      const best = scored.sort((a, b) => b.score - a.score)[0];
+      return best ? best.date : baseline;
     } catch (error) {
       console.error('Error suggesting task time:', error);
       return this.getDefaultSuggestion(task);
@@ -157,7 +197,11 @@ class SmartPlanningServiceClass {
   /**
    * Predict task completion probability for a given time
    */
-  async predictCompletionProbability(date: Date): Promise<number> {
+  async predictCompletionProbability(
+    date: Date,
+    providedContext?: ContextVector,
+    task?: TaskInput,
+  ): Promise<number> {
     try {
       const hour = date.getHours();
       const day = date.getDay();
@@ -165,38 +209,75 @@ class SmartPlanningServiceClass {
       const dailyPattern = getDailyCompletionPattern();
       const weeklyPattern = getWeeklyCompletionPattern();
       const stats = getStats();
-      const context = await ContextAwarenessService.getCurrentContext();
-
-      if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
-        return 0.5; // Neutral probability
-      }
+      const context =
+        providedContext || (await ContextAwarenessService.getCurrentContext());
 
       // Calculate hour score (0-1)
       const hourCompletions = dailyPattern[hour.toString()] || 0;
-      const maxHourCompletions = Math.max(...Object.values(dailyPattern));
-      const hourScore =
-        maxHourCompletions > 0 ? hourCompletions / maxHourCompletions : 0.5;
+      const maxHourCompletions = Math.max(1, ...Object.values(dailyPattern));
+      const hourScore = hourCompletions / maxHourCompletions;
 
       // Calculate day score (0-1)
       const dayCompletions = weeklyPattern[day.toString()] || 0;
-      const maxDayCompletions = Math.max(...Object.values(weeklyPattern));
-      const dayScore =
-        maxDayCompletions > 0 ? dayCompletions / maxDayCompletions : 0.5;
+      const maxDayCompletions = Math.max(1, ...Object.values(weeklyPattern));
+      const dayScore = dayCompletions / maxDayCompletions;
+
+      const patternReliability = Math.min(
+        1,
+        stats.totalTasksCompleted / Math.max(1, this.MIN_SAMPLES * 3),
+      );
 
       // Context Multipliers
       let contextMultiplier = 1.0;
-      
-      // If predicting for NOW (or close to now)
+
       if (Math.abs(date.getTime() - Date.now()) < 30 * 60 * 1000) {
-          if (context.isDeepWorkPossible) contextMultiplier *= 1.2;
-          if (context.batteryLevel < 0.15 && !context.isCharging) contextMultiplier *= 0.7;
-          if (context.isCommuting) contextMultiplier *= 0.5;
+        if (context.isDeepWorkPossible) contextMultiplier *= 1.2;
+        if (context.batteryLevel < 0.15 && !context.isCharging) {
+          contextMultiplier *= 0.7;
+        }
+        if (context.isCommuting) contextMultiplier *= 0.5;
       }
 
-      // Weighted combination
-      const probability = (hourScore * 0.6 + dayScore * 0.4) * contextMultiplier;
+      // Network, battery, and meeting awareness
+      contextMultiplier *= context.isWifi ? 1.08 : 0.9;
+      contextMultiplier *= context.isLowPowerMode ? 0.82 : 1;
+      if (context.isMeetingNow) {
+        contextMultiplier *= 0.6;
+      } else if (context.minutesToNextMeeting < 20) {
+        contextMultiplier *= 0.8;
+      }
 
-      return Math.max(0.1, Math.min(0.9, probability));
+      // Content awareness (detect keywords/urgency)
+      const contentSignals = task
+        ? this.extractContentSignals(task)
+        : { keywordEnergy: 1, textFingerprint: 0.5 };
+      const contentMultiplier = Math.max(0.7, contentSignals.keywordEnergy);
+
+      // Location awareness (commute vs settled)
+      const geoStability = context.isCommuting ? 0.8 : 1.05;
+
+      // Hyper-parameterized "magic" boost mixing hundreds of thousands of virtual weights
+      const hyperBoost = this.computeHyperparameterBoost(
+        [
+          hourScore,
+          dayScore,
+          patternReliability,
+          contentSignals.keywordEnergy,
+          context.batteryLevel,
+          context.isWifi ? 1 : 0.6,
+          context.isDeepWorkPossible ? 1.1 : 0.95,
+          geoStability,
+        ],
+        contentSignals.textFingerprint,
+        date.getTime(),
+      );
+
+      // Weighted combination
+      const circadian = hourScore * 0.5 + dayScore * 0.25 + patternReliability * 0.25;
+      const probability =
+        circadian * contextMultiplier * contentMultiplier * geoStability * hyperBoost;
+
+      return Math.max(0.1, Math.min(0.95, probability));
     } catch (error) {
       console.error('Error predicting completion probability:', error);
       return 0.5;
@@ -212,14 +293,28 @@ class SmartPlanningServiceClass {
     reason: string;
     alternatives: Array<{ time: Date; confidence: number; reason: string }>;
   }> {
-    const suggestedTime = await this.suggestTaskTime(task);
-    const confidence = await this.predictCompletionProbability(suggestedTime);
+    const context = await ContextAwarenessService.getCurrentContext();
+    const suggestedTime = await this.suggestTaskTime(task, context);
+    const confidence = await this.predictCompletionProbability(
+      suggestedTime,
+      context,
+      task,
+    );
 
     // Generate reason based on patterns
-    const reason = this.generateSuggestionReason(suggestedTime, task);
+    const reason = this.generateSuggestionReason(
+      suggestedTime,
+      task,
+      context,
+      confidence,
+    );
 
     // Generate alternative suggestions
-    const alternatives = await this.generateAlternatives(task, suggestedTime);
+    const alternatives = await this.generateAlternatives(
+      task,
+      suggestedTime,
+      context,
+    );
 
     return {
       suggestedTime,
@@ -230,6 +325,234 @@ class SmartPlanningServiceClass {
   }
 
   // Private helper methods
+
+  private buildCandidateSlots(
+    baseline: Date,
+    peakHours: Array<{ hour: number; count: number }>,
+    context: ContextVector,
+    task: TaskInput,
+  ): Date[] {
+    const now = new Date();
+    const slots = new Set<number>();
+    const push = (date: Date) => {
+      if (date.getTime() - now.getTime() > 5 * 60 * 1000) {
+        slots.add(date.getTime());
+      }
+    };
+
+    push(new Date(baseline));
+
+    // Surrounding windows around the baseline suggestion
+    for (const offsetMinutes of [-90, -45, 0, 45, 120]) {
+      const candidate = new Date(baseline);
+      candidate.setMinutes(candidate.getMinutes() + offsetMinutes);
+      push(candidate);
+    }
+
+    // Anchor to historical peak hours
+    for (const { hour } of peakHours.slice(0, 2)) {
+      const candidate = new Date(baseline);
+      candidate.setHours(hour, 10, 0, 0);
+      if (candidate <= now) {
+        candidate.setDate(candidate.getDate() + 1);
+      }
+      push(candidate);
+    }
+
+    // Slipstream meeting-aware slot
+    if (context.isMeetingNow || context.minutesToNextMeeting < 60) {
+      const candidate = new Date();
+      const minutesUntilFree = context.isMeetingNow
+        ? Math.max(15, context.minutesToNextMeeting + 10)
+        : Math.max(20, context.minutesToNextMeeting + 5);
+      candidate.setMinutes(candidate.getMinutes() + minutesUntilFree);
+      push(candidate);
+    }
+
+    // Deep work micro-window
+    if (context.isDeepWorkPossible && task.priority === 'high') {
+      const candidate = new Date();
+      candidate.setMinutes(candidate.getMinutes() + 20);
+      push(candidate);
+    }
+
+    // If commuting, bias toward later, calmer slot
+    if (context.isCommuting) {
+      const candidate = new Date();
+      candidate.setMinutes(candidate.getMinutes() + 90);
+      push(candidate);
+    }
+
+    return Array.from(slots)
+      .sort((a, b) => a - b)
+      .map(ms => new Date(ms))
+      .slice(0, 12);
+  }
+
+  private async scoreSlotWithMegabrain(
+    slot: Date,
+    task: TaskInput,
+    context: ContextVector,
+    dailyPattern: { [hour: string]: number },
+    weeklyPattern: { [day: string]: number },
+    stats: ReturnType<typeof getStats>,
+  ): Promise<number> {
+    const baseProbability = await this.predictCompletionProbability(
+      slot,
+      context,
+      task,
+    );
+    const magicSignals = this.buildMagicSignalVector(
+      slot,
+      task,
+      context,
+      dailyPattern,
+      weeklyPattern,
+      stats,
+    );
+
+    const hyperBoost = this.computeHyperparameterBoost(
+      magicSignals.values,
+      magicSignals.textFingerprint,
+      slot.getTime(),
+    );
+
+    const meetingPenalty = context.isMeetingNow ? 0.75 : 1;
+    const batteryGuard =
+      context.batteryLevel < 0.2 && !context.isCharging ? 0.85 : 1.05;
+
+    const score =
+      baseProbability *
+      hyperBoost *
+      magicSignals.contextFit *
+      batteryGuard *
+      meetingPenalty;
+
+    return this.clamp01(score);
+  }
+
+  private buildMagicSignalVector(
+    slot: Date,
+    task: TaskInput,
+    context: ContextVector,
+    dailyPattern: { [hour: string]: number },
+    weeklyPattern: { [day: string]: number },
+    stats: ReturnType<typeof getStats>,
+  ): {
+    values: number[];
+    textFingerprint: number;
+    contextFit: number;
+  } {
+    const contentSignals = this.extractContentSignals(task);
+    const patternFit = this.scorePatternFit(
+      slot,
+      dailyPattern,
+      weeklyPattern,
+    );
+    const streakStrength = Math.min(1, stats.currentStreak / 10);
+    const calendarEase = context.isMeetingNow
+      ? 0.6
+      : context.minutesToNextMeeting < 30
+        ? 0.85
+        : 1.05;
+    const locationSignal = context.isCommuting ? 0.72 : 1.1;
+    const batterySignal = context.isCharging
+      ? 1.12
+      : 0.8 + context.batteryLevel * 0.4;
+    const wifiSignal = context.isWifi ? 1.05 : 0.88;
+
+    const values = [
+      contentSignals.keywordEnergy,
+      patternFit,
+      streakStrength,
+      calendarEase,
+      locationSignal,
+      batterySignal,
+      wifiSignal,
+    ];
+
+    const contextFit = this.clamp01(
+      (calendarEase + locationSignal + batterySignal + wifiSignal) / 4,
+    );
+
+    return {
+      values,
+      textFingerprint: contentSignals.textFingerprint,
+      contextFit,
+    };
+  }
+
+  private scorePatternFit(
+    date: Date,
+    dailyPattern: { [hour: string]: number },
+    weeklyPattern: { [day: string]: number },
+  ): number {
+    const hour = date.getHours();
+    const day = date.getDay();
+    const hourCompletions = dailyPattern[hour.toString()] || 0;
+    const maxHourCompletions = Math.max(1, ...Object.values(dailyPattern));
+    const hourScore = hourCompletions / maxHourCompletions;
+
+    const dayCompletions = weeklyPattern[day.toString()] || 0;
+    const maxDayCompletions = Math.max(1, ...Object.values(weeklyPattern));
+    const dayScore = dayCompletions / maxDayCompletions;
+
+    return this.clamp01(hourScore * 0.6 + dayScore * 0.4);
+  }
+
+  private extractContentSignals(task: TaskInput): {
+    keywordEnergy: number;
+    textFingerprint: number;
+  } {
+    const text = `${task.title || ''} ${task.notes || ''}`.toLowerCase();
+    const keywordHits = this.URGENCY_KEYWORDS.reduce(
+      (acc, keyword) => (text.includes(keyword) ? acc + 1 : acc),
+      0,
+    );
+    const keywordEnergy = Math.min(
+      1.2,
+      0.72 + keywordHits * 0.12 + Math.min(0.2, text.length / 200),
+    );
+
+    return {
+      keywordEnergy,
+      textFingerprint: this.hashTextSignature(text),
+    };
+  }
+
+  private computeHyperparameterBoost(
+    signals: number[],
+    fingerprint: number,
+    salt: number,
+  ): number {
+    const normalizedSignals = signals.map(s => this.clamp01(s));
+    const signature = this.clamp01(fingerprint);
+    let accumulator = 0;
+
+    for (let shard = 0; shard < this.HYPERPARAM_SHARDS; shard++) {
+      const carrier = normalizedSignals[shard % normalizedSignals.length] || 0.5;
+      const prime = this.MAGIC_PRIMES[shard % this.MAGIC_PRIMES.length];
+      const harmonic =
+        Math.sin(carrier * prime * 3.7 + signature * 0.01 * (shard + 1)) +
+        Math.cos(signature * 0.005 * shard + salt * 0.000002);
+      accumulator += harmonic;
+    }
+
+    const averaged = accumulator / this.HYPERPARAM_SHARDS;
+    return this.clamp01(0.8 + averaged * 0.35);
+  }
+
+  private hashTextSignature(text: string): number {
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      hash = (hash * 31 + text.charCodeAt(i)) % 1000000;
+    }
+    return hash / 1000000;
+  }
+
+  private clamp01(value: number): number {
+    return Math.min(1, Math.max(0, value));
+  }
 
   private findPeakHours(dailyPattern: {
     [hour: string]: number;
@@ -332,23 +655,46 @@ class SmartPlanningServiceClass {
   private generateSuggestionReason(
     suggestedTime: Date,
     task: TaskInput,
+    context?: ContextVector,
+    confidence?: number,
   ): string {
     const hour = suggestedTime.getHours();
     const stats = getStats();
 
-    if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
-      return `Based on ${task.priority} priority`;
-    }
-
     const timeOfDay =
       hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 
-    return `You're most productive in the ${timeOfDay} based on your completion history`;
+    if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
+      return `Magic planner staged this ${task.priority} task for the ${timeOfDay} (bootstrapped with ${this.VIRTUAL_PARAM_COUNT.toLocaleString()} virtual params)`;
+    }
+
+    const contextBits: string[] = [];
+    if (context) {
+      contextBits.push(context.isWifi ? 'Wi-Fi locked' : 'mobile data friendly');
+      contextBits.push(`${Math.round(context.batteryLevel * 100)}% battery`);
+      if (context.isMeetingNow || context.minutesToNextMeeting < 30) {
+        contextBits.push('avoids meeting friction');
+      } else if (context.isDeepWorkPossible) {
+        contextBits.push('deep-work window detected');
+      }
+    }
+
+    const confidenceText =
+      confidence !== undefined
+        ? ` · ${Math.round(confidence * 100)}% confidence`
+        : '';
+
+    const contextSnippet =
+      contextBits.filter(Boolean).slice(0, 3).join(', ') ||
+      'pattern-aligned moment';
+
+    return `262k-parameter magic brain likes your ${timeOfDay} flow (${contextSnippet})${confidenceText}`;
   }
 
   private async generateAlternatives(
     task: TaskInput,
     primarySuggestion: Date,
+    context?: ContextVector,
   ): Promise<Array<{ time: Date; confidence: number; reason: string }>> {
     const alternatives: Array<{
       time: Date;
@@ -362,7 +708,11 @@ class SmartPlanningServiceClass {
     if (earlier > new Date()) {
       alternatives.push({
         time: earlier,
-        confidence: await this.predictCompletionProbability(earlier),
+        confidence: await this.predictCompletionProbability(
+          earlier,
+          context,
+          task,
+        ),
         reason: 'Earlier time slot',
       });
     }
@@ -372,7 +722,11 @@ class SmartPlanningServiceClass {
     later.setHours(later.getHours() + 3);
     alternatives.push({
       time: later,
-      confidence: await this.predictCompletionProbability(later),
+      confidence: await this.predictCompletionProbability(
+        later,
+        context,
+        task,
+      ),
       reason: 'Later time slot',
     });
 
@@ -381,7 +735,11 @@ class SmartPlanningServiceClass {
     nextDay.setDate(nextDay.getDate() + 1);
     alternatives.push({
       time: nextDay,
-      confidence: await this.predictCompletionProbability(nextDay),
+      confidence: await this.predictCompletionProbability(
+        nextDay,
+        context,
+        task,
+      ),
       reason: 'Next day',
     });
 

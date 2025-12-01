@@ -70,6 +70,9 @@ class NotificationServiceClass {
         task.priority,
         dueMs,
         estDurationMs,
+        {
+          reminderText: `${task.title} ${task.notes || ''}`,
+        },
       );
 
       // Calculate optimal notification time based on RT patterns

@@ -151,7 +151,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   }, [categoryDisplay, showCategoryPicker, t]);
 
   // Define generateSmartSuggestion before useEffect
-  const generateSmartSuggestion = React.useCallback(() => {
+  const generateSmartSuggestion = React.useCallback(async () => {
     try {
       const taskInput: TaskInput = {
         title: title.trim() || t('task.newTaskPlaceholder'),
@@ -162,7 +162,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         priority: priority || 'medium',
       };
 
-      const suggestions = SmartPlanningService.getSmartSuggestions(taskInput);
+      const suggestions = await SmartPlanningService.getSmartSuggestions(
+        taskInput,
+      );
       setSmartSuggestion({
         suggestedTime: suggestions.suggestedTime,
         confidence: suggestions.confidence,
@@ -177,7 +179,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     } catch (error) {
       console.error('Error generating smart suggestion:', error);
     }
-  }, [title, dueDate, dueTime, category, priority]);
+  }, [title, notes, dueDate, dueTime, category, priority, t]);
 
   // Generate smart suggestion when priority or category changes
   useEffect(() => {

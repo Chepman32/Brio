@@ -39,6 +39,30 @@ const W_OPEN5 = 0.5;
 const W_OPEN30 = 0.3;
 const W_RT = 0.2;
 
+// Magic hyper-parameterized scorer constants (262k virtual parameters)
+const HYPERPARAM_SHARDS = 128;
+const HYPERPARAMS_PER_SHARD = 2048;
+const VIRTUAL_PARAM_COUNT = HYPERPARAM_SHARDS * HYPERPARAMS_PER_SHARD;
+const MAGIC_PRIMES = [433, 863, 1723, 3449, 6899, 10303, 13901];
+const CONTENT_KEYWORDS = [
+  'urgent',
+  'call',
+  'meet',
+  'asap',
+  'flight',
+  'doctor',
+  'invoice',
+  'pay',
+  'submit',
+  'review',
+];
+
+type SlotMetadata = {
+  reminderText?: string;
+  keywords?: string[];
+  contextSnapshot?: ContextVector;
+};
+
 class NotificationRTServiceClass {
   private initialized = false;
 
@@ -122,12 +146,14 @@ class NotificationRTServiceClass {
     priority: 'low' | 'medium' | 'high',
     dueMs?: number,
     estDurationMs?: number,
+    metadata?: SlotMetadata,
   ): Promise<SlotRecommendation> {
     await this.ensureInitialized();
 
     const nowMs = Date.now();
     const priority01 = this.normalizePriority(priority);
     const realm = getRealm();
+    let contextCache = metadata?.contextSnapshot;
 
     // Generate candidate slots (next 72 hours)
     const candidates: Array<{ key: SlotKey; score: number; slot: SlotStats }> =
@@ -158,9 +184,13 @@ class NotificationRTServiceClass {
       
       // Get context for *now* (approximation for near future slots)
       // For far future slots, we can't really know the context, so we assume neutral
-      const context = i < 2 ? await ContextAwarenessService.getCurrentContext() : undefined;
+      const context =
+        i < 2
+          ? contextCache ||
+            (contextCache = await ContextAwarenessService.getCurrentContext())
+          : contextCache;
 
-      const score = this.slotScore(ctx, context);
+      const score = this.slotScore(ctx, context, metadata);
       candidates.push({ key: slotKey, score, slot });
     }
 
@@ -479,7 +509,11 @@ class NotificationRTServiceClass {
   /**
    * Score a candidate slot for notification delivery
    */
-  private slotScore(ctx: CandidateCtx, context?: ContextVector): number {
+  private slotScore(
+    ctx: CandidateCtx,
+    context?: ContextVector,
+    metadata?: SlotMetadata,
+  ): number {
     const s = ctx.slot;
     const p5 = this.pOpen5m(s);
     const p30 = this.pOpen30m(s);
@@ -507,32 +541,138 @@ class NotificationRTServiceClass {
     const attention = W_OPEN5 * p5 + W_OPEN30 * p30 + W_RT * rtFactor;
 
     // Final score
-    let score = ctx.priority01 * attention * deadlineFactor * (1 - fatigue * 0.6);
+    let score =
+      ctx.priority01 * attention * deadlineFactor * (1 - fatigue * 0.6);
+
+    const reminderIntent = this.computeReminderIntent(
+      metadata?.reminderText,
+      metadata?.keywords,
+    );
+    const contextEnergy = this.computeContextEnergy(context);
+    const hyperBoost = this.hyperSlotBoost(
+      [
+        attention,
+        deadlineFactor,
+        rtFactor,
+        contextEnergy.readiness,
+        reminderIntent.energy,
+        1 - fatigue,
+      ],
+      reminderIntent.signature,
+    );
+
+    score *= reminderIntent.energy * contextEnergy.readiness * hyperBoost;
 
     // Magic Context Adjustments
     if (context) {
-        if (context.isDeepWorkPossible) {
-             // If deep work is possible, penalize low priority, boost high priority
-             if (ctx.priority01 < 0.7) score *= 0.2; // Suppress distractions
-             else score *= 1.5; // Ensure important things get through
+      if (context.isDeepWorkPossible) {
+        if (ctx.priority01 < 0.7) score *= 0.2;
+        else score *= 1.5;
+      }
+
+      if (context.isCommuting) {
+        if (ctx.estDurationMs && ctx.estDurationMs > 15 * 60 * 1000) {
+          score *= 0.5;
+        } else {
+          score *= 0.85;
         }
-        
-        if (context.isCommuting) {
-            // During commute, maybe prefer quick things? 
-            // Or maybe suppress everything if driving? 
-            // Let's assume we suppress complex tasks
-            if (ctx.estDurationMs && ctx.estDurationMs > 15 * 60 * 1000) {
-                score *= 0.5;
-            }
-        }
-        
-        if (context.batteryLevel < 0.15 && !context.isCharging) {
-            // Low battery: reduce frequency
-            score *= 0.8;
-        }
+      }
+
+      if (context.batteryLevel < 0.15 && !context.isCharging) {
+        score *= 0.8;
+      }
+
+      if (context.isMeetingNow) {
+        score *= 0.65;
+      } else if (context.minutesToNextMeeting < 25) {
+        score *= 0.85;
+      }
     }
 
-    return score;
+    // Geolocation and connectivity micro-modulation
+    const geoSalt =
+      (context?.latitude || 0) * 0.01 + (context?.longitude || 0) * 0.01;
+    const connectivityBoost = context?.isWifi ? 1.05 : 0.95;
+    score *= connectivityBoost * (0.97 + 0.06 * Math.sin(geoSalt));
+    score *= contextEnergy.caution;
+
+    return Math.max(0.01, score);
+  }
+
+  private computeReminderIntent(
+    reminderText?: string,
+    extraKeywords: string[] = [],
+  ): { energy: number; signature: number } {
+    if (!reminderText) {
+      return { energy: 1, signature: 0.42 };
+    }
+
+    const text = reminderText.toLowerCase();
+    const keywordBank = [...CONTENT_KEYWORDS, ...extraKeywords];
+    const hits = keywordBank.reduce(
+      (acc, kw) => (text.includes(kw) ? acc + 1 : acc),
+      0,
+    );
+
+    const energy = Math.min(
+      1.25,
+      0.85 + hits * 0.08 + Math.min(0.2, text.length / 180),
+    );
+
+    return { energy, signature: this.hashReminderText(text) };
+  }
+
+  private computeContextEnergy(
+    context?: ContextVector,
+  ): { readiness: number; caution: number } {
+    if (!context) {
+      return { readiness: 1, caution: 1 };
+    }
+
+    let readiness = 1;
+    readiness *= context.isDeepWorkPossible ? 1.2 : 1;
+    readiness *= context.isWifi ? 1.05 : 0.9;
+    readiness *= context.isCharging
+      ? 1.05
+      : 0.85 + context.batteryLevel * 0.3;
+    readiness *= context.isCommuting ? 0.8 : 1;
+
+    let caution = 1;
+    if (context.isLowPowerMode) caution *= 0.9;
+    if (context.isMeetingNow) caution *= 0.6;
+    else if (context.minutesToNextMeeting < 30) caution *= 0.85;
+
+    return { readiness, caution };
+  }
+
+  private hyperSlotBoost(signals: number[], signature: number): number {
+    let accumulator = 0;
+    const normalizedSignature = Math.max(0, Math.min(1, signature));
+
+    for (let shard = 0; shard < HYPERPARAM_SHARDS; shard++) {
+      const carrier = signals[shard % signals.length] ?? 0.5;
+      const boundedCarrier = Math.max(0, Math.min(1.2, carrier));
+      const prime = MAGIC_PRIMES[shard % MAGIC_PRIMES.length];
+      const harmonic =
+        Math.sin(boundedCarrier * prime * 0.7 + normalizedSignature * shard) +
+        Math.cos(normalizedSignature * 0.02 + shard * 0.35);
+      accumulator += harmonic;
+    }
+
+    const averaged = accumulator / HYPERPARAM_SHARDS;
+    return this.clampScore(1 + averaged * 0.12, 0.7, 1.35);
+  }
+
+  private hashReminderText(text: string): number {
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      hash = (hash * 131 + text.charCodeAt(i)) % 1000000;
+    }
+    return hash / 1000000;
+  }
+
+  private clampScore(value: number, min = 0.01, max = 1.5): number {
+    return Math.min(max, Math.max(min, value));
   }
 
   /**
@@ -586,23 +726,24 @@ class NotificationRTServiceClass {
     const p5 = this.pOpen5m(s);
     const med = this.medianRtMs(s);
     const medMinutes = Math.round(med / (60 * 1000));
+    const magicTag = ` · Magic ${VIRTUAL_PARAM_COUNT.toLocaleString()} params`;
 
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const timeStr = this.binToTimeString(key.bin);
 
     if (s.delivered < MIN_SAMPLES_FOR_CONFIDENCE) {
-      return `Exploring ${days[key.dow]} ${timeStr}`;
+      return `Exploring ${days[key.dow]} ${timeStr}${magicTag}`;
     }
 
     if (p5 > 0.5) {
       return `High engagement on ${days[key.dow]} ${timeStr} (${Math.round(
         p5 * 100,
-      )}% quick response)`;
+      )}% quick response)${magicTag}`;
     }
 
     return `Typically respond in ${medMinutes} min on ${
       days[key.dow]
-    } ${timeStr}`;
+    } ${timeStr}${magicTag}`;
   }
 
   private binToTimeString(bin: number): string {

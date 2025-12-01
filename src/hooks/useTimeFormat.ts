@@ -41,12 +41,12 @@ export const useTimeFormat = () => {
   }, [refreshFormat]);
 
   const formatTime = useCallback(
-    (date: Date) => formatTimeWithFormat(date, format),
+    (date?: Date) => formatTimeWithFormat(date, format),
     [format],
   );
 
   const formatTimeRange = useCallback(
-    (startTime: Date, endTime: Date) =>
+    (startTime?: Date, endTime?: Date) =>
       formatTimeRangeWithFormat(startTime, endTime, format),
     [format],
   );

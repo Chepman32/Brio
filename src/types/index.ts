@@ -119,7 +119,7 @@ export interface TaskDetailModalProps {
 // Service interfaces
 export interface SmartPlanningServiceInterface {
   analyzeCompletionPatterns(): void;
-  suggestTaskTime(task: TaskInput): Date;
+  suggestTaskTime(task: TaskInput): Promise<Date>;
   updateUserStats(completedTask: TaskType): void;
   getOptimalSchedulingTime(): number;
 }

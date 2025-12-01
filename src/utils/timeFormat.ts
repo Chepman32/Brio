@@ -41,11 +41,24 @@ export const getTimeFormat = (): '12h' | '24h' => {
  * Format time with explicit format
  */
 export const formatTimeWithFormat = (
-  date: Date,
+  date?: Date,
   format: '12h' | '24h',
 ): string => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  // Guard against undefined/null or non-Date inputs
+  if (!date || typeof (date as any).getHours !== 'function') {
+    return '';
+  }
+
+  let hours: number;
+  let minutes: number;
+
+  try {
+    hours = date.getHours();
+    minutes = date.getMinutes();
+  } catch (error) {
+    console.warn('formatTimeWithFormat fallback hit:', error);
+    return '';
+  }
 
   if (format === '12h') {
     const period = hours >= 12 ? 'PM' : 'AM';
@@ -59,7 +72,8 @@ export const formatTimeWithFormat = (
 /**
  * Format time according to user preference
  */
-export const formatTime = (date: Date): string => {
+export const formatTime = (date?: Date): string => {
+  if (!date) return '';
   const format = getTimeFormat();
   return formatTimeWithFormat(date, format);
 };
@@ -68,20 +82,18 @@ export const formatTime = (date: Date): string => {
  * Format time range with explicit format
  */
 export const formatTimeRangeWithFormat = (
-  startTime: Date,
-  endTime: Date,
+  startTime?: Date,
+  endTime?: Date,
   format: '12h' | '24h',
 ): string => {
-  return `${formatTimeWithFormat(startTime, format)} – ${formatTimeWithFormat(
-    endTime,
-    format,
-  )}`;
+  if (!startTime || !endTime) return '';
+  return `${formatTimeWithFormat(startTime, format)} – ${formatTimeWithFormat(endTime, format)}`;
 };
 
 /**
  * Format time range according to user preference
  */
-export const formatTimeRange = (startTime: Date, endTime: Date): string => {
+export const formatTimeRange = (startTime?: Date, endTime?: Date): string => {
   const format = getTimeFormat();
   return formatTimeRangeWithFormat(startTime, endTime, format);
 };

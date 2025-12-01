@@ -29,6 +29,16 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const deviceInfoModule = require('react-native-device-info');
   DeviceInfo = deviceInfoModule.default || deviceInfoModule;
+  // Backfill missing methods in simulator/test environments
+  if (typeof DeviceInfo.getBatteryLevel !== 'function') {
+    DeviceInfo.getBatteryLevel = async () => 1;
+  }
+  if (typeof DeviceInfo.isBatteryCharging !== 'function') {
+    DeviceInfo.isBatteryCharging = async () => false;
+  }
+  if (typeof (DeviceInfo as any).isLowPowerMode !== 'function') {
+    (DeviceInfo as any).isLowPowerMode = async () => false;
+  }
 } catch (error) {
   console.warn(
     'react-native-device-info unavailable, using fallback values:',
@@ -162,11 +172,31 @@ class ContextAwarenessServiceClass {
   // --- Private Collectors ---
 
   private async getBatteryContext() {
-    const [level, charging, lowPower] = await Promise.all([
-      DeviceInfo.getBatteryLevel(),
-      DeviceInfo.isBatteryCharging(),
-      (DeviceInfo as any).isLowPowerMode(),
-    ]);
+    const safeCall = async <T>(fn?: () => Promise<T>, fallback: T = undefined as any) => {
+      if (typeof fn !== 'function') return fallback;
+      try {
+        return await fn();
+      } catch (error) {
+        console.warn('Battery context call failed, using fallback:', error);
+        return fallback;
+      }
+    };
+
+    const level = await safeCall(
+      DeviceInfo && DeviceInfo.getBatteryLevel,
+      1,
+    );
+
+    const charging = await safeCall(
+      DeviceInfo && (DeviceInfo as any).isBatteryCharging,
+      false,
+    );
+
+    const lowPower = await safeCall(
+      DeviceInfo && (DeviceInfo as any).isLowPowerMode,
+      false,
+    );
+
     return { level, charging, lowPower };
   }
 
