@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TaskListView } from '../components/TaskListView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
@@ -50,6 +52,7 @@ export const TodayScreen: React.FC = () => {
           dueTime: task.dueTime,
           category: task.category,
           priority: task.priority,
+          icon: (task as any).icon,
           completed: task.completed,
           completedAt: task.completedAt,
           snoozedUntil: task.snoozedUntil,
@@ -211,65 +214,202 @@ export const TodayScreen: React.FC = () => {
   };
 
   const contentContainerStyle = getContentContainerStyle();
+  const remainingCount = tasks.length;
+  const topTask = tasks[0];
+  const remainingTasks = tasks.slice(1);
+  const progressPct = remainingCount === 0 ? 1 : Math.max(0.08, Math.min(1, 1 / Math.max(1, remainingCount)));
 
   const dynamicStyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
     },
-    header: {
-      paddingBottom: 20,
-      backgroundColor: colors.surface,
-      borderBottomLeftRadius: 24,
-      borderBottomRightRadius: 24,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 8,
-      elevation: 2,
+    headerCard: {
+      paddingTop: insets.top + 20,
+      paddingHorizontal: 20,
+      paddingBottom: 28,
+      borderRadius: 28,
+      backgroundColor: 'rgba(255,255,255,0.12)',
+      marginHorizontal: 16,
+      marginTop: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.08,
+      shadowRadius: 16,
     },
-    greeting: {
-      fontWeight: 'bold',
-      color: colors.text,
-      marginBottom: 4,
-    },
-    date: {
-      color: colors.textSecondary,
+    greetingRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
       marginBottom: 12,
     },
-    taskCount: {
-      color: colors.primary,
+    greetingIcon: {
+      marginRight: 10,
+    },
+    greeting: {
+      fontWeight: '800',
+      color: '#1E1E2D',
+    },
+    pillRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 12,
+    },
+    pill: {
+      backgroundColor: 'rgba(255,255,255,0.7)',
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    pillText: {
+      color: '#4A4A68',
       fontWeight: '600',
+    },
+    taskRemaining: {
+      color: '#4B45F1',
+      fontWeight: '700',
+      marginBottom: 8,
+    },
+    progressTrack: {
+      height: 6,
+      borderRadius: 6,
+      backgroundColor: 'rgba(255,255,255,0.35)',
+      overflow: 'hidden',
+      marginBottom: 16,
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: 6,
+      backgroundColor: '#4B45F1',
+    },
+    card: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: 22,
+      padding: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.08,
+      shadowRadius: 20,
+      elevation: 4,
+    },
+    cardBadge: {
+      width: 46,
+      height: 46,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: '#FFB703',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    cardCategory: {
+      backgroundColor: '#EEF1FF',
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 14,
+      color: '#4A4A68',
+      fontWeight: '600',
+    },
+    cardTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: '#1E1E2D',
+    },
+    cardIconWrapper: {
+      width: 42,
+      height: 42,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: '#FFB703',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    cardSpacer: {
+      flex: 1,
+    },
+    listWrapper: {
+      flex: 1,
+      paddingHorizontal: 16,
+      paddingTop: 12,
+    },
+    addButtonWrapper: {
+      position: 'absolute',
+      bottom: 36 + insets.bottom,
+      right: 24,
     },
   });
 
   return (
-    <View style={dynamicStyles.container}>
-      <View
-        style={[
-          dynamicStyles.header,
-          {
-            paddingTop: insets.top + 20,
-            paddingHorizontal: isTablet ? 32 : 20,
-          },
-        ]}
-      >
-        <View style={contentContainerStyle}>
+    <LinearGradient
+      colors={['#E9E7FF', '#DCE7FF']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={dynamicStyles.container}
+    >
+      <View style={dynamicStyles.headerCard}>
+        <View style={dynamicStyles.greetingRow}>
+          <Icon
+            name="sunny-outline"
+            size={28}
+            color="#F7C948"
+            style={dynamicStyles.greetingIcon}
+          />
           <Text style={[dynamicStyles.greeting, { fontSize: isTablet ? 34 : 28 }]}>
             {getGreeting()}
           </Text>
-          <Text style={[dynamicStyles.date, { fontSize: isTablet ? 18 : 16 }]}>
-            {formatDate()}
-          </Text>
-          <Text style={[dynamicStyles.taskCount, { fontSize: isTablet ? 16 : 14 }]}>
-            {t('today.tasksRemaining', { count: tasks.length })}
-          </Text>
         </View>
+        <View style={dynamicStyles.pillRow}>
+          <View style={dynamicStyles.pill}>
+            <Text style={dynamicStyles.pillText}>{t('today.today') || 'Today'}</Text>
+            <Text style={dynamicStyles.pillText}>•</Text>
+            <Text style={dynamicStyles.pillText}>{formatDate()}</Text>
+          </View>
+        </View>
+        <Text style={[dynamicStyles.taskRemaining, { fontSize: 16 }]}>
+          {t('today.tasksRemaining', { count: remainingCount })}
+        </Text>
+        <View style={dynamicStyles.progressTrack}>
+          <View
+            style={[
+              dynamicStyles.progressFill,
+              { width: `${Math.min(100, progressPct * 100)}%` },
+            ]}
+          />
+        </View>
+        {topTask && (
+          <Pressable
+            style={dynamicStyles.card}
+            onPress={() => handleTaskPress(topTask._id)}
+          >
+            <View style={dynamicStyles.cardBadge}>
+              <Icon
+                name={topTask.icon || 'checkmark-circle-outline'}
+                size={24}
+                color="#1E1E2D"
+              />
+            </View>
+            <Text style={dynamicStyles.cardTitle} numberOfLines={1}>
+              {topTask.title}
+            </Text>
+            <View style={dynamicStyles.cardSpacer} />
+            {topTask.category && (
+              <Text style={dynamicStyles.cardCategory}>
+                {topTask.category}
+              </Text>
+            )}
+          </Pressable>
+        )}
       </View>
 
-      <View style={contentContainerStyle}>
+      <View style={dynamicStyles.listWrapper}>
         <TaskListView
-          tasks={tasks}
+          tasks={remainingTasks}
           onTaskComplete={handleTaskComplete}
           onTaskSnooze={handleTaskSnooze}
           onTaskPress={handleTaskPress}
@@ -280,7 +420,9 @@ export const TodayScreen: React.FC = () => {
         />
       </View>
 
-      <FloatingActionButton onPress={handleAddTask} />
+      <View style={dynamicStyles.addButtonWrapper}>
+        <FloatingActionButton onPress={handleAddTask} />
+      </View>
 
       <TaskCreationModal
         visible={showTaskModal}
@@ -302,7 +444,7 @@ export const TodayScreen: React.FC = () => {
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
       />
-    </View>
+    </LinearGradient>
   );
 };
 

@@ -101,23 +101,28 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.View style={[styles.container, { backgroundColor: colors.surface, shadowColor: colors.shadow }, animatedStyle]}>
+      <Animated.View
+        style={[
+          styles.container,
+          { backgroundColor: colors.surface, shadowColor: colors.shadow },
+          animatedStyle,
+        ]}
+      >
         <View
           style={[
             styles.priorityIndicator,
             { backgroundColor: getPriorityColor() },
           ]}
         />
-        <View style={styles.content}>
+        <Pressable style={styles.content} onPress={() => onPress(taskId)}>
           <View style={styles.titleRow}>
-            {task.icon && (
-              <Icon
-                name={task.icon}
-                size={18}
-                color={colors.textSecondary}
-                style={styles.titleIcon}
-              />
-            )}
+            <View style={styles.iconBadge}>
+              {task.icon ? (
+                <Icon name={task.icon} size={24} color={colors.text} />
+              ) : (
+                <Icon name="checkmark-circle-outline" size={24} color={colors.text} />
+              )}
+            </View>
             <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
               {task.title}
             </Text>
@@ -139,7 +144,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               </Text>
             )}
           </View>
-        </View>
+        </Pressable>
       </Animated.View>
     </GestureDetector>
   );
@@ -174,8 +179,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  titleIcon: {
-    marginRight: 8,
+  iconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#FFB703',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
   notes: {
     fontSize: 14,

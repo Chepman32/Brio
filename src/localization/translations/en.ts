@@ -38,6 +38,7 @@ export default {
   // Today screen
   today: {
     title: 'Today',
+    today: 'Today',
     noTasks: 'No tasks for today',
     addTask: 'Add Task',
     goodMorning: 'Good morning',
