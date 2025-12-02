@@ -285,6 +285,10 @@ export default {
     smartSuggestionTime: '%{date} at %{time}',
     applySuggestion: 'Apply Suggestion',
     newTaskPlaceholder: 'New Task',
+    recurring: 'Recurring',
+    recurring_daily: 'Daily',
+    recurring_weekly: 'Weekly',
+    recurring_monthly: 'Monthly',
   },
 
   // Calendar

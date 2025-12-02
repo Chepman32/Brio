@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
   Platform,
+  Switch,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -63,6 +64,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   >(undefined);
   const [icon, setIcon] = useState<string | undefined>(undefined);
   const [showIconPickerModal, setShowIconPickerModal] = useState(false);
+  const [recurring, setRecurring] = useState<boolean>(false);
+  const [recurringFrequency, setRecurringFrequency] = useState<
+    'daily' | 'weekly' | 'monthly'
+  >('daily');
   const [showSmartSuggestions, setShowSmartSuggestions] = useState(false);
   const [smartSuggestion, setSmartSuggestion] = useState<{
     suggestedTime: Date;
@@ -142,6 +147,11 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         setCategoryDisplay(cat ? translateCategory(cat, t) : '');
         setPriority(editTask.priority);
         setIcon(editTask.icon);
+        setRecurring(!!editTask.recurring);
+        setRecurringFrequency(
+          (editTask.recurringFrequency as 'daily' | 'weekly' | 'monthly') ||
+            'daily',
+        );
         setInitialSnapshot({
           title: editTask.title,
           notes: editTask.notes || '',
@@ -150,6 +160,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
           dueDate: editTask.dueDate ? new Date(editTask.dueDate) : new Date(),
           dueTime: editTask.dueTime ? new Date(editTask.dueTime) : undefined,
           icon: editTask.icon,
+          recurring: !!editTask.recurring,
+          recurringFrequency:
+            (editTask.recurringFrequency as 'daily' | 'weekly' | 'monthly') ||
+            'daily',
         });
       } else {
         // Prefill with the selected date (fallback to today)
@@ -157,6 +171,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         setDueDate(initialDate);
         setDueTime(undefined);
         setIcon(undefined);
+        setRecurring(false);
+        setRecurringFrequency('daily');
         setInitialSnapshot(null);
       }
     } else {
@@ -179,6 +195,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setShowDatePicker(false);
       setShowTimePicker(false);
       setIcon(undefined);
+      setRecurring(false);
+      setRecurringFrequency('daily');
       setInitialSnapshot(null);
     }
   }, [visible, editTask, defaultDate, translateY, t]);
@@ -260,9 +278,23 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       priority !== initialSnapshot.priority ||
       !isSameDateValue(dueDate, initialSnapshot.dueDate) ||
       !isSameDateValue(dueTime, initialSnapshot.dueTime) ||
-      icon !== initialSnapshot.icon
+      icon !== initialSnapshot.icon ||
+      recurring !== initialSnapshot.recurring ||
+      recurringFrequency !== initialSnapshot.recurringFrequency
     );
-  }, [title, notes, category, priority, dueDate, dueTime, icon, editTask, initialSnapshot]);
+  }, [
+    title,
+    notes,
+    category,
+    priority,
+    dueDate,
+    dueTime,
+    icon,
+    recurring,
+    recurringFrequency,
+    editTask,
+    initialSnapshot,
+  ]);
 
   const canSave = Boolean(title.trim()) && (!editTask || isDirty);
 
@@ -321,6 +353,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       category: category.trim() || undefined,
       priority: priority || 'medium',
       icon,
+      recurring,
+      recurringFrequency: recurring ? recurringFrequency : undefined,
     };
 
     onSave(taskInput);
@@ -483,6 +517,41 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                     </Pressable>
                   ))}
                 </View>
+              </View>
+
+              <View style={styles.field}>
+                <View style={styles.switchRow}>
+                  <Text style={[styles.label, { marginBottom: 0, color: colors.text }]}>{t('task.recurring') || 'Recurring'}</Text>
+                  <Switch
+                    value={recurring}
+                    onValueChange={setRecurring}
+                    thumbColor={recurring ? colors.primary : '#f4f3f4'}
+                    trackColor={{ false: '#d9d9d9', true: `${colors.primary}55` }}
+                  />
+                </View>
+                {recurring && (
+                  <View style={styles.recurringOptions}>
+                    {(['daily', 'weekly', 'monthly'] as const).map(freq => (
+                      <Pressable
+                        key={freq}
+                        style={[
+                          styles.recurringPill,
+                          recurringFrequency === freq && styles.recurringPillActive,
+                        ]}
+                        onPress={() => setRecurringFrequency(freq)}
+                      >
+                        <Text
+                          style={[
+                            styles.recurringPillText,
+                            recurringFrequency === freq && styles.recurringPillTextActive,
+                          ]}
+                        >
+                          {t(`task.recurring_${freq}`) || freq}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
               </View>
 
               {/* Date and Time Selection */}
@@ -995,6 +1064,11 @@ const styles = StyleSheet.create({
   iconGridItemSelected: {
     backgroundColor: '#EEF2FF',
   },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   suggestionTime: {
     fontSize: 16,
     fontWeight: '600',
@@ -1120,5 +1194,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  recurringOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+  },
+  recurringPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    backgroundColor: '#FFFFFF',
+  },
+  recurringPillActive: {
+    borderColor: '#6366F1',
+    backgroundColor: '#EEF2FF',
+  },
+  recurringPillText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '600',
+  },
+  recurringPillTextActive: {
+    color: '#4B45F1',
   },
 });

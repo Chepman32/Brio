@@ -11,6 +11,8 @@ export interface TaskInput {
   category?: string;
   priority: 'low' | 'medium' | 'high';
   icon?: string;
+  recurring?: boolean;
+  recurringFrequency?: 'daily' | 'weekly' | 'monthly';
 }
 
 export const createTask = (input: TaskInput): Task => {
@@ -23,6 +25,8 @@ export const createTask = (input: TaskInput): Task => {
       _id: new BSON.ObjectId().toHexString(),
       ...input,
       icon: input.icon,
+      recurring: input.recurring ?? false,
+      recurringFrequency: input.recurring ? input.recurringFrequency || 'daily' : null,
       completed: false,
       createdAt,
       updatedAt: createdAt,

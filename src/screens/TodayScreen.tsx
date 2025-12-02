@@ -53,6 +53,12 @@ export const TodayScreen: React.FC = () => {
           category: task.category,
           priority: task.priority,
           icon: (task as any).icon,
+          recurring: (task as any).recurring,
+          recurringFrequency: (task as any).recurringFrequency as
+            | 'daily'
+            | 'weekly'
+            | 'monthly'
+            | undefined,
           completed: task.completed,
           completedAt: task.completedAt,
           snoozedUntil: task.snoozedUntil,

@@ -8,6 +8,8 @@ export interface TaskType {
   category?: string;
   priority: 'low' | 'medium' | 'high';
   icon?: string;
+  recurring?: boolean;
+  recurringFrequency?: 'daily' | 'weekly' | 'monthly';
   completed: boolean;
   completedAt?: Date;
   createdAt: Date;
@@ -23,6 +25,8 @@ export interface TaskInput {
   category?: string;
   priority: 'low' | 'medium' | 'high';
   icon?: string;
+  recurring?: boolean;
+  recurringFrequency?: 'daily' | 'weekly' | 'monthly';
 }
 
 // Achievement types

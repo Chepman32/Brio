@@ -28,7 +28,7 @@ export const initializeRealm = async (): Promise<Realm> => {
       Occurrence,
       TimeCluster,
     ],
-    schemaVersion: 6,
+    schemaVersion: 8,
     onMigration: (oldRealm: Realm, newRealm: Realm) => {
       // Migration for schema version 2: add timeFormat field
       if (oldRealm.schemaVersion < 2) {
@@ -67,6 +67,30 @@ export const initializeRealm = async (): Promise<Realm> => {
           const task = newTasks[i] as any;
           if (task.icon === undefined) {
             task.icon = null;
+          }
+        }
+      }
+
+      // Migration for schema version 7: add recurring flag to Task
+      if (oldRealm.schemaVersion < 7) {
+        const newTasks = newRealm.objects('Task');
+        for (let i = 0; i < newTasks.length; i++) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const task = newTasks[i] as any;
+          if (task.recurring === undefined) {
+            task.recurring = false;
+          }
+        }
+      }
+
+      // Migration for schema version 8: add recurringFrequency to Task
+      if (oldRealm.schemaVersion < 8) {
+        const newTasks = newRealm.objects('Task');
+        for (let i = 0; i < newTasks.length; i++) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const task = newTasks[i] as any;
+          if (task.recurringFrequency === undefined) {
+            task.recurringFrequency = null;
           }
         }
       }
