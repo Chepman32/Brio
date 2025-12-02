@@ -7,6 +7,7 @@ export interface TaskType {
   dueTime?: Date;
   category?: string;
   priority: 'low' | 'medium' | 'high';
+  icon?: string;
   completed: boolean;
   completedAt?: Date;
   createdAt: Date;
@@ -21,6 +22,7 @@ export interface TaskInput {
   dueTime?: Date;
   category?: string;
   priority: 'low' | 'medium' | 'high';
+  icon?: string;
 }
 
 // Achievement types

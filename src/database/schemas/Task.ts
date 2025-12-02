@@ -8,6 +8,7 @@ export class Task extends Realm.Object<Task> {
   dueTime?: Date;
   category?: string;
   priority!: 'low' | 'medium' | 'high';
+  icon?: string;
   completed!: boolean;
   completedAt?: Date;
   createdAt!: Date;
@@ -25,6 +26,7 @@ export class Task extends Realm.Object<Task> {
       dueTime: 'date?',
       category: 'string?',
       priority: 'string',
+      icon: 'string?',
       completed: { type: 'bool', default: false },
       completedAt: 'date?',
       createdAt: 'date',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -108,9 +109,19 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           ]}
         />
         <View style={styles.content}>
-          <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
-            {task.title}
-          </Text>
+          <View style={styles.titleRow}>
+            {task.icon && (
+              <Icon
+                name={task.icon}
+                size={18}
+                color={colors.textSecondary}
+                style={styles.titleIcon}
+              />
+            )}
+            <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
+              {task.title}
+            </Text>
+          </View>
           {task.notes && (
             <Text style={[styles.notes, { color: colors.textSecondary }]} numberOfLines={1}>
               {task.notes}
@@ -157,6 +168,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  titleIcon: {
+    marginRight: 8,
   },
   notes: {
     fontSize: 14,

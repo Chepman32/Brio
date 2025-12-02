@@ -260,6 +260,8 @@ export default {
     priorityMedium: 'Medium',
     priorityHigh: 'High',
     category: 'Category',
+    icon: 'Icon',
+    noIcon: 'None',
     reminder: 'Reminder',
     repeat: 'Repeat',
     repeatNone: 'None',

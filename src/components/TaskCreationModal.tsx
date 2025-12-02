@@ -23,6 +23,25 @@ import { useTimeFormat } from '../hooks/useTimeFormat';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
 
+const ICON_OPTIONS: string[] = [
+  'cart-outline',
+  'pricetag-outline',
+  'bicycle-outline',
+  'gift-outline',
+  'briefcase-outline',
+  'fitness-outline',
+  'book-outline',
+  'home-outline',
+  'restaurant-outline',
+  'calendar-outline',
+  'alarm-outline',
+  'school-outline',
+  'medkit-outline',
+  'planet-outline',
+  'airplane-outline',
+  'rocket-outline',
+];
+
 export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   visible,
   onClose,
@@ -42,6 +61,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const [priority, setPriority] = useState<
     'low' | 'medium' | 'high' | undefined
   >(undefined);
+  const [icon, setIcon] = useState<string | undefined>(undefined);
+  const [showIconPickerModal, setShowIconPickerModal] = useState(false);
   const [showSmartSuggestions, setShowSmartSuggestions] = useState(false);
   const [smartSuggestion, setSmartSuggestion] = useState<{
     suggestedTime: Date;
@@ -53,6 +74,15 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [scrollKey, setScrollKey] = useState(0);
+  const [initialSnapshot, setInitialSnapshot] = useState<{
+    title: string;
+    notes: string;
+    category: string;
+    priority?: 'low' | 'medium' | 'high';
+    dueDate: Date;
+    dueTime?: Date;
+    icon?: string;
+  } | null>(null);
 
   const translateY = useSharedValue(1000);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -85,6 +115,13 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
     [locale],
   );
 
+  const closeCategoryPicker = React.useCallback(() => {
+    if (showCategoryPicker) {
+      setShowCategoryPicker(false);
+      setFilteredCategories([]);
+    }
+  }, [showCategoryPicker]);
+
   useEffect(() => {
     if (visible) {
       translateY.value = withSpring(0, {
@@ -104,11 +141,23 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         setCategory(cat);
         setCategoryDisplay(cat ? translateCategory(cat, t) : '');
         setPriority(editTask.priority);
+        setIcon(editTask.icon);
+        setInitialSnapshot({
+          title: editTask.title,
+          notes: editTask.notes || '',
+          category: cat,
+          priority: editTask.priority,
+          dueDate: editTask.dueDate ? new Date(editTask.dueDate) : new Date(),
+          dueTime: editTask.dueTime ? new Date(editTask.dueTime) : undefined,
+          icon: editTask.icon,
+        });
       } else {
         // Prefill with the selected date (fallback to today)
         const initialDate = defaultDate ? new Date(defaultDate) : new Date();
         setDueDate(initialDate);
         setDueTime(undefined);
+        setIcon(undefined);
+        setInitialSnapshot(null);
       }
     } else {
       translateY.value = withSpring(1000, {
@@ -129,6 +178,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setFilteredCategories([]);
       setShowDatePicker(false);
       setShowTimePicker(false);
+      setIcon(undefined);
+      setInitialSnapshot(null);
     }
   }, [visible, editTask, defaultDate, translateY, t]);
 
@@ -160,6 +211,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         dueTime,
         category: category.trim() || undefined,
         priority: priority || 'medium',
+        icon,
       };
 
       const suggestions = await SmartPlanningService.getSmartSuggestions(
@@ -187,6 +239,32 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       generateSmartSuggestion();
     }
   }, [priority, category, visible, editTask, generateSmartSuggestion]);
+
+  const isSameDateValue = (a?: Date, b?: Date) => {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return a.getTime() === b.getTime();
+  };
+
+  const isDirty = React.useMemo(() => {
+    if (!editTask) {
+      return true;
+    }
+    if (!initialSnapshot) {
+      return false;
+    }
+    return (
+      title !== initialSnapshot.title ||
+      notes !== initialSnapshot.notes ||
+      category !== initialSnapshot.category ||
+      priority !== initialSnapshot.priority ||
+      !isSameDateValue(dueDate, initialSnapshot.dueDate) ||
+      !isSameDateValue(dueTime, initialSnapshot.dueTime) ||
+      icon !== initialSnapshot.icon
+    );
+  }, [title, notes, category, priority, dueDate, dueTime, icon, editTask, initialSnapshot]);
+
+  const canSave = Boolean(title.trim()) && (!editTask || isDirty);
 
   const applySuggestion = () => {
     if (smartSuggestion) {
@@ -242,6 +320,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       dueTime,
       category: category.trim() || undefined,
       priority: priority || 'medium',
+      icon,
     };
 
     onSave(taskInput);
@@ -290,6 +369,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   onChangeText={setTitle}
                   placeholder={t('task.title')}
                   placeholderTextColor={colors.textTertiary}
+                  onFocus={closeCategoryPicker}
                 />
               </View>
 
@@ -303,6 +383,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   placeholderTextColor={colors.textTertiary}
                   multiline
                   numberOfLines={4}
+                  onFocus={closeCategoryPicker}
                 />
               </View>
 
@@ -318,6 +399,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                   placeholder={t('task.category')}
                   placeholderTextColor={colors.textTertiary}
                   onFocus={() => {
+                    closeCategoryPicker(); // ensure consistent state before opening
                     setFilteredCategories([...PREDEFINED_CATEGORIES]);
                     setShowCategoryPicker(true);
                   }}
@@ -350,6 +432,22 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 )}
               </View>
 
+              <Pressable
+                style={[
+                  styles.iconPickerButton,
+                  { borderColor: colors.border, backgroundColor: colors.surfaceSecondary },
+                ]}
+                onPress={() => setShowIconPickerModal(true)}
+              >
+                {icon ? (
+                  <Icon name={icon} size={40} color={colors.text} />
+                ) : (
+                  <Text style={[styles.iconPickerText, { color: colors.textSecondary }]}>
+                    {t('task.noIcon') || t('common.none') || 'None'}
+                  </Text>
+                )}
+              </Pressable>
+
               <View style={styles.field}>
                 <Text style={styles.label}>{t('task.priority')}</Text>
                 <View style={styles.priorityContainer}>
@@ -363,9 +461,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                           backgroundColor: getPriorityColor(p),
                         },
                       ]}
-                      onPress={() =>
-                        setPriority(priority === p ? undefined : p)
-                      }
+                      onPress={() => {
+                        closeCategoryPicker();
+                        setPriority(priority === p ? undefined : p);
+                      }}
                     >
                       <Icon
                         name={getPriorityIcon(p)}
@@ -390,7 +489,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               <View style={styles.field} ref={dateFieldRef}>
                 <Pressable
                   style={styles.accordionHeader}
-                  onPress={() => setShowDatePicker(!showDatePicker)}
+                  onPress={() => {
+                    closeCategoryPicker();
+                    setShowDatePicker(!showDatePicker);
+                  }}
                 >
                   <View style={styles.accordionHeaderContent}>
                     <Text style={styles.label}>{t('task.dueDate')}</Text>
@@ -446,6 +548,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 <Pressable
                   style={styles.accordionHeader}
                   onPress={() => {
+                    closeCategoryPicker();
                     if (!dueTime) {
                       const newTime = new Date(dueDate);
                       newTime.setHours(9, 0, 0, 0);
@@ -549,6 +652,66 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             </ScrollView>
           </Pressable>
 
+          <Modal
+            visible={showIconPickerModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowIconPickerModal(false)}
+          >
+            <Pressable
+              style={styles.iconPickerOverlay}
+              onPress={() => setShowIconPickerModal(false)}
+            >
+              <View style={[styles.iconPickerModal, { backgroundColor: colors.surface }]}>
+                <View style={styles.iconPickerHeader}>
+                  <Text style={[styles.iconPickerTitle, { color: colors.text }]}>
+                    {t('task.icon') || 'Icon'}
+                  </Text>
+                  <Pressable onPress={() => setShowIconPickerModal(false)}>
+                    <Icon name="close" size={22} color={colors.textSecondary} />
+                  </Pressable>
+                </View>
+
+                <View style={styles.iconGrid}>
+                  <Pressable
+                    style={[
+                      styles.iconGridItem,
+                      !icon && styles.iconGridItemSelected,
+                    ]}
+                    onPress={() => {
+                      setIcon(undefined);
+                      setShowIconPickerModal(false);
+                    }}
+                  >
+                    <Text style={[styles.iconLabel, { color: colors.textSecondary }]}>
+                      {t('task.noIcon') || t('common.none') || 'None'}
+                    </Text>
+                  </Pressable>
+
+                  {ICON_OPTIONS.map(name => (
+                    <Pressable
+                      key={name}
+                      style={[
+                        styles.iconGridItem,
+                        icon === name && styles.iconGridItemSelected,
+                      ]}
+                      onPress={() => {
+                        setIcon(name);
+                        setShowIconPickerModal(false);
+                      }}
+                    >
+                      <Icon
+                        name={name}
+                        size={22}
+                        color={icon === name ? colors.primary : colors.textSecondary}
+                      />
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            </Pressable>
+          </Modal>
+
           <View style={[styles.footer, { borderTopColor: colors.border }]}>
             <Pressable style={[styles.cancelButton, { borderColor: colors.border }]} onPress={onClose}>
               <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
@@ -556,11 +719,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             <Pressable
               style={[
                 styles.saveButton,
-                { backgroundColor: colors.primary },
-                !title.trim() && { backgroundColor: colors.disabled },
+                { backgroundColor: canSave ? colors.primary : colors.disabled },
               ]}
               onPress={handleSave}
-              disabled={!title.trim()}
+              disabled={!canSave}
             >
               <Text style={styles.saveButtonText}>{t('common.save')}</Text>
             </Pressable>
@@ -759,6 +921,79 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 8,
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  iconPill: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconPillActive: {
+    borderColor: '#6366F1',
+  },
+  iconLabel: {
+    fontSize: 14,
+  },
+  iconPickerButton: {
+    borderWidth: 1,
+    borderRadius: 16,
+    width: 64,
+    height: 64,
+    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
+  iconPickerText: {
+    fontSize: 15,
+  },
+  iconPickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  iconPickerModal: {
+    width: '100%',
+    maxWidth: 360,
+    borderRadius: 16,
+    padding: 16,
+  },
+  iconPickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconPickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  iconGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  iconGridItem: {
+    width: '25%',
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  iconGridItemSelected: {
+    backgroundColor: '#EEF2FF',
   },
   suggestionTime: {
     fontSize: 16,

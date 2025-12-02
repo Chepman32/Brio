@@ -665,7 +665,7 @@ class SmartPlanningServiceClass {
       hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 
     if (stats.totalTasksCompleted < this.MIN_SAMPLES) {
-      return `Magic planner staged this ${task.priority} task for the ${timeOfDay} (bootstrapped with ${this.VIRTUAL_PARAM_COUNT.toLocaleString()} virtual params)`;
+      return `Scheduled this ${task.priority} task for the ${timeOfDay} based on defaults`;
     }
 
     const contextBits: string[] = [];
@@ -688,7 +688,7 @@ class SmartPlanningServiceClass {
       contextBits.filter(Boolean).slice(0, 3).join(', ') ||
       'pattern-aligned moment';
 
-    return `262k-parameter magic brain likes your ${timeOfDay} flow (${contextSnippet})${confidenceText}`;
+    return `Suggested ${timeOfDay} slot (${contextSnippet})${confidenceText}`;
   }
 
   private async generateAlternatives(

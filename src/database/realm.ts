@@ -7,8 +7,8 @@ import {
   RTStats,
   PatternModel,
   Occurrence,
-  TimeCluster,
-} from './schemas';
+    TimeCluster,
+  } from './schemas';
 
 let realmInstance: Realm | null = null;
 
@@ -28,7 +28,7 @@ export const initializeRealm = async (): Promise<Realm> => {
       Occurrence,
       TimeCluster,
     ],
-    schemaVersion: 5,
+    schemaVersion: 6,
     onMigration: (oldRealm: Realm, newRealm: Realm) => {
       // Migration for schema version 2: add timeFormat field
       if (oldRealm.schemaVersion < 2) {
@@ -56,6 +56,18 @@ export const initializeRealm = async (): Promise<Realm> => {
           setting.soundEnabled = true;
           setting.hapticsEnabled = true;
           setting.locale = 'en';
+        }
+      }
+
+      // Migration for schema version 6: add icon to Task
+      if (oldRealm.schemaVersion < 6) {
+        const newTasks = newRealm.objects('Task');
+        for (let i = 0; i < newTasks.length; i++) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const task = newTasks[i] as any;
+          if (task.icon === undefined) {
+            task.icon = null;
+          }
         }
       }
     },

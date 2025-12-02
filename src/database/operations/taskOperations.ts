@@ -10,6 +10,7 @@ export interface TaskInput {
   dueTime?: Date;
   category?: string;
   priority: 'low' | 'medium' | 'high';
+  icon?: string;
 }
 
 export const createTask = (input: TaskInput): Task => {
@@ -21,6 +22,7 @@ export const createTask = (input: TaskInput): Task => {
     task = realm.create<Task>('Task', {
       _id: new BSON.ObjectId().toHexString(),
       ...input,
+      icon: input.icon,
       completed: false,
       createdAt,
       updatedAt: createdAt,
