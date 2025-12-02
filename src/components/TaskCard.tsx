@@ -116,7 +116,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         />
         <Pressable style={styles.content} onPress={() => onPress(taskId)}>
           <View style={styles.titleRow}>
-            <View style={styles.iconBadge}>
+            <View
+              style={[
+                styles.iconBadge,
+                { borderColor: getPriorityColor() },
+              ]}
+            >
               {task.icon ? (
                 <Icon name={task.icon} size={24} color={colors.text} />
               ) : (
@@ -184,7 +189,6 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#FFB703',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,

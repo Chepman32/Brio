@@ -220,6 +220,18 @@ export const TodayScreen: React.FC = () => {
     }
   };
 
+  const getPriorityColor = (priority?: 'low' | 'medium' | 'high') => {
+    switch (priority) {
+      case 'high':
+        return '#FF4D4F';
+      case 'medium':
+        return '#FFB703';
+      case 'low':
+      default:
+        return '#4CAF50';
+    }
+  };
+
   const contentContainerStyle = getContentContainerStyle();
   const remainingCount = tasks.length;
   const topTask = tasks[0];
@@ -344,10 +356,27 @@ export const TodayScreen: React.FC = () => {
       flex: 1,
       paddingHorizontal: 16,
       paddingTop: 12,
+      paddingBottom: 180,
+    },
+    emptyState: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingBottom: 80,
+    },
+    emptyText: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: '#333',
+      marginBottom: 6,
+    },
+    emptySubText: {
+      fontSize: 14,
+      color: '#666',
     },
     addButtonWrapper: {
       position: 'absolute',
-      bottom: 36 + insets.bottom,
+      bottom: 48,
       right: 24,
     },
   });
@@ -394,7 +423,12 @@ export const TodayScreen: React.FC = () => {
             style={dynamicStyles.card}
             onPress={() => handleTaskPress(topTask._id)}
           >
-            <View style={dynamicStyles.cardBadge}>
+            <View
+              style={[
+                dynamicStyles.cardBadge,
+                { borderColor: getPriorityColor(topTask.priority) },
+              ]}
+            >
               <Icon
                 name={topTask.icon || 'checkmark-circle-outline'}
                 size={24}
@@ -415,16 +449,23 @@ export const TodayScreen: React.FC = () => {
       </View>
 
       <View style={dynamicStyles.listWrapper}>
-        <TaskListView
-          tasks={remainingTasks}
-          onTaskComplete={handleTaskComplete}
-          onTaskSnooze={handleTaskSnooze}
-          onTaskPress={handleTaskPress}
-          onReorder={taskIds => {
-            // TODO: Implement reordering
-            console.log('Reorder tasks:', taskIds);
-          }}
-        />
+        {topTask || remainingTasks.length > 0 ? (
+          <TaskListView
+            tasks={remainingTasks}
+            onTaskComplete={handleTaskComplete}
+            onTaskSnooze={handleTaskSnooze}
+            onTaskPress={handleTaskPress}
+            onReorder={taskIds => {
+              // TODO: Implement reordering
+              console.log('Reorder tasks:', taskIds);
+            }}
+          />
+        ) : (
+          <View style={dynamicStyles.emptyState}>
+            <Text style={dynamicStyles.emptyText}>{t('today.noTasks')}</Text>
+            <Text style={dynamicStyles.emptySubText}>{t('planner.addNewTask')}</Text>
+          </View>
+        )}
       </View>
 
       <View style={dynamicStyles.addButtonWrapper}>

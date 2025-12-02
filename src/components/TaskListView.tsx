@@ -28,14 +28,7 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
     />
   );
 
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <Text style={[styles.emptyText, { color: colors.text }]}>{t('today.noTasks')}</Text>
-      <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-        {t('planner.addNewTask')}
-      </Text>
-    </View>
-  );
+  const renderEmpty = () => null;
 
   return (
     <FlatList
