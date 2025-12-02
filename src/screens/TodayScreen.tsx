@@ -14,6 +14,7 @@ import {
   createTask,
   getTaskById,
   deleteTask,
+  completePastDueTasks,
 } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
 import { SmartPlanningService } from '../services/SmartPlanningService';
@@ -37,12 +38,26 @@ export const TodayScreen: React.FC = () => {
   const { colors } = useTheme();
   const { t, locale } = useLocalization();
 
-  const loadTasks = React.useCallback(() => {
+  const autoCompletePastDue = React.useCallback(async () => {
     try {
+      const autoCompleted = completePastDueTasks();
+      for (const task of autoCompleted) {
+        await NotificationService.cancelNotification(task._id);
+        SmartPlanningService.updateUserStats(task);
+      }
+      if (autoCompleted.length > 0) {
+        AchievementService.checkAchievements();
+      }
+    } catch (error) {
+      console.error('Error auto-completing past due tasks:', error);
+    }
+  }, []);
+
+  const loadTasks = React.useCallback(async () => {
+    try {
+      await autoCompletePastDue();
       const today = new Date();
-      console.log('Loading tasks for date:', today);
       const todayTasks = getTasksByDate(today);
-      console.log('Found tasks:', todayTasks.length);
       const incompleteTasks = todayTasks
         .filter(task => !task.completed)
         .map(task => ({
@@ -66,12 +81,11 @@ export const TodayScreen: React.FC = () => {
           createdAt: task.createdAt,
           updatedAt: task.updatedAt,
         }));
-      console.log('Incomplete tasks:', incompleteTasks.length);
       setTasks(incompleteTasks);
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
-  }, []);
+  }, [autoCompletePastDue]);
 
   useEffect(() => {
     loadTasks();
@@ -83,9 +97,9 @@ export const TodayScreen: React.FC = () => {
     }, [loadTasks]),
   );
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    loadTasks();
+    await loadTasks();
     setRefreshing(false);
   };
 
@@ -118,7 +132,7 @@ export const TodayScreen: React.FC = () => {
           );
         }
       }
-      loadTasks();
+      await loadTasks();
     } catch (error) {
       console.error('Error completing task:', error);
     }

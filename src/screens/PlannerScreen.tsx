@@ -5,12 +5,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import { CalendarView } from '../components/CalendarView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { TaskCreationModal } from '../components/TaskCreationModal';
-import { getTasks, createTask } from '../database/operations';
+import { getTasks, createTask, completePastDueTasks } from '../database/operations';
 import { TaskType, TaskInput } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle } from '../utils/responsiveDimensions';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
+import { NotificationService } from '../services/NotificationService';
+import { SmartPlanningService } from '../services/SmartPlanningService';
+import { AchievementService } from '../services/AchievementService';
 
 export const PlannerScreen: React.FC = () => {
   const [mode, setMode] = useState<'day' | 'week' | 'month'>('week');
@@ -23,14 +26,30 @@ export const PlannerScreen: React.FC = () => {
   const { colors } = useTheme();
   const { t } = useLocalization();
 
-  const loadTasks = React.useCallback(() => {
+  const autoCompletePastDue = React.useCallback(async () => {
     try {
+      const autoCompleted = completePastDueTasks();
+      for (const task of autoCompleted) {
+        await NotificationService.cancelNotification(task._id);
+        SmartPlanningService.updateUserStats(task);
+      }
+      if (autoCompleted.length > 0) {
+        AchievementService.checkAchievements();
+      }
+    } catch (error) {
+      console.error('Error auto-completing past due tasks (planner):', error);
+    }
+  }, []);
+
+  const loadTasks = React.useCallback(async () => {
+    try {
+      await autoCompletePastDue();
       const allTasks = getTasks();
       setTasks(Array.from(allTasks));
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
-  }, []);
+  }, [autoCompletePastDue]);
 
   useEffect(() => {
     loadTasks();

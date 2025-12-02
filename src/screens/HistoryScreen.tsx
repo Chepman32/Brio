@@ -8,7 +8,12 @@ import {
   RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { getCompletedTasks, markTaskIncomplete, deleteTask } from '../database/operations';
+import {
+  getCompletedTasks,
+  markTaskIncomplete,
+  deleteTask,
+  completePastDueTasks,
+} from '../database/operations';
 import { TaskType } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { getContentContainerStyle } from '../utils/responsiveDimensions';
@@ -17,6 +22,9 @@ import { useLocalization } from '../contexts/LocalizationContext';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { translateCategory } from '../utils/categories';
 import { TaskDetailModal } from '../components/TaskDetailModal';
+import { NotificationService } from '../services/NotificationService';
+import { SmartPlanningService } from '../services/SmartPlanningService';
+import { AchievementService } from '../services/AchievementService';
 
 export const HistoryScreen: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
@@ -29,8 +37,24 @@ export const HistoryScreen: React.FC = () => {
   const { formatTime } = useTimeFormat();
   const contentContainerStyle = getContentContainerStyle();
 
-  const loadCompletedTasks = useCallback(() => {
+  const autoCompletePastDue = useCallback(async () => {
     try {
+      const autoCompleted = completePastDueTasks();
+      for (const task of autoCompleted) {
+        await NotificationService.cancelNotification(task._id);
+        SmartPlanningService.updateUserStats(task);
+      }
+      if (autoCompleted.length > 0) {
+        AchievementService.checkAchievements();
+      }
+    } catch (error) {
+      console.error('Error auto-completing past due tasks (history):', error);
+    }
+  }, []);
+
+  const loadCompletedTasks = useCallback(async () => {
+    try {
+      await autoCompletePastDue();
       const tasks = getCompletedTasks().map(task => ({
         _id: task._id,
         title: task.title,
@@ -56,15 +80,15 @@ export const HistoryScreen: React.FC = () => {
     } catch (error) {
       console.error('Error loading completed tasks:', error);
     }
-  }, []);
+  }, [autoCompletePastDue]);
 
   useEffect(() => {
     loadCompletedTasks();
   }, [loadCompletedTasks]);
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    loadCompletedTasks();
+    await loadCompletedTasks();
     setRefreshing(false);
   };
 

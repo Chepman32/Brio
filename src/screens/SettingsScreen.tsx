@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -44,6 +44,7 @@ export const SettingsScreen: React.FC = () => {
   const [showPatternsModal, setShowPatternsModal] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const languageListRef = useRef<FlatList<any>>(null);
   const insets = useSafeAreaInsets();
   const { isTablet } = useResponsive();
   const contentContainerStyle = getContentContainerStyle();
@@ -136,17 +137,46 @@ export const SettingsScreen: React.FC = () => {
 
   const languageList = React.useMemo(
     () =>
-      (Object.keys(languageNames) as LocaleType[])
-        .map(localeKey => ({
+      (Object.keys(languageNames) as LocaleType[]).reduce<
+        { locale: LocaleType; label: string; sortKey: string }[]
+      >((acc, localeKey) => {
+        acc.push({
           locale: localeKey,
           label: languageNames[localeKey],
           sortKey: languageSortNames[localeKey] || languageNames[localeKey],
-        }))
-        .sort((a, b) =>
-          a.sortKey.localeCompare(b.sortKey, 'en', { sensitivity: 'base' }),
-        ),
+        });
+        return acc;
+      }, []),
     [languageNames, languageSortNames],
   );
+
+  const sortedLanguageList = React.useMemo(() => {
+    const enItem = languageList.find(item => item.locale === 'en');
+    const others = languageList
+      .filter(item => item.locale !== 'en')
+      .sort((a, b) =>
+        a.sortKey.localeCompare(b.sortKey, 'en', { sensitivity: 'base' }),
+      );
+    return enItem ? [enItem, ...others] : others;
+  }, [languageList]);
+
+  React.useEffect(() => {
+    if (showLanguageModal) {
+      const index = sortedLanguageList.findIndex(item => item.locale === locale);
+      if (index > -1) {
+        setTimeout(() => {
+          try {
+            languageListRef.current?.scrollToIndex({
+              index,
+              animated: true,
+            });
+          } catch (err) {
+            console.error('Failed to scroll to current language:', err);
+          }
+        }, 50);
+      }
+    }
+  }, [locale, showLanguageModal, sortedLanguageList]);
 
   const dynamicStyles = StyleSheet.create({
     container: {
@@ -628,7 +658,21 @@ export const SettingsScreen: React.FC = () => {
             </Pressable>
           </View>
           <FlatList
-            data={languageList}
+            data={sortedLanguageList}
+            ref={languageListRef}
+            getItemLayout={(_, index) => ({
+              length: 64,
+              offset: 64 * index,
+              index,
+            })}
+            onScrollToIndexFailed={info => {
+              setTimeout(() => {
+                languageListRef.current?.scrollToOffset({
+                  offset: info.averageItemLength * info.index,
+                  animated: true,
+                });
+              }, 50);
+            }}
             keyExtractor={item => item.locale}
             renderItem={({ item }) => (
               <Pressable

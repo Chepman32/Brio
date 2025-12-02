@@ -51,6 +51,29 @@ export const getTasks = (): Realm.Results<Task> => {
   return realm.objects<Task>('Task').sorted('dueDate', false);
 };
 
+export const completePastDueTasks = (): Task[] => {
+  const realm = getRealm();
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const tasksToComplete = realm
+    .objects<Task>('Task')
+    .filtered('completed == false AND dueDate < $0', startOfToday);
+
+  const completedTasks: Task[] = [];
+
+  realm.write(() => {
+    tasksToComplete.forEach(task => {
+      task.completed = true;
+      task.completedAt = task.dueDate;
+      task.updatedAt = new Date();
+      completedTasks.push(task);
+    });
+  });
+
+  return completedTasks;
+};
+
 export const getTasksByDate = (date: Date): Task[] => {
   const realm = getRealm();
   const startOfDay = new Date(date);
