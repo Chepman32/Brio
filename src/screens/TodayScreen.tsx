@@ -382,7 +382,7 @@ export const TodayScreen: React.FC = () => {
     },
     addButtonWrapper: {
       position: 'absolute',
-      bottom: 48,
+      bottom: 24,
       right: 24,
     },
   });

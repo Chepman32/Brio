@@ -380,20 +380,15 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
             </Pressable>
           </View>
 
-          <Pressable
-            style={styles.scrollContainer}
-            onPress={() => {
-              if (showCategoryPicker) {
-                setShowCategoryPicker(false);
-              }
-            }}
-          >
+          <View style={styles.scrollContainer}>
             <ScrollView
               key={scrollKey}
               ref={scrollViewRef}
               style={styles.content}
               showsVerticalScrollIndicator={false}
               contentOffset={{ x: 0, y: 0 }}
+              keyboardShouldPersistTaps="handled"
+              onScrollBeginDrag={closeCategoryPicker}
             >
               <View style={styles.field}>
                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('task.title')} *</Text>
@@ -719,7 +714,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
                 </View>
               )}
             </ScrollView>
-          </Pressable>
+          </View>
 
           <Modal
             visible={showIconPickerModal}
