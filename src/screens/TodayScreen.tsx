@@ -196,6 +196,13 @@ export const TodayScreen: React.FC = () => {
     return t('today.goodEvening');
   };
 
+  const getGreetingIcon = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'sunny-outline';
+    if (hour < 18) return 'partly-sunny-outline';
+    return 'moon-outline';
+  };
+
   const formatDate = () => {
     const today = new Date();
     try {
@@ -355,7 +362,7 @@ export const TodayScreen: React.FC = () => {
       <View style={dynamicStyles.headerCard}>
         <View style={dynamicStyles.greetingRow}>
           <Icon
-            name="sunny-outline"
+            name={getGreetingIcon()}
             size={28}
             color="#F7C948"
             style={dynamicStyles.greetingIcon}
