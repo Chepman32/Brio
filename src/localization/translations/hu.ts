@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'A Brio megtanulja a feladatlétrehozási mintáidat, és javaslatokat tesz olyan feladatokra, amelyeket általában meghatározott időpontokban adsz hozzá.',
     appDescription: 'Okos offline emlékeztető és tervezési alkalmazás',
     minutesShort: '%{count} perc',
+    history: 'Előzmények',
+    historyDescription: 'Tekintse át befejezett feladatait.',
+  },
+
+  history: {
+    title: 'Előzmények',
+    subtitle: 'Nézze meg mindazt, amit már befejezett.',
+    completedFallback: 'Befejezett feladat',
+    emptyTitle: 'Még nincsenek befejezett feladatok',
+    emptySubtitle: 'Fejezzen be néhány feladatot, és itt fognak megjelenni.',
   },
   task: {
     title: 'Cím',

@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio вивчає ваші шаблони створення завдань і пропонує завдання, які ви зазвичай додаєте в певний час.',
     appDescription: 'Розумний додаток для нагадувань та планування офлайн',
     minutesShort: '%{count} хв',
+    history: 'Історія',
+    historyDescription: 'Перегляньте виконані завдання.',
+  },
+
+  history: {
+    title: 'Історія',
+    subtitle: 'Дивіться все, що ви вже виконали.',
+    completedFallback: 'Завдання виконано',
+    emptyTitle: 'Ще немає виконаних завдань',
+    emptySubtitle: 'Виконайте кілька завдань, і вони з\'являться тут.',
   },
   task: {
     title: 'Назва',

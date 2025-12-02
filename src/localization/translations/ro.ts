@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio învață modelele tale de creare a sarcinilor și sugerează sarcini pe care le adaugi de obicei la anumite ore.',
     appDescription: 'Aplicație inteligentă offline de mementouri și planificare',
     minutesShort: '%{count} min',
+    history: 'Istoric',
+    historyDescription: 'Revizuiește sarcinile finalizate.',
+  },
+
+  history: {
+    title: 'Istoric',
+    subtitle: 'Vezi tot ce ai finalizat deja.',
+    completedFallback: 'Sarcină finalizată',
+    emptyTitle: 'Nicio sarcină finalizată încă',
+    emptySubtitle: 'Finalizează câteva sarcini și vor apărea aici.',
   },
   task: {
     title: 'Titlu',

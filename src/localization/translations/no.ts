@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio lærer dine oppgaveopprettingsmønstre og foreslår oppgaver du vanligvis legger til på bestemte tidspunkter.',
     appDescription: 'Smart offline påminnelse og planleggingsapp',
     minutesShort: '%{count} min',
+    history: 'Historikk',
+    historyDescription: 'Se gjennom fullførte oppgaver.',
+  },
+
+  history: {
+    title: 'Historikk',
+    subtitle: 'Se alt du allerede har fullført.',
+    completedFallback: 'Fullført oppgave',
+    emptyTitle: 'Ingen fullførte oppgaver ennå',
+    emptySubtitle: 'Fullfør noen oppgaver, så vises de her.',
   },
   task: {
     title: 'Tittel',

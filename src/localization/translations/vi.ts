@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio học các mẫu tạo nhiệm vụ của bạn và đề xuất các nhiệm vụ bạn thường thêm vào những thời điểm cụ thể.',
     appDescription: 'Ứng dụng nhắc nhở và lập kế hoạch thông minh ngoại tuyến',
     minutesShort: '%{count} phút',
+    history: 'Lịch sử',
+    historyDescription: 'Xem lại các nhiệm vụ đã hoàn thành.',
+  },
+
+  history: {
+    title: 'Lịch sử',
+    subtitle: 'Xem tất cả những gì bạn đã hoàn thành.',
+    completedFallback: 'Nhiệm vụ đã hoàn thành',
+    emptyTitle: 'Chưa có nhiệm vụ hoàn thành',
+    emptySubtitle: 'Hoàn thành một số nhiệm vụ và chúng sẽ xuất hiện ở đây.',
   },
   task: {
     title: 'Tiêu đề',

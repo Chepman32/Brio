@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'O Brio aprende com seus padrões de criação de tarefas e sugere tarefas que você normalmente adiciona em horários específicos.',
     appDescription: 'Aplicativo Inteligente de Lembretes e Planejamento Offline',
     minutesShort: '%{count} min',
+    history: 'Histórico',
+    historyDescription: 'Revise suas tarefas concluídas.',
+  },
+
+  history: {
+    title: 'Histórico',
+    subtitle: 'Veja tudo o que você já concluiu.',
+    completedFallback: 'Tarefa concluída',
+    emptyTitle: 'Nenhuma tarefa concluída ainda',
+    emptySubtitle: 'Complete algumas tarefas e elas aparecerão aqui.',
   },
   patterns: {
     title: 'Padrões Recorrentes',

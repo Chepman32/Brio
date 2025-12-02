@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio आपके कार्य बनाने के पैटर्न सीखता है और उन कार्यों का सुझाव देता है जो आप आमतौर पर विशिष्ट समय पर जोड़ते हैं।',
     appDescription: 'स्मार्ट ऑफ़लाइन रिमाइंडर और प्लानिंग ऐप',
     minutesShort: '%{count} मिनट',
+    history: 'इतिहास',
+    historyDescription: 'अपने पूर्ण किए गए कार्यों की समीक्षा करें।',
+  },
+
+  history: {
+    title: 'इतिहास',
+    subtitle: 'वह सब देखें जो आपने पहले ही पूरा कर लिया है।',
+    completedFallback: 'पूर्ण कार्य',
+    emptyTitle: 'अभी तक कोई पूर्ण कार्य नहीं',
+    emptySubtitle: 'कुछ कार्य पूरे करें और वे यहां दिखाई देंगे।',
   },
   task: {
     title: 'शीर्षक',

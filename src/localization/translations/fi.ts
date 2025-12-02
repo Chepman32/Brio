@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio oppii tehtäviesi luontimallit ja ehdottaa tehtäviä, joita yleensä lisäät tiettynä aikana.',
     appDescription: 'Älykäs offline-muistutus ja suunnittelusovellus',
     minutesShort: '%{count} min',
+    history: 'Historia',
+    historyDescription: 'Tarkastele suoritettuja tehtäviä.',
+  },
+
+  history: {
+    title: 'Historia',
+    subtitle: 'Katso kaikki, mitä olet jo suorittanut.',
+    completedFallback: 'Suoritettu tehtävä',
+    emptyTitle: 'Ei vielä suoritettuja tehtäviä',
+    emptySubtitle: 'Suorita tehtäviä, niin ne näkyvät täällä.',
   },
   task: {
     title: 'Otsikko',

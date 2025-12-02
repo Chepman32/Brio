@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio uczy się wzorców tworzenia zadań i sugeruje zadania, które zwykle dodajesz o określonych porach.',
     appDescription: 'Inteligentna aplikacja do przypomnienia i planowania offline',
     minutesShort: '%{count} min',
+    history: 'Historia',
+    historyDescription: 'Przejrzyj ukończone zadania.',
+  },
+
+  history: {
+    title: 'Historia',
+    subtitle: 'Zobacz wszystko, co już ukończyłeś.',
+    completedFallback: 'Zadanie ukończone',
+    emptyTitle: 'Brak ukończonych zadań',
+    emptySubtitle: 'Ukończ kilka zadań, a pojawią się tutaj.',
   },
   task: {
     title: 'Tytuł',

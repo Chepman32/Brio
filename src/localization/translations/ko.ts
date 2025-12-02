@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio는 작업 생성 패턴을 학습하고 특정 시간에 일반적으로 추가하는 작업을 제안합니다.',
     appDescription: '스마트한 오프라인 리마인더 및 플래닝 앱',
     minutesShort: '%{count}분',
+    history: '기록',
+    historyDescription: '완료된 작업을 검토합니다.',
+  },
+
+  history: {
+    title: '기록',
+    subtitle: '이미 완료한 모든 것을 확인하세요.',
+    completedFallback: '완료된 작업',
+    emptyTitle: '아직 완료된 작업이 없습니다',
+    emptySubtitle: '작업을 완료하면 여기에 표시됩니다.',
   },
   task: {
     title: '제목',

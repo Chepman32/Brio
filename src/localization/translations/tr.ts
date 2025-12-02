@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio, görev oluşturma kalıplarınızdan öğrenir ve belirli zamanlarda eklediğiniz görevleri önerir.',
     appDescription: 'Akıllı Çevrimdışı Hatırlatma ve Planlama Uygulaması',
     minutesShort: '%{count} dk',
+    history: 'Geçmiş',
+    historyDescription: 'Tamamlanan görevlerinizi inceleyin.',
+  },
+
+  history: {
+    title: 'Geçmiş',
+    subtitle: 'Zaten tamamladığınız her şeyi görün.',
+    completedFallback: 'Tamamlanan görev',
+    emptyTitle: 'Henüz tamamlanan görev yok',
+    emptySubtitle: 'Birkaç görevi tamamlayın, burada görünecekler.',
   },
   patterns: {
     title: 'Yinelenen Desenler',

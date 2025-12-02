@@ -129,6 +129,16 @@ export default {
     aiPoweredDescription: 'Brio apprend de vos habitudes de création de tâches et suggère des tâches que vous ajoutez généralement à des moments précis.',
     appDescription: 'Application de rappel et de planification intelligente hors ligne',
     minutesShort: '%{count} min',
+    history: 'Historique',
+    historyDescription: 'Consultez vos tâches terminées.',
+  },
+
+  history: {
+    title: 'Historique',
+    subtitle: 'Voir tout ce que vous avez déjà terminé.',
+    completedFallback: 'Tâche terminée',
+    emptyTitle: 'Pas encore de tâches terminées',
+    emptySubtitle: 'Terminez des tâches et elles apparaîtront ici.',
   },
   patterns: {
     title: 'Modèles récurrents',

@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio mempelajari pola pembuatan tugas Anda dan menyarankan tugas yang biasa Anda tambahkan pada waktu tertentu.',
     appDescription: 'Aplikasi pengingat dan perencanaan cerdas offline',
     minutesShort: '%{count} menit',
+    history: 'Riwayat',
+    historyDescription: 'Tinjau tugas yang telah selesai.',
+  },
+
+  history: {
+    title: 'Riwayat',
+    subtitle: 'Lihat semua yang telah Anda selesaikan.',
+    completedFallback: 'Tugas selesai',
+    emptyTitle: 'Belum ada tugas yang selesai',
+    emptySubtitle: 'Selesaikan beberapa tugas dan mereka akan muncul di sini.',
   },
   task: {
     title: 'Judul',

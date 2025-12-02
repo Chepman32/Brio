@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Nag-aaral ang Brio ng iyong mga pattern sa paggawa ng gawain at nagmumungkahi ng mga gawain na karaniwang idinadagdag mo sa mga partikular na oras.',
     appDescription: 'Smart na offline reminder at planning app',
     minutesShort: '%{count} min',
+    history: 'Kasaysayan',
+    historyDescription: 'Suriin ang iyong mga natapos na gawain.',
+  },
+
+  history: {
+    title: 'Kasaysayan',
+    subtitle: 'Tingnan ang lahat ng iyong natapos na.',
+    completedFallback: 'Natapos na gawain',
+    emptyTitle: 'Wala pang natapos na gawain',
+    emptySubtitle: 'Tapusin ang ilang gawain at lilitaw ang mga ito dito.',
   },
   task: {
     title: 'Pamagat',

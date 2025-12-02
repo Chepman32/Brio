@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio会学习您的任务创建模式，并建议您通常在特定时间添加的任务。',
     appDescription: '智能离线提醒和计划应用',
     minutesShort: '%{count} 分钟',
+    history: '历史',
+    historyDescription: '查看已完成的任务。',
+  },
+
+  history: {
+    title: '历史',
+    subtitle: '查看您已完成的所有内容。',
+    completedFallback: '任务已完成',
+    emptyTitle: '暂无已完成任务',
+    emptySubtitle: '完成一些任务，它们将显示在这里。',
   },
   task: {
     title: '标题',

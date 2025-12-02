@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio leert van uw taakpatronen en suggereert taken die u normaal op specifieke tijden toevoegt.',
     appDescription: 'Slimme Offline Herinnering & Planning App',
     minutesShort: '%{count} min',
+    history: 'Geschiedenis',
+    historyDescription: 'Bekijk uw voltooide taken.',
+  },
+
+  history: {
+    title: 'Geschiedenis',
+    subtitle: 'Bekijk alles wat u al hebt voltooid.',
+    completedFallback: 'Taak voltooid',
+    emptyTitle: 'Nog geen voltooide taken',
+    emptySubtitle: 'Voltooi enkele taken en ze verschijnen hier.',
   },
   patterns: {
     title: 'Terugkerende Patronen',

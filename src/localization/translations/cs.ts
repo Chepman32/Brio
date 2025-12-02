@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio se učí vaše vzorce vytváření úkolů a navrhuje úkoly, které obvykle přidáváte v konkrétní časy.',
     appDescription: 'Chytrá offline aplikace pro připomínky a plánování',
     minutesShort: '%{count} min',
+    history: 'Historie',
+    historyDescription: 'Prohlédněte si své dokončené úkoly.',
+  },
+
+  history: {
+    title: 'Historie',
+    subtitle: 'Podívejte se na vše, co jste již dokončili.',
+    completedFallback: 'Dokončený úkol',
+    emptyTitle: 'Zatím žádné dokončené úkoly',
+    emptySubtitle: 'Dokončete nějaké úkoly a objeví se zde.',
   },
   task: {
     title: 'Název',

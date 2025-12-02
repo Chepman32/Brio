@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio impara dai tuoi modelli di creazione attività e suggerisce attività che di solito aggiungi in orari specifici.',
     appDescription: 'App Intelligente di Promemoria e Pianificazione Offline',
     minutesShort: '%{count} min',
+    history: 'Cronologia',
+    historyDescription: 'Rivedi le tue attività completate.',
+  },
+
+  history: {
+    title: 'Cronologia',
+    subtitle: 'Vedi tutto ciò che hai già completato.',
+    completedFallback: 'Attività completata',
+    emptyTitle: 'Nessuna attività completata ancora',
+    emptySubtitle: 'Completa alcune attività e appariranno qui.',
   },
   patterns: {
     title: 'Modelli Ricorrenti',

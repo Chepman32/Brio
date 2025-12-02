@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio จะเรียนรู้รูปแบบการสร้างงานของคุณและแนะนำงานที่คุณมักเพิ่มในเวลาที่กำหนด',
     appDescription: 'แอปเตือนและวางแผนอัจฉริยะแบบออฟไลน์',
     minutesShort: '%{count} นาที',
+    history: 'ประวัติ',
+    historyDescription: 'ตรวจสอบงานที่เสร็จแล้วของคุณ',
+  },
+
+  history: {
+    title: 'ประวัติ',
+    subtitle: 'ดูทุกสิ่งที่คุณทำเสร็จแล้ว',
+    completedFallback: 'งานที่เสร็จแล้ว',
+    emptyTitle: 'ยังไม่มีงานที่เสร็จแล้ว',
+    emptySubtitle: 'ทำงานให้เสร็จแล้วงานจะปรากฏที่นี่',
   },
   task: {
     title: 'ชื่อเรื่อง',

@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio lär sig dina uppgiftsskapande mönster och föreslår uppgifter du vanligtvis lägger till vid specifika tider.',
     appDescription: 'Smart offline påminnelse och planeringsapp',
     minutesShort: '%{count} min',
+    history: 'Historik',
+    historyDescription: 'Granska dina slutförda uppgifter.',
+  },
+
+  history: {
+    title: 'Historik',
+    subtitle: 'Se allt du redan har slutfört.',
+    completedFallback: 'Slutförd uppgift',
+    emptyTitle: 'Inga slutförda uppgifter ännu',
+    emptySubtitle: 'Slutför några uppgifter så visas de här.',
   },
   task: {
     title: 'Titel',

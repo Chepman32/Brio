@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio לומד את דפוסי יצירת המשימות שלך ומציע משימות שאתה בדרך כלל מוסיף בזמנים מסוימים.',
     appDescription: 'אפליקציית תזכורות ותכנון חכמה במצב לא מקוון',
     minutesShort: '%{count} דקות',
+    history: 'היסטוריה',
+    historyDescription: 'סקור את המשימות שהושלמו.',
+  },
+
+  history: {
+    title: 'היסטוריה',
+    subtitle: 'ראה את כל מה שכבר השלמת.',
+    completedFallback: 'משימה שהושלמה',
+    emptyTitle: 'אין עדיין משימות שהושלמו',
+    emptySubtitle: 'סיים כמה משימות והן יופיעו כאן.',
   },
   task: {
     title: 'כותרת',

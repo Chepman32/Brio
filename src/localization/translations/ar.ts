@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'يتعلم Brio من أنماط إنشاء المهام الخاصة بك ويقترح المهام التي تضيفها عادةً في أوقات معينة.',
     appDescription: 'تطبيق ذكي للتذكيرات والتخطيط دون اتصال',
     minutesShort: '%{count} د',
+    history: 'السجل',
+    historyDescription: 'مراجعة مهامك المكتملة.',
+  },
+
+  history: {
+    title: 'السجل',
+    subtitle: 'شاهد كل ما أكملته بالفعل.',
+    completedFallback: 'مهمة مكتملة',
+    emptyTitle: 'لا توجد مهام مكتملة بعد',
+    emptySubtitle: 'أنهِ بعض المهام وستظهر هنا.',
   },
   patterns: {
     title: 'الأنماط المتكررة',

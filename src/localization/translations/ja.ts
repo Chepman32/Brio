@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brioはあなたのタスク作成パターンを学習し、特定の時間に通常追加するタスクを提案します。',
     appDescription: 'スマートなオフラインリマインダーとプランニングアプリ',
     minutesShort: '%{count}分',
+    history: '履歴',
+    historyDescription: '完了したタスクを確認します。',
+  },
+
+  history: {
+    title: '履歴',
+    subtitle: 'すでに完了したすべてを表示します。',
+    completedFallback: '完了したタスク',
+    emptyTitle: '完了したタスクはまだありません',
+    emptySubtitle: 'タスクを完了すると、ここに表示されます。',
   },
   task: {
     title: 'タイトル',

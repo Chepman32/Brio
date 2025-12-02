@@ -132,6 +132,16 @@ export default {
     aiPoweredDescription: 'Brio mempelajari corak penciptaan tugas anda dan mencadangkan tugas yang biasanya anda tambah pada masa tertentu.',
     appDescription: 'Aplikasi peringatan dan perancangan pintar luar talian',
     minutesShort: '%{count} min',
+    history: 'Sejarah',
+    historyDescription: 'Semak tugas anda yang telah selesai.',
+  },
+
+  history: {
+    title: 'Sejarah',
+    subtitle: 'Lihat semua yang telah anda selesaikan.',
+    completedFallback: 'Tugas selesai',
+    emptyTitle: 'Tiada tugas selesai lagi',
+    emptySubtitle: 'Selesaikan beberapa tugas dan ia akan muncul di sini.',
   },
   task: {
     title: 'Tajuk',
