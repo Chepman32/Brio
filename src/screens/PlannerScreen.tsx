@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { CalendarView } from '../components/CalendarView';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { TaskCreationModal } from '../components/TaskCreationModal';
@@ -34,6 +35,12 @@ export const PlannerScreen: React.FC = () => {
   useEffect(() => {
     loadTasks();
   }, [loadTasks]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadTasks();
+    }, [loadTasks]),
+  );
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);

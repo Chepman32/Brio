@@ -5,6 +5,8 @@ export default {
     cancel: 'Cancel',
     delete: 'Delete',
     edit: 'Edit',
+    complete: 'Complete',
+    recover: 'Recover',
     done: 'Done',
     close: 'Close',
     confirm: 'Confirm',
@@ -204,6 +206,16 @@ export default {
     aiPoweredDescription: 'Brio learns from your task creation patterns and suggests tasks you typically add at specific times.',
     appDescription: 'Smart Offline Reminder & Planning App',
     minutesShort: '%{count} min',
+    history: 'History',
+    historyDescription: 'Review your completed tasks.',
+  },
+
+  history: {
+    title: 'History',
+    subtitle: 'See everything you have already completed.',
+    completedFallback: 'Completed task',
+    emptyTitle: 'No completed tasks yet',
+    emptySubtitle: "Finish some tasks and they'll show up here.",
   },
 
   // Recurring Patterns

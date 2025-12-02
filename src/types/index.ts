@@ -76,6 +76,11 @@ export type MainTabParamList = {
   Settings: undefined;
 };
 
+export type SettingsStackParamList = {
+  SettingsHome: undefined;
+  History: undefined;
+};
+
 // Component prop types
 export interface TaskCardProps {
   task: TaskType;
@@ -120,6 +125,8 @@ export interface TaskDetailModalProps {
   onClose: () => void;
   onEdit: (task: TaskType) => void;
   onDelete: (taskId: string) => void;
+  onComplete: (taskId: string) => void;
+  completeLabel?: string;
 }
 
 // Service interfaces

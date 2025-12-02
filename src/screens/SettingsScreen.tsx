@@ -11,6 +11,8 @@ import {
   FlatList,
   Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   getSettings,
@@ -27,8 +29,11 @@ import { getContentContainerStyle } from '../utils/responsiveDimensions';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
 import { ThemeType, LocaleType } from '../database/schemas/Settings';
+import { SettingsStackParamList } from '../types';
 
 export const SettingsScreen: React.FC = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<SettingsStackParamList, 'SettingsHome'>>();
   const { colors, themeName, setTheme } = useTheme();
   const { locale, setLocale, t, languageNames, languageFlags, languageSortNames } = useLocalization();
   const [notificationsEnabled, setNotificationsEnabledState] = useState(true);
@@ -530,6 +535,19 @@ export const SettingsScreen: React.FC = () => {
         {/* Data Section */}
         <View style={styles.section}>
           <Text style={dynamicStyles.sectionTitle}>{t('settings.data')}</Text>
+
+          <Pressable
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('History')}
+          >
+            <View style={styles.settingInfo}>
+              <Text style={dynamicStyles.settingLabel}>{t('settings.history')}</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {t('settings.historyDescription')}
+              </Text>
+            </View>
+            <Text style={dynamicStyles.chevron}>›</Text>
+          </Pressable>
 
           <Pressable style={dynamicStyles.dangerButton} onPress={handleResetData}>
             <Text style={dynamicStyles.dangerButtonText}>{t('settings.clearData')}</Text>

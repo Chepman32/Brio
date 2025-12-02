@@ -19,6 +19,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onClose,
   onEdit,
   onDelete,
+  onComplete,
+  completeLabel,
 }) => {
   const { formatTime } = useTimeFormat();
   const { colors } = useTheme();
@@ -81,9 +83,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         <Pressable style={styles.backdrop} onPress={onClose} />
         <View style={[styles.modalContainer, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('task.title')}</Text>
-            <Pressable onPress={onClose}>
-              <Text style={[styles.closeButton, { color: colors.textSecondary }]}>✕</Text>
+            <View />
+            <Pressable
+              onPress={() => {
+                onDelete(task._id);
+                onClose();
+              }}
+              hitSlop={8}
+            >
+              <Text style={[styles.deleteIconLabel, { color: colors.error }]}>
+                {t('common.delete')}
+              </Text>
             </Pressable>
           </View>
 
@@ -139,13 +149,15 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
           <View style={[styles.footer, { borderTopColor: colors.border }]}>
             <Pressable
-              style={[styles.button, styles.deleteButton, { backgroundColor: colors.errorLight }]}
+              style={[styles.button, styles.completeButton, { backgroundColor: colors.success }]}
               onPress={() => {
-                onDelete(task._id);
+                onComplete(task._id);
                 onClose();
               }}
             >
-              <Text style={[styles.deleteButtonText, { color: colors.error }]}>{t('common.delete')}</Text>
+              <Text style={styles.completeButtonText}>
+                {completeLabel || t('common.complete')}
+              </Text>
             </Pressable>
             <Pressable
               style={[styles.button, styles.editButton, { backgroundColor: colors.primary }]}
@@ -173,9 +185,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   modalContainer: {
-    width: '90%',
-    maxHeight: '80%',
-    borderRadius: 24,
+    width: '94%',
+    maxHeight: '90%',
+    borderRadius: 28,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 12,
@@ -185,15 +197,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     borderBottomWidth: 1,
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  closeButton: {
-    fontSize: 24,
+  deleteIconLabel: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   content: {
     padding: 20,
@@ -237,13 +247,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-  deleteButton: {},
-  deleteButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
   editButton: {},
   editButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  completeButton: {},
+  completeButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',

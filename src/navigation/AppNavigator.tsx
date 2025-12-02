@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { TodayScreen } from '../screens/TodayScreen';
 import { PlannerScreen } from '../screens/PlannerScreen';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
-import { SettingsScreen } from '../screens/SettingsScreen';
+import { SettingsNavigator } from './SettingsNavigator';
 import { MainTabParamList } from '../types';
 import { useResponsive } from '../hooks/useResponsive';
 import { ResponsiveSizes } from '../utils/responsiveDimensions';
@@ -74,7 +74,7 @@ export const AppNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={SettingsNavigator}
         options={{
           tabBarLabel: t('tabs.settings'),
           tabBarIcon: ({ color, size }) => (

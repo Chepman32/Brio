@@ -1,6 +1,6 @@
 import { getRealm } from '../realm';
 import { Task } from '../schemas';
-import { BSON } from 'realm';
+import Realm, { BSON } from 'realm';
 import { RecurringSuggestionService } from '../../services/RecurringSuggestionService';
 
 export interface TaskInput {
@@ -70,6 +70,14 @@ export const getTaskById = (id: string): Task | null => {
   return realm.objectForPrimaryKey<Task>('Task', id);
 };
 
+export const getCompletedTasks = (): Realm.Results<Task> => {
+  const realm = getRealm();
+  return realm
+    .objects<Task>('Task')
+    .filtered('completed == true')
+    .sorted('completedAt', true);
+};
+
 export const updateTask = (id: string, updates: Partial<TaskInput>): void => {
   const realm = getRealm();
   const task = realm.objectForPrimaryKey<Task>('Task', id);
@@ -94,6 +102,21 @@ export const completeTask = (id: string): void => {
   realm.write(() => {
     task.completed = true;
     task.completedAt = new Date();
+    task.updatedAt = new Date();
+  });
+};
+
+export const markTaskIncomplete = (id: string): void => {
+  const realm = getRealm();
+  const task = realm.objectForPrimaryKey<Task>('Task', id);
+
+  if (!task) {
+    throw new Error(`Task with id ${id} not found`);
+  }
+
+  realm.write(() => {
+    task.completed = false;
+    task.completedAt = undefined;
     task.updatedAt = new Date();
   });
 };

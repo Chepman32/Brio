@@ -23,6 +23,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { ResponsiveSizes, getContentContainerStyle } from '../utils/responsiveDimensions';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const TodayScreen: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
@@ -75,6 +76,12 @@ export const TodayScreen: React.FC = () => {
   useEffect(() => {
     loadTasks();
   }, [loadTasks]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadTasks();
+    }, [loadTasks]),
+  );
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -497,6 +504,11 @@ export const TodayScreen: React.FC = () => {
         }}
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
+        onComplete={taskId => {
+          handleTaskComplete(taskId);
+          setShowDetailModal(false);
+          setSelectedTask(null);
+        }}
       />
     </LinearGradient>
   );
