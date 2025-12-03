@@ -1,9 +1,21 @@
 import React from 'react';
-import { FlatList, StyleSheet, View, Text } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  Text,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { TaskCard } from './TaskCard';
 import { TaskListViewProps } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocalization } from '../contexts/LocalizationContext';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export const TaskListView: React.FC<TaskListViewProps> = ({
   tasks,
@@ -14,6 +26,15 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
 }) => {
   const { colors } = useTheme();
   const { t } = useLocalization();
+  const previousIds = React.useRef<string[]>([]);
+
+  React.useEffect(() => {
+    const ids = tasks.map(t => t._id);
+    if (previousIds.current.length) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    }
+    previousIds.current = ids;
+  }, [tasks]);
 
   const renderItem = ({ item }: { item: any }) => (
     <TaskCard

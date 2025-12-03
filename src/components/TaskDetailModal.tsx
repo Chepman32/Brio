@@ -7,6 +7,13 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { TaskDetailModalProps } from '../types';
 import { useTimeFormat } from '../hooks/useTimeFormat';
 import { useTheme } from '../contexts/ThemeContext';
@@ -25,8 +32,31 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const { formatTime } = useTimeFormat();
   const { colors } = useTheme();
   const { t, locale } = useLocalization();
+  const [renderModal, setRenderModal] = React.useState(visible);
+  const overlayOpacity = useSharedValue(0);
+  const contentTranslate = useSharedValue(20);
+  const contentOpacity = useSharedValue(0);
 
-  if (!task) return null;
+  React.useEffect(() => {
+    if (!task) {
+      setRenderModal(false);
+      return;
+    }
+    if (visible) {
+      setRenderModal(true);
+      overlayOpacity.value = withTiming(1, { duration: 180 });
+      contentTranslate.value = withSpring(0, { damping: 18, stiffness: 220 });
+      contentOpacity.value = withTiming(1, { duration: 200 });
+    } else {
+      overlayOpacity.value = withTiming(0, { duration: 160 }, finished => {
+        if (finished) {
+          runOnJS(setRenderModal)(false);
+        }
+      });
+      contentTranslate.value = withTiming(20, { duration: 160 });
+      contentOpacity.value = withTiming(0, { duration: 160 });
+    }
+  }, [visible, task, overlayOpacity, contentTranslate, contentOpacity]);
 
   const formatDate = (date: Date) => {
     try {
@@ -72,16 +102,34 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     }
   };
 
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: overlayOpacity.value,
+  }));
+
+  const containerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: contentTranslate.value }],
+    opacity: contentOpacity.value,
+  }));
+
+  if (!task) {
+    return null;
+  }
+
+  if (!renderModal) {
+    return null;
+  }
+
   return (
     <Modal
-      visible={visible}
+      visible={renderModal}
       transparent
+      // Keep native fade while we run custom overlay/content animations for smoother UX
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={[styles.overlay, { backgroundColor: colors.overlay }]}>
+      <Animated.View style={[styles.overlay, { backgroundColor: colors.overlay }, overlayStyle]}>
         <Pressable style={styles.backdrop} onPress={onClose} />
-        <View style={[styles.modalContainer, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+        <Animated.View style={[styles.modalContainer, { backgroundColor: colors.surface, shadowColor: colors.shadow }, containerStyle]}>
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <View />
             <Pressable
@@ -169,8 +217,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               <Text style={styles.editButtonText}>{t('common.edit')}</Text>
             </Pressable>
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 };
