@@ -272,7 +272,7 @@ export const TodayScreen: React.FC = () => {
     },
     headerCard: {
       paddingTop: insets.top + 20,
-      paddingHorizontal: 20,
+      paddingHorizontal: 0,
       paddingBottom: 28,
       borderRadius: 28,
       backgroundColor: 'rgba(255,255,255,0.12)',
@@ -404,7 +404,7 @@ export const TodayScreen: React.FC = () => {
     addButtonWrapper: {
       position: 'absolute',
       bottom: 24,
-      right: 24,
+      right: 18,
     },
   });
 

@@ -9,6 +9,7 @@ import {
   ScrollView,
   Platform,
   Switch,
+  ActivityIndicator,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -79,6 +80,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [scrollKey, setScrollKey] = useState(0);
+  const [isGeneratingSuggestion, setIsGeneratingSuggestion] = useState(false);
   const [initialSnapshot, setInitialSnapshot] = useState<{
     title: string;
     notes: string;
@@ -93,6 +95,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   const scrollViewRef = useRef<ScrollView>(null);
   const dateFieldRef = useRef<View>(null);
   const timeFieldRef = useRef<View>(null);
+  const hasAutoScrolledToSuggestion = useRef(false);
 
   const getPriorityLabel = (value: 'low' | 'medium' | 'high') => {
     switch (value) {
@@ -129,6 +132,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
 
   useEffect(() => {
     if (visible) {
+      hasAutoScrolledToSuggestion.current = false;
       translateY.value = withSpring(0, {
         damping: 30,
         stiffness: 300,
@@ -198,6 +202,8 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       setRecurring(false);
       setRecurringFrequency('daily');
       setInitialSnapshot(null);
+      hasAutoScrolledToSuggestion.current = false;
+      setIsGeneratingSuggestion(false);
     }
   }, [visible, editTask, defaultDate, translateY, t]);
 
@@ -221,6 +227,9 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
 
   // Define generateSmartSuggestion before useEffect
   const generateSmartSuggestion = React.useCallback(async () => {
+    setShowSmartSuggestions(false);
+    setSmartSuggestion(null);
+    setIsGeneratingSuggestion(true);
     try {
       const taskInput: TaskInput = {
         title: title.trim() || t('task.newTaskPlaceholder'),
@@ -241,13 +250,10 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         reason: suggestions.reason,
       });
       setShowSmartSuggestions(true);
-
-      // Auto-scroll to show suggestions
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 100);
     } catch (error) {
       console.error('Error generating smart suggestion:', error);
+    } finally {
+      setIsGeneratingSuggestion(false);
     }
   }, [title, notes, dueDate, dueTime, category, priority, t]);
 
@@ -339,6 +345,20 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
       }, 100);
     }
   }, [showTimePicker]);
+
+  // Only auto-scroll the first time suggestions become visible to avoid jumping while typing
+  useEffect(() => {
+    if (!showSmartSuggestions) {
+      hasAutoScrolledToSuggestion.current = false;
+      return;
+    }
+    if (visible && !hasAutoScrolledToSuggestion.current) {
+      hasAutoScrolledToSuggestion.current = true;
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [showSmartSuggestions, visible]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -673,6 +693,14 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
               </View>
 
               {/* Smart Suggestions */}
+              {isGeneratingSuggestion && !editTask && (
+                <View style={[styles.suggestionLoading, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+                  <ActivityIndicator color={colors.primary} />
+                  <Text style={[styles.suggestionLoadingText, { color: colors.textSecondary }]}>
+                    {t('common.loading')}
+                  </Text>
+                </View>
+              )}
               {showSmartSuggestions && smartSuggestion && !editTask && (
                 <View style={styles.suggestionCard}>
                   <View style={styles.suggestionHeader}>
@@ -945,6 +973,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  suggestionLoading: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 8,
+  },
+  suggestionLoadingText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   suggestionCard: {
     backgroundColor: '#F0F4FF',
