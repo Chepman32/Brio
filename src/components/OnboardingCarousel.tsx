@@ -33,7 +33,9 @@ interface OnboardingSlide {
   backgroundColor: string;
 }
 
-const buildSlides = (t: (key: string, options?: object) => string): OnboardingSlide[] => [
+const buildSlides = (
+  t: (key: string, options?: object) => string,
+): OnboardingSlide[] => [
   {
     id: 1,
     title: t('onboarding.offlineTitle'),
@@ -115,7 +117,9 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
           style={[styles.skipButton, { top: insets.top + 20 }]}
           onPress={handleSkip}
         >
-          <Text style={[styles.skipText, { color: colors.textSecondary }]}>{t('common.skip')}</Text>
+          <Text style={[styles.skipText, { color: colors.textSecondary }]}>
+            {t('common.skip')}
+          </Text>
         </Pressable>
       )}
 
@@ -169,7 +173,16 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
             };
           });
 
-          return <Animated.View key={index} style={[styles.dot, { height: isTablet ? 10 : 8, backgroundColor: colors.primary }, dotStyle]} />;
+          return (
+            <Animated.View
+              key={index}
+              style={[
+                styles.dot,
+                { height: isTablet ? 10 : 8, backgroundColor: colors.primary },
+                dotStyle,
+              ]}
+            />
+          );
         })}
       </View>
 
@@ -187,7 +200,9 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
         onPress={handleNext}
       >
         <Text style={[styles.nextButtonText, { fontSize: isTablet ? 20 : 18 }]}>
-          {currentIndex === slides.length - 1 ? t('onboarding.getStarted') : t('common.next')}
+          {currentIndex === slides.length - 1
+            ? t('onboarding.getStarted')
+            : t('common.next')}
         </Text>
       </Pressable>
     </View>
@@ -269,15 +284,40 @@ const SlideItem: React.FC<SlideItemProps> = ({ slide, index, scrollX }) => {
   });
 
   return (
-    <View style={[styles.slide, { width: screenWidth, paddingHorizontal: horizontalPadding }]}>
-      <View style={[styles.slideContent, { paddingTop: insets.top + (isTablet ? 100 : 80) }]}>
+    <View
+      style={[
+        styles.slide,
+        { width: screenWidth, paddingHorizontal: horizontalPadding },
+      ]}
+    >
+      <View
+        style={[
+          styles.slideContent,
+          { paddingTop: insets.top + (isTablet ? 100 : 80) },
+        ]}
+      >
         {/* Top Section - Horizontal Animation */}
         <Animated.View style={[styles.topSection, topSectionStyle]}>
           {/* Title */}
-          <Text style={[styles.title, { fontSize: titleSize, color: colors.text }]}>{slide.title}</Text>
+          <Text
+            style={[styles.title, { fontSize: titleSize, color: colors.text }]}
+          >
+            {slide.title}
+          </Text>
 
           {/* Subtitle */}
-          <Text style={[styles.subtitle, { fontSize: subtitleSize, lineHeight: subtitleSize * 1.4, color: colors.textSecondary }]}>{slide.subtitle}</Text>
+          <Text
+            style={[
+              styles.subtitle,
+              {
+                fontSize: subtitleSize,
+                lineHeight: subtitleSize * 1.4,
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {slide.subtitle}
+          </Text>
 
           {/* Icon */}
           <View
@@ -313,20 +353,34 @@ const GestureDemo: React.FC = () => {
   const { t } = useLocalization();
   return (
     <View style={styles.demoContainer}>
-      <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
+      <View
+        style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}
+      >
         <View style={[styles.taskCircle, { borderColor: colors.border }]} />
-        <Text style={[styles.taskText, { color: colors.text }]}>{t('onboarding.meetingTask')}</Text>
+        <Text style={[styles.taskText, { color: colors.text }]}>
+          {t('onboarding.meetingTask')}
+        </Text>
       </View>
-      <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
+      <View
+        style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}
+      >
         <View style={[styles.taskCircle, { borderColor: colors.border }]} />
-        <Text style={[styles.taskText, { color: colors.text }]}>{t('onboarding.callTask')}</Text>
-        <View style={[styles.snoozeButton, { backgroundColor: colors.primary }]}>
+        <Text style={[styles.taskText, { color: colors.text }]}>
+          {t('onboarding.callTask')}
+        </Text>
+        <View
+          style={[styles.snoozeButton, { backgroundColor: colors.primary }]}
+        >
           <Text style={styles.snoozeText}>{t('common.snooze')}</Text>
         </View>
       </View>
-      <View style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}>
+      <View
+        style={[styles.taskItem, { backgroundColor: colors.surfaceSecondary }]}
+      >
         <View style={[styles.taskCircle, { borderColor: colors.border }]} />
-        <Text style={[styles.taskText, { color: colors.text }]}>{t('onboarding.groceriesTask')}</Text>
+        <Text style={[styles.taskText, { color: colors.text }]}>
+          {t('onboarding.groceriesTask')}
+        </Text>
       </View>
       <View style={styles.swipeHint}>
         <Icon name="arrow-back" size={32} color={colors.border} />
@@ -341,17 +395,17 @@ const CalendarDemo: React.FC = () => {
   return (
     <View style={styles.calendarContainer}>
       <View style={styles.calendarIllustration}>
-        <Icon name="time-outline" size={48} color={colors.primary} />
+        <Icon name="time-outline" size={36} color={colors.primary} />
         <View style={styles.personIllustration}>
           <View style={styles.personHead} />
           <View style={styles.personBody} />
         </View>
-        <Icon name="checkmark-circle" size={48} color={colors.primary} />
+        <Icon name="checkmark-circle" size={36} color={colors.primary} />
       </View>
       <View style={[styles.bottomNav, { borderTopColor: colors.border }]}>
-        <Icon name="home-outline" size={28} color={colors.textSecondary} />
-        <Icon name="calendar-outline" size={28} color={colors.textSecondary} />
-        <Icon name="search-outline" size={28} color={colors.textSecondary} />
+        <Icon name="home-outline" size={24} color={colors.textSecondary} />
+        <Icon name="calendar-outline" size={24} color={colors.textSecondary} />
+        <Icon name="search-outline" size={24} color={colors.textSecondary} />
       </View>
     </View>
   );
@@ -360,34 +414,55 @@ const CalendarDemo: React.FC = () => {
 const SmartRemindersDemo: React.FC = () => {
   const { colors } = useTheme();
   const { t } = useLocalization();
-  const weekDayKeys: Array<'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'> = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  const weekDayKeys: Array<
+    'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
+  > = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
   const weekDays = weekDayKeys.map(key => t(`calendar.weekdays.${key}`));
   const busyDay = t('calendar.weekdays.wed');
 
   return (
     <View style={styles.smartContainer}>
-      <View style={[styles.dayCard, { backgroundColor: colors.surfaceSecondary }]}>
-        <Text style={styles.dayCardTitle}>{t('onboarding.busyDay', { day: busyDay })}</Text>
+      <View
+        style={[styles.dayCard, { backgroundColor: colors.surfaceSecondary }]}
+      >
+        <Text style={styles.dayCardTitle}>
+          {t('onboarding.busyDay', { day: busyDay })}
+        </Text>
         <View style={styles.weekDays}>
           {weekDays.map((day, i) => (
             <Text
               key={day}
-              style={[styles.weekDay, { color: colors.textSecondary }, i === 2 && [styles.weekDayActive, { backgroundColor: colors.primary }]]}
+              style={[
+                styles.weekDay,
+                { color: colors.textSecondary },
+                i === 2 && [
+                  styles.weekDayActive,
+                  { backgroundColor: colors.primary },
+                ],
+              ]}
             >
               {day}
             </Text>
           ))}
         </View>
         <View style={styles.timeSlot}>
-          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>12:00</Text>
+          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
+            12:00
+          </Text>
           <View style={[styles.eventBlock, { backgroundColor: '#BBF7D0' }]}>
-            <Text style={[styles.eventText, { color: colors.text }]}>{t('onboarding.meetingAt', { time: '12:00' })}</Text>
+            <Text style={[styles.eventText, { color: colors.text }]}>
+              {t('onboarding.meetingAt', { time: '12:00' })}
+            </Text>
           </View>
         </View>
         <View style={styles.timeSlot}>
-          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>15:00</Text>
+          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
+            15:00
+          </Text>
           <View style={[styles.eventBlock, { backgroundColor: '#FED7AA' }]}>
-            <Text style={[styles.eventText, { color: colors.text }]}>{t('onboarding.callAt', { time: '15:00' })}</Text>
+            <Text style={[styles.eventText, { color: colors.text }]}>
+              {t('onboarding.callAt', { time: '15:00' })}
+            </Text>
           </View>
         </View>
       </View>
@@ -412,7 +487,7 @@ const styles = StyleSheet.create({
   },
   slide: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   slideContent: {
@@ -427,8 +502,8 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     width: '100%',
-    flex: 1,
-    justifyContent: 'center',
+    flexShrink: 1,
+    justifyContent: 'flex-start',
   },
   title: {
     fontWeight: 'bold',
@@ -437,12 +512,12 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     textAlign: 'center',
-    marginBottom: 48,
+    marginBottom: 24,
   },
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 16,
   },
   pagination: {
     flexDirection: 'row',
@@ -511,56 +586,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     width: '100%',
-    marginTop: 20,
+    marginTop: 8,
   },
   personIllustration: {
     alignItems: 'center',
   },
   personHead: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#FDE68A',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   personBody: {
-    width: 80,
-    height: 100,
-    borderRadius: 40,
+    width: 56,
+    height: 70,
+    borderRadius: 28,
     backgroundColor: '#FDE68A',
   },
   bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginTop: 40,
-    paddingTop: 20,
+    marginTop: 16,
+    paddingTop: 12,
     borderTopWidth: 1,
   },
   smartContainer: {
     width: '100%',
-    marginTop: 20,
+    marginTop: 8,
   },
   dayCard: {
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
   },
   dayCardTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FFFFFF',
     backgroundColor: '#93C5FD',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 12,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
     overflow: 'hidden',
   },
   weekDays: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   weekDay: {
     fontSize: 12,
@@ -576,16 +651,16 @@ const styles = StyleSheet.create({
   timeSlot: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   timeLabel: {
-    fontSize: 14,
-    width: 50,
+    fontSize: 12,
+    width: 45,
   },
   eventBlock: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 8,
   },
   eventText: {
